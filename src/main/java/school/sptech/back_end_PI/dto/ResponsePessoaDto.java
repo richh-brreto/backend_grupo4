@@ -1,14 +1,18 @@
 package school.sptech.back_end_PI.dto;
 
 
-import org.jspecify.annotations.Nullable;
-
-public class RequestPessoa {
+public class ResponsePessoaDto {
+    protected Long Id;
     protected String nome;
     protected String email;
-    protected Integer telefone;
-    protected Integer Senha;
+    protected String telefone;
 
+    public Long getId() {
+        return Id;
+    }
+    public void setId(Long id) {
+        Id = id;
+    }
     public String getNome() {
         return nome;
     }
@@ -21,16 +25,11 @@ public class RequestPessoa {
     public void setEmail(String email) {
         this.email = email;
     }
-    public Integer getTelefone() {
+    public String getTelefone() {
         return telefone;
     }
-    public void setTelefone(Integer telefone) {
+    public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
-    public Integer getSenha() {
-        return Senha;
-    }
-    public void setSenha(Integer senha) {
-        Senha = senha;
-    }
+
 }

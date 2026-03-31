@@ -8,18 +8,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 @MappedSuperclass
 public abstract class Pessoa  implements UserDetails {
 
-    @NotNull @NotBlank
+    @NotBlank
     protected String nome;
 
-    @NotNull @NotBlank
+    @Email
     protected String email;
 
     @NotNull @Positive @Size(max = 11)
     protected String telefone;
 
-    @NotNull @NotBlank
+    @NotBlank
     protected String senha;
 
+    @NotBlank
     private String tipo;
 
     public String getTipo() {

@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "Professor")
 public class Professor extends Pessoa {
-    @Id
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
