@@ -9,19 +9,9 @@ import java.util.List;
 @Entity
 @Table(name = "aluno")
 public class Aluno extends Pessoa{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public Long getId() {
-        return id;
-    }
-
     public Aluno() {
     }
+
     public Aluno(Long id) {
         this.id = id;
     }

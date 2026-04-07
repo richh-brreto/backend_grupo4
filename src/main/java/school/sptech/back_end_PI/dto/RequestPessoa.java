@@ -7,7 +7,7 @@ public class RequestPessoa {
     protected String nome;
     protected String email;
     protected Integer telefone;
-    protected Integer Senha;
+    protected Integer senha;
 
     public String getNome() {
         return nome;
@@ -28,9 +28,9 @@ public class RequestPessoa {
         this.telefone = telefone;
     }
     public Integer getSenha() {
-        return Senha;
+        return senha;
     }
     public void setSenha(Integer senha) {
-        Senha = senha;
+        senha = senha;
     }
 }
