@@ -3,6 +3,8 @@ package school.sptech.back_end_PI.services;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import school.sptech.back_end_PI.entity.Pessoa;
@@ -10,6 +12,7 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
@@ -23,10 +26,14 @@ public class JwtService {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    public String generateToken(Pessoa pessoa) {
+    public String generateToken(Authentication authentication) {
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
         return Jwts.builder()
-                .setSubject(pessoa.getUsername())
-                .claim("role", pessoa.getAuthorities())
+                .setSubject(authentication.getName())
+                .claim("authorities", authorities)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)

@@ -23,7 +23,7 @@ public abstract class Pessoa implements UserDetails {
     @NotNull @NotBlank
     protected String email;
 
-    @NotNull @Positive @Size(max = 11)
+    @NotNull @Size(max = 11)
     protected String telefone;
 
     @NotNull @NotBlank
@@ -33,12 +33,17 @@ public abstract class Pessoa implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(() -> "ROLE_" + tipo);
     }
 
     @Override
     public String getUsername() {
         return email;
+    }
+
+    @Override
+    public String getPassword() {
+        return senha;
     }
 
     @Override
