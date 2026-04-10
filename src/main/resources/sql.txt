@@ -1,4 +1,4 @@
-create database if not exists boost;
+CREATE DATABASE IF NOT EXISTS boost;
 USE boost;
 
 -- DADOS CADASTRAIS
@@ -8,56 +8,45 @@ CREATE TABLE aluno (
     nome VARCHAR(100),
     email VARCHAR(200),
     senha VARCHAR(200),
-    telefone CHAR(11)
+    telefone CHAR(11),
+    tipo VARCHAR(100)
 );
+
 CREATE TABLE professor (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100),
     email VARCHAR(200),
     senha VARCHAR(200),
-    telefone CHAR(11)
+    telefone CHAR(11),
+    tipo VARCHAR(100)
 );
+
 CREATE TABLE turma (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    tipo CHAR(3),
-    nome VARCHAR(45)
+    nome VARCHAR(45),
+    nivel VARCHAR(50),
+    limite_alunos INT
 );
--- ENTIDADE DE LIGAÇÃO (AULA)
-CREATE TABLE aula (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    professor_id INT,
-    turma_id INT,
-    dia_semana CHAR(3),
-    hora_inicio TIME,
-    hora_fim TIME,
 
-    FOREIGN KEY (professor_id) REFERENCES professor(id),
-    FOREIGN KEY (turma_id) REFERENCES turma(id)
+-- MANY TO MANY: aluno ↔ turma
+
+CREATE TABLE aluno_turma (
+    aluno_id INT NOT NULL,
+    turma_id INT NOT NULL,
+
+    PRIMARY KEY (aluno_id, turma_id),
+
+    CONSTRAINT fk_aluno
+        FOREIGN KEY (aluno_id) REFERENCES aluno(id),
+
+    CONSTRAINT fk_turma
+        FOREIGN KEY (turma_id) REFERENCES turma(id)
 );
--- DADOS DE GESTÃO
-CREATE TABLE ocorrencia (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    aula_id INT,
-    data DATE,
 
-    FOREIGN KEY (aula_id) REFERENCES aula(id)
-);
-CREATE TABLE agenda (
-    aluno_id INT,
-    aula_id INT,
-    PRIMARY KEY (aluno_id, aula_id),
+select * from turma;
+select * from aluno;
+select * from professor;
+select * from aluno_turma;
 
-    FOREIGN KEY (aluno_id) REFERENCES aluno(id),
-    FOREIGN KEY (aula_id) REFERENCES aula(id)
-);
-CREATE TABLE presenca (
-    aluno_id INT,
-    ocorrencia_id INT,
-    presente TINYINT,
 
-    PRIMARY KEY (aluno_id, ocorrencia_id),
-
-    FOREIGN KEY (aluno_id) REFERENCES aluno(id),
-    FOREIGN KEY (ocorrencia_id) REFERENCES ocorrencia(id));
-    
-    select * from professor;
+drop database boost;

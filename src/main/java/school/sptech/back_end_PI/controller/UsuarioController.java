@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import school.sptech.back_end_PI.dto.RequestPessoa;
+import school.sptech.back_end_PI.dto.pessoa.RequestPessoa;
 import school.sptech.back_end_PI.services.JwtService;
 
 @RestController

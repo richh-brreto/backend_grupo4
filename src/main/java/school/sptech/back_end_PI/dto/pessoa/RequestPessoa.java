@@ -1,7 +1,5 @@
-package school.sptech.back_end_PI.dto;
+package school.sptech.back_end_PI.dto.pessoa;
 
-
-import org.jspecify.annotations.Nullable;
 
 public class RequestPessoa {
     protected String nome;

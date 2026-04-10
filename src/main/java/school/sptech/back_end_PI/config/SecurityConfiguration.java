@@ -32,7 +32,8 @@ public class SecurityConfiguration {
     private static final String[] URLS_PERMITIDAS = {
             "/usuarios/login/**",
             "/alunos/**",
-            "/professores/**"
+            "/professores/**",
+            "/turmas/**"
     };
 
     public SecurityConfiguration(
@@ -52,6 +53,9 @@ public class SecurityConfiguration {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+//                .authorizeHttpRequests(auth -> auth
+//                        .anyRequest().permitAll()
+//                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(URLS_PERMITIDAS).permitAll()
                         .anyRequest().authenticated()
