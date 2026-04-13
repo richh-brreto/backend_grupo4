@@ -10,6 +10,7 @@ import java.util.List;
 @Table(name = "aluno")
 public class Aluno extends Pessoa{
 
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
