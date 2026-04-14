@@ -1,92 +1,52 @@
-CREATE DATABASE IF NOT EXISTS escola;
-USE escola;
+CREATE DATABASE IF NOT EXISTS boost;
+USE boost;
+
+-- DADOS CADASTRAIS
 
 CREATE TABLE aluno (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    telefone VARCHAR(20),
-    senha VARCHAR(255) NOT NULL,
-    tipo VARCHAR(50)
-);
-
-CREATE TABLE turma (
-    id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100),
-    nivel VARCHAR(50),
-    limite_alunos INT DEFAULT 5
-);
-
-CREATE TABLE aluno_turma (
-    aluno_id INT NOT NULL,
-    turma_id INT NOT NULL,
-    PRIMARY KEY (aluno_id, turma_id),
-    FOREIGN KEY (aluno_id) REFERENCES aluno(id) ON DELETE CASCADE,
-    FOREIGN KEY (turma_id) REFERENCES turma(id) ON DELETE CASCADE
-);
-
-CREATE TABLE professor_turma (
-    professor_id INT NOT NULL,
-    turma_id INT NOT NULL,
-    PRIMARY KEY (professor_id, turma_id),
-    FOREIGN KEY (turma_id) REFERENCES turma(id) ON DELETE CASCADE
-);
-
-CREATE TABLE recorrencia (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    turma_id INT,
-    dia_semana VARCHAR(15),
-    hora_inicio TIME,
-    hora_fim TIME,
-    data_inicio DATE,
-    data_fim DATE,
-    FOREIGN KEY (turma_id) REFERENCES turma(id) ON DELETE CASCADE
-);
-
-CREATE TABLE aula (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    turma_id INT,
-    data_hora DATETIME,
-    status VARCHAR(20) DEFAULT 'AGENDADA',
-    FOREIGN KEY (turma_id) REFERENCES turma(id) ON DELETE CASCADE
-);
-
-CREATE TABLE aula_excecao (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    aula_id INT,
-    motivo VARCHAR(255),
-    nova_data DATETIME,
-    FOREIGN KEY (aula_id) REFERENCES aula(id) ON DELETE CASCADE
-);
-
-CREATE TABLE presenca (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    aula_id INT,
-    aluno_id INT,
-    presente TINYINT(1),
-    observacao VARCHAR(255),
-    FOREIGN KEY (aula_id) REFERENCES aula(id) ON DELETE CASCADE,
-    FOREIGN KEY (aluno_id) REFERENCES aluno(id) ON DELETE CASCADE
-);
-
-CREATE TABLE logs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    entidade VARCHAR(50),
-    entidade_id INT,
-    acao VARCHAR(50),
-    descricao TEXT,
-    data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    email VARCHAR(200),
+    senha VARCHAR(200),
+    telefone CHAR(11),
+    tipo VARCHAR(100)
 );
 
 CREATE TABLE professor (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    telefone VARCHAR(20),
-    senha VARCHAR(255) NOT NULL, -- Necessário para a entidade Pessoa
-    tipo VARCHAR(50)             -- Necessário para a entidade Pessoa
+    nome VARCHAR(100),
+    email VARCHAR(200),
+    senha VARCHAR(200),
+    telefone CHAR(11),
+    tipo VARCHAR(100)
 );
 
-ALTER TABLE professor_turma
-ADD CONSTRAINT fk_professor
-FOREIGN KEY (professor_id) REFERENCES professor(id) ON DELETE CASCADE;
+CREATE TABLE turma (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(45),
+    nivel VARCHAR(50),
+    limite_alunos INT
+);
+
+-- MANY TO MANY: aluno ↔ turma
+
+CREATE TABLE aluno_turma (
+    aluno_id INT NOT NULL,
+    turma_id INT NOT NULL,
+
+    PRIMARY KEY (aluno_id, turma_id),
+
+    CONSTRAINT fk_aluno
+        FOREIGN KEY (aluno_id) REFERENCES aluno(id),
+
+    CONSTRAINT fk_turma
+        FOREIGN KEY (turma_id) REFERENCES turma(id)
+);
+
+select * from turma;
+select * from aluno;
+select * from professor;
+select * from aluno_turma;
+
+
+drop database boost;
