@@ -7,7 +7,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import school.sptech.back_end_PI.entity.Pessoa;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 
