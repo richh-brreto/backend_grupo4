@@ -1,18 +1,18 @@
 package school.sptech.back_end_PI.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import school.sptech.back_end_PI.dto.pessoa.RequestPessoaDto;
+import school.sptech.back_end_PI.dto.ProfessorRequest;
 import school.sptech.back_end_PI.services.JwtService;
 
 @RestController
-@RequestMapping("/usuarios")
 public class UsuarioController {
 
     private final AuthenticationManager authenticationManager;
@@ -25,7 +25,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody RequestPessoaDto request) {
+    public ResponseEntity<?> login(@RequestBody ProfessorRequest request, HttpServletResponse response) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -36,6 +36,14 @@ public class UsuarioController {
 
         String token = jwtService.generateToken(authentication);
 
-        return ResponseEntity.ok(token);
+        Cookie cookie = new Cookie("authToken", token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(5 * 60);
+
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok("Login realizado com sucesso - Token gerado");
     }
 }

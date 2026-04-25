@@ -1,5 +1,8 @@
-package school.sptech.back_end_PI.entity;
-import jakarta.persistence.*;
+package school.sptech.back_end_PI.dto;
+
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -10,38 +13,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@Entity
-@Table(name = "Professor")
-public class Professor implements UserDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
-
-    @NotNull
-    @NotBlank
-    protected String nome;
-
+public class ProfessorRequest implements UserDetails {
     @NotNull @NotBlank
     protected String email;
-
-    @NotNull @Size(max = 11)
-    protected String telefone;
 
     @NotNull @NotBlank
     protected String senha;
 
-    private String tipo;
-
-    public Professor() {
+    public ProfessorRequest() {
     }
 
-    public Professor(Long id, String nome, String email, String telefone, String senha, String tipo) {
-        this.id = id;
-        this.nome = nome;
+    public ProfessorRequest(String email, String senha) {
         this.email = email;
-        this.telefone = telefone;
         this.senha = senha;
-        this.tipo = tipo;
     }
 
     @Override
@@ -68,22 +52,6 @@ public class Professor implements UserDetails {
     @Override
     public boolean isEnabled() { return true; }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -92,27 +60,11 @@ public class Professor implements UserDetails {
         this.email = email;
     }
 
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
     public String getSenha() {
         return senha;
     }
 
     public void setSenha(String senha) {
         this.senha = senha;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
     }
 }

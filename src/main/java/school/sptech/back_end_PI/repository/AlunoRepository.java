@@ -6,5 +6,5 @@ public interface AlunoRepository extends JpaRepository<Aluno,Integer> {
 
     boolean existsAlunoByEmail(String email);
 
-    Object findByEmail(String email);
+    Aluno findByEmail(String email);
 }
