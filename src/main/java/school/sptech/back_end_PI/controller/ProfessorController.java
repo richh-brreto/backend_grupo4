@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import school.sptech.back_end_PI.dto.CreateProfessorRequest;
 import school.sptech.back_end_PI.entity.Professor;
 import school.sptech.back_end_PI.services.ProfessorService;
 
@@ -22,13 +23,18 @@ public class ProfessorController {
         this.service = service;
     }
 
-    @PostMapping
-    @Operation(summary = "Cadastrar um professor", description = "Cadastrar um novo professor com um ID único")
-    public ResponseEntity cadastrar (
-            @Parameter(description = "Um professor, contendo seu id, nome, email, telefone, senha e tipo de usuário (no caso: professor)", required = true)
-            @Valid @RequestBody Professor professor
-    ){
-        return ResponseEntity.status(201).body(service.create(professor));
-    }
+//    @PostMapping
+//    @Operation(summary = "Cadastrar um professor", description = "Cadastrar um novo professor com um ID único")
+//    public ResponseEntity cadastrar (
+//            @Parameter(description = "Um professor, contendo seu id, nome, email, telefone, senha e tipo de usuário (no caso: professor)", required = true)
+//            @Valid @RequestBody Professor professor
+//    ){
+//        return ResponseEntity.status(201).body(service.create(professor, 1));
+//    }
 
+    @PostMapping
+    public ResponseEntity<Professor> cadastrar(@Valid @RequestBody CreateProfessorRequest dto) {
+        Professor professorSalvo = service.create(dto);
+        return ResponseEntity.status(201).body(professorSalvo);
+    }
 }

@@ -9,26 +9,34 @@ import jakarta.validation.constraints.Size;
 public class Aluno {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
+    private Long id;
 
     @NotNull
     @NotBlank
-    protected String nome;
+    private String nome;
 
     @NotNull @NotBlank
-    protected String email;
+    private String email;
 
     @NotNull @Size(max = 11)
-    protected String telefone;
+    private String telefone;
+
+    @NotBlank
+    private String nivel;
+
+    @ManyToOne
+    @JoinColumn(name = "turma_idula_turma", nullable = true)
+    private Turma turma;
 
     public Aluno() {
     }
 
-    public Aluno(Long id, String nome, String email, String telefone) {
+    public Aluno(Long id, String nome, String email, String telefone, String nivel) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.telefone = telefone;
+        this.nivel = nivel;
     }
 
     public Long getId() {
@@ -61,5 +69,13 @@ public class Aluno {
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
+    }
+
+    public String getNivel() {
+        return nivel;
+    }
+
+    public void setNivel(String nivel) {
+        this.nivel = nivel;
     }
 }

@@ -1,41 +1,40 @@
 package school.sptech.back_end_PI.entity;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
-import java.util.List;
 
 @Entity
-@Table(name = "Professor")
-public class Professor implements UserDetails {
+@Table(name = "professor")
+public class Professor {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
+    @Column(name = "professor_id")
+    private Integer id;
+
+    @NotBlank
+    private String nome;
+
+    @NotBlank
+    private String email;
 
     @NotNull
+    private Integer telefone;
+
     @NotBlank
-    protected String nome;
+    private String senha;
 
-    @NotNull @NotBlank
-    protected String email;
-
-    @NotNull @Size(max = 11)
-    protected String telefone;
-
-    @NotNull @NotBlank
-    protected String senha;
-
-    private String tipo;
+    // Relacionamento com a tabela de tipos
+    @ManyToOne
+    @JoinColumn(name = "tipo_professor_idtipo_professor")
+    private TipoProfessor tipo;
 
     public Professor() {
     }
 
-    public Professor(Long id, String nome, String email, String telefone, String senha, String tipo) {
+    public Professor(Integer id, String nome, String email, Integer telefone, String senha, TipoProfessor tipo) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -44,75 +43,51 @@ public class Professor implements UserDetails {
         this.tipo = tipo;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_PROFESSOR"));
-    }
-
-    @Override
-    public String getUsername() {
-        return getEmail();
-    }
-
-    @Override
-    public String getPassword() {
-        return getSenha();
-    }
-
-    @Override
-    public boolean isAccountNonExpired() { return true; }
-    @Override
-    public boolean isAccountNonLocked() { return true; }
-    @Override
-    public boolean isCredentialsNonExpired() { return true; }
-    @Override
-    public boolean isEnabled() { return true; }
-
-    public Long getId() {
+    public Integer getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getNome() {
         return nome;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getTelefone() {
+    public Integer getTelefone() {
         return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
     }
 
     public String getSenha() {
         return senha;
     }
 
+    public TipoProfessor getTipo() {
+        return tipo;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setTelefone(Integer telefone) {
+        this.telefone = telefone;
+    }
+
     public void setSenha(String senha) {
         this.senha = senha;
     }
 
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
+    public void setTipo(TipoProfessor tipo) {
         this.tipo = tipo;
     }
 }

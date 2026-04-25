@@ -1,52 +1,100 @@
+-- Criação do banco de dados (opcional)
 CREATE DATABASE IF NOT EXISTS boost;
 USE boost;
 
--- DADOS CADASTRAIS
+-- 1. Tabela Tipo Professor
+CREATE TABLE tipo_professor (
+    idtipo_professor INT AUTO_INCREMENT PRIMARY KEY,
+    tipo_professor VARCHAR(45) NOT NULL
+);
 
+-- 2. Tabela Professor
+CREATE TABLE professor (
+    professor_id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(45) NOT NULL,
+    email VARCHAR(45) NOT NULL,
+    telefone INT,
+    senha VARCHAR(45) NOT NULL,
+    tipo_professor_idtipo_professor INT,
+    CONSTRAINT fk_professor_tipo FOREIGN KEY (tipo_professor_idtipo_professor)
+        REFERENCES tipo_professor(idtipo_professor)
+);
+
+-- 3. Tabela Turma
+CREATE TABLE turma (
+    idula_turma INT AUTO_INCREMENT PRIMARY KEY,
+    nome_turma VARCHAR(45) NOT NULL,
+    nivel VARCHAR(45),
+    limite_alunos INT,
+    tipo VARCHAR(45) -- Aqui você define 'INDIVIDUAL' ou 'GRUPO'
+);
+
+-- 4. Tabela Aluno (Com turma_id NULLABLE para permitir cadastro inicial livre)
 CREATE TABLE aluno (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100),
-    email VARCHAR(200),
-    senha VARCHAR(200),
-    telefone CHAR(11),
-    tipo VARCHAR(100)
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    telefone VARCHAR(20),
+    nivel VARCHAR(45),
+    turma_idula_turma INT NULL, -- NULL permite cadastrar aluno sem turma
+    CONSTRAINT fk_aluno_turma FOREIGN KEY (turma_idula_turma)
+        REFERENCES turma(idula_turma)
 );
 
-CREATE TABLE professor (
+-- 5. Tabela Horário
+CREATE TABLE horario (
+    idhorario INT AUTO_INCREMENT PRIMARY KEY,
+    dia_semana VARCHAR(45) NOT NULL,
+    hora_inicio TIME NOT NULL,
+    hora_fim TIME NOT NULL
+);
+
+-- 6. Tabelas de Disponibilidade (Relacionamentos N:N)
+CREATE TABLE disponibilidade_professor (
+    professor_professor_id INT,
+    horario_idhorario INT,
+    PRIMARY KEY (professor_professor_id, horario_idhorario),
+    CONSTRAINT fk_disp_prof FOREIGN KEY (professor_professor_id) REFERENCES professor(professor_id),
+    CONSTRAINT fk_disp_prof_horario FOREIGN KEY (horario_idhorario) REFERENCES horario(idhorario)
+);
+
+CREATE TABLE disponibilidade_aluno (
+    horario_idhorario INT,
+    aluno_id INT,
+    PRIMARY KEY (horario_idhorario, aluno_id),
+    CONSTRAINT fk_disp_aluno_horario FOREIGN KEY (horario_idhorario) REFERENCES horario(idhorario),
+    CONSTRAINT fk_disp_aluno FOREIGN KEY (aluno_id) REFERENCES aluno(id)
+);
+
+-- 7. Tabela Contrato (O "Gerador" de aulas)
+CREATE TABLE contrato (
+    idcontrato INT AUTO_INCREMENT PRIMARY KEY,
+    professor_professor_id INT NOT NULL,
+    turma_idula_turma INT NOT NULL,
+    data_inicio DATE NOT NULL,
+    data_fim DATE NOT NULL,
+    CONSTRAINT fk_contrato_professor FOREIGN KEY (professor_professor_id) REFERENCES professor(professor_id),
+    CONSTRAINT fk_contrato_turma FOREIGN KEY (turma_idula_turma) REFERENCES turma(idula_turma)
+);
+
+-- 8. Tabela Aula (As instâncias reais no calendário)
+CREATE TABLE aula (
+    idAula INT AUTO_INCREMENT PRIMARY KEY,
+    data DATE NOT NULL,
+    presenca TINYINT DEFAULT 0,
+    status VARCHAR(45),
+    hora_inicio TIME,
+    hora_fim TIME,
+    contrato_idcontrato INT NOT NULL,
+    CONSTRAINT fk_aula_contrato FOREIGN KEY (contrato_idcontrato) REFERENCES contrato(idcontrato)
+);
+
+-- 9. Tabela Logs (Para auditoria)
+CREATE TABLE logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100),
-    email VARCHAR(200),
-    senha VARCHAR(200),
-    telefone CHAR(11),
-    tipo VARCHAR(100)
+    acao VARCHAR(50),
+    descricao TEXT,
+    data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    aula_idAula INT,
+    CONSTRAINT fk_logs_aula FOREIGN KEY (aula_idAula) REFERENCES aula(idAula)
 );
-
-CREATE TABLE turma (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(45),
-    nivel VARCHAR(50),
-    limite_alunos INT
-);
-
--- MANY TO MANY: aluno ↔ turma
-
-CREATE TABLE aluno_turma (
-    aluno_id INT NOT NULL,
-    turma_id INT NOT NULL,
-
-    PRIMARY KEY (aluno_id, turma_id),
-
-    CONSTRAINT fk_aluno
-        FOREIGN KEY (aluno_id) REFERENCES aluno(id),
-
-    CONSTRAINT fk_turma
-        FOREIGN KEY (turma_id) REFERENCES turma(id)
-);
-
-select * from turma;
-select * from aluno;
-select * from professor;
-select * from aluno_turma;
-
-
-drop database boost;
