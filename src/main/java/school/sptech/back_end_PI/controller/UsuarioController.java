@@ -25,6 +25,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
+    @io.swagger.v3.oas.annotations.security.SecurityRequirements // Isso remove o cadeado no Swagger
     public ResponseEntity<?> login(@RequestBody ProfessorRequest request, HttpServletResponse response) {
 
         Authentication authentication = authenticationManager.authenticate(

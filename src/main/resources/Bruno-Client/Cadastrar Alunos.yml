@@ -1,0 +1,26 @@
+info:
+  name: Cadastrar Alunos
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://localhost:8080/alunos
+  body:
+    type: json
+    data: |-
+      {
+        "nome": "josadfao",
+        "email": "joasadosadfasdf@gmasdffsaail.com",
+        "telefone": "1995751002",
+        "senha": "senha123",
+        "nivel": "fudido"
+      }
+  auth:
+    type: bearer
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
