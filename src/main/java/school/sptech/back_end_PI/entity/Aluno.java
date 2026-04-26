@@ -24,9 +24,6 @@ public class Aluno {
     @NotBlank
     private String nivel;
 
-    @ManyToOne
-    @JoinColumn(name = "turma_idula_turma", nullable = true)
-    private Turma turma;
 
     public Aluno() {
     }

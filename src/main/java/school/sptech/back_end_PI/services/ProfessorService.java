@@ -21,20 +21,6 @@ public class ProfessorService {
         this.tipoProfessorRepository = tipoProfessorRepository;
     }
 
-//    public Professor create(Professor professor, Integer idTipoProfessor){
-//        if(professorRepository.existsProfessorByEmail(professor.getEmail())){
-//            throw new ConflictException("Email professor já cadastrado");
-//        }
-//
-//        TipoProfessor tipoProfessor = tipoProfessorRepository.findById(idTipoProfessor).orElseThrow(
-//                () -> new EntityNotFound("Tipo de professor nao encontrado")
-//        );
-//
-//        professor.setTipo(tipoProfessor);
-//
-//
-//        return professorRepository.save(professor);
-//    }
 
 
     public Professor create(CreateProfessorRequest dto) {

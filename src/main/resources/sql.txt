@@ -98,3 +98,14 @@ CREATE TABLE logs (
     aula_idAula INT,
     CONSTRAINT fk_logs_aula FOREIGN KEY (aula_idAula) REFERENCES aula(idAula)
 );
+
+INSERT INTO tipo_professor (idtipo_professor, tipo_professor) VALUES (1, 'ADM');
+INSERT INTO tipo_professor (idtipo_professor, tipo_professor) VALUES (2, 'Professor');
+
+INSERT INTO professor (nome, email, telefone, senha, tipo_professor_idtipo_professor)
+VALUES ('Administrador Sistema', 'admin@sptech.school', 1199999888, 'admin123', 1);
+
+select * from professor;
+select * from aluno;
+
+drop database boost;
