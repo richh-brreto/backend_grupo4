@@ -104,3 +104,96 @@ INSERT INTO tipo_professor (tipo_professor) VALUES ('ADM'), ('Professor');
 
 INSERT INTO professor (nome, email, telefone, senha, tipo_professor_id_tipo_professor)
 VALUES ('Administrador Sistema', 'admin@sptech.school', 1199999888, 'admin123', 1);
+
+-- Segunda-feira
+INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
+('Segunda-feira', '06:00:00', '07:00:00'), ('Segunda-feira', '07:00:00', '08:00:00'),
+('Segunda-feira', '08:00:00', '09:00:00'), ('Segunda-feira', '09:00:00', '10:00:00'),
+('Segunda-feira', '10:00:00', '11:00:00'), ('Segunda-feira', '11:00:00', '12:00:00'),
+('Segunda-feira', '12:00:00', '13:00:00'), ('Segunda-feira', '13:00:00', '14:00:00'),
+('Segunda-feira', '14:00:00', '15:00:00'), ('Segunda-feira', '15:00:00', '16:00:00'),
+('Segunda-feira', '16:00:00', '17:00:00'), ('Segunda-feira', '17:00:00', '18:00:00'),
+('Segunda-feira', '18:00:00', '19:00:00'), ('Segunda-feira', '19:00:00', '20:00:00'),
+('Segunda-feira', '20:00:00', '21:00:00'), ('Segunda-feira', '21:00:00', '22:00:00'),
+('Segunda-feira', '22:00:00', '23:00:00');
+
+-- Terça-feira
+INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
+('Terça-feira', '06:00:00', '07:00:00'), ('Terça-feira', '07:00:00', '08:00:00'),
+('Terça-feira', '08:00:00', '09:00:00'), ('Terça-feira', '09:00:00', '10:00:00'),
+('Terça-feira', '10:00:00', '11:00:00'), ('Terça-feira', '11:00:00', '12:00:00'),
+('Terça-feira', '12:00:00', '13:00:00'), ('Terça-feira', '13:00:00', '14:00:00'),
+('Terça-feira', '14:00:00', '15:00:00'), ('Terça-feira', '15:00:00', '16:00:00'),
+('Terça-feira', '16:00:00', '17:00:00'), ('Terça-feira', '17:00:00', '18:00:00'),
+('Terça-feira', '18:00:00', '19:00:00'), ('Terça-feira', '19:00:00', '20:00:00'),
+('Terça-feira', '20:00:00', '21:00:00'), ('Terça-feira', '21:00:00', '22:00:00'),
+('Terça-feira', '22:00:00', '23:00:00');
+
+-- Quarta-feira
+INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
+('Quarta-feira', '06:00:00', '07:00:00'), ('Quarta-feira', '07:00:00', '08:00:00'),
+('Quarta-feira', '08:00:00', '09:00:00'), ('Quarta-feira', '09:00:00', '10:00:00'),
+('Quarta-feira', '10:00:00', '11:00:00'), ('Quarta-feira', '11:00:00', '12:00:00'),
+('Quarta-feira', '12:00:00', '13:00:00'), ('Quarta-feira', '13:00:00', '14:00:00'),
+('Quarta-feira', '14:00:00', '15:00:00'), ('Quarta-feira', '15:00:00', '16:00:00'),
+('Quarta-feira', '16:00:00', '17:00:00'), ('Quarta-feira', '17:00:00', '18:00:00'),
+('Quarta-feira', '18:00:00', '19:00:00'), ('Quarta-feira', '19:00:00', '20:00:00'),
+('Quarta-feira', '20:00:00', '21:00:00'), ('Quarta-feira', '21:00:00', '22:00:00'),
+('Quarta-feira', '22:00:00', '23:00:00');
+
+-- Quinta-feira
+INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
+('Quinta-feira', '06:00:00', '07:00:00'), ('Quinta-feira', '07:00:00', '08:00:00'),
+('Quinta-feira', '08:00:00', '09:00:00'), ('Quinta-feira', '09:00:00', '10:00:00'),
+('Quinta-feira', '10:00:00', '11:00:00'), ('Quinta-feira', '11:00:00', '12:00:00'),
+('Quinta-feira', '12:00:00', '13:00:00'), ('Quinta-feira', '13:00:00', '14:00:00'),
+('Quinta-feira', '14:00:00', '15:00:00'), ('Quinta-feira', '15:00:00', '16:00:00'),
+('Quinta-feira', '16:00:00', '17:00:00'), ('Quinta-feira', '17:00:00', '18:00:00'),
+('Quinta-feira', '18:00:00', '19:00:00'), ('Quinta-feira', '19:00:00', '20:00:00'),
+('Quinta-feira', '20:00:00', '21:00:00'), ('Quinta-feira', '21:00:00', '22:00:00'),
+('Quinta-feira', '22:00:00', '23:00:00');
+
+-- Sexta-feira
+INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
+('Sexta-feira', '06:00:00', '07:00:00'), ('Sexta-feira', '07:00:00', '08:00:00'),
+('Sexta-feira', '08:00:00', '09:00:00'), ('Sexta-feira', '09:00:00', '10:00:00'),
+('Sexta-feira', '10:00:00', '11:00:00'), ('Sexta-feira', '11:00:00', '12:00:00'),
+('Sexta-feira', '12:00:00', '13:00:00'), ('Sexta-feira', '13:00:00', '14:00:00'),
+('Sexta-feira', '14:00:00', '15:00:00'), ('Sexta-feira', '15:00:00', '16:00:00'),
+('Sexta-feira', '16:00:00', '17:00:00'), ('Sexta-feira', '17:00:00', '18:00:00'),
+('Sexta-feira', '18:00:00', '19:00:00'), ('Sexta-feira', '19:00:00', '20:00:00'),
+('Sexta-feira', '20:00:00', '21:00:00'), ('Sexta-feira', '21:00:00', '22:00:00'),
+('Sexta-feira', '22:00:00', '23:00:00');
+
+-- Sábado
+INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
+('Sábado', '06:00:00', '07:00:00'), ('Sábado', '07:00:00', '08:00:00'),
+('Sábado', '08:00:00', '09:00:00'), ('Sábado', '09:00:00', '10:00:00'),
+('Sábado', '10:00:00', '11:00:00'), ('Sábado', '11:00:00', '12:00:00'),
+('Sábado', '12:00:00', '13:00:00'), ('Sábado', '13:00:00', '14:00:00'),
+('Sábado', '14:00:00', '15:00:00'), ('Sábado', '15:00:00', '16:00:00'),
+('Sábado', '16:00:00', '17:00:00'), ('Sábado', '17:00:00', '18:00:00'),
+('Sábado', '18:00:00', '19:00:00'), ('Sábado', '19:00:00', '20:00:00'),
+('Sábado', '20:00:00', '21:00:00'), ('Sábado', '21:00:00', '22:00:00'),
+('Sábado', '22:00:00', '23:00:00');
+
+-- Domingo
+INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
+('Domingo', '06:00:00', '07:00:00'), ('Domingo', '07:00:00', '08:00:00'),
+('Domingo', '08:00:00', '09:00:00'), ('Domingo', '09:00:00', '10:00:00'),
+('Domingo', '10:00:00', '11:00:00'), ('Domingo', '11:00:00', '12:00:00'),
+('Domingo', '12:00:00', '13:00:00'), ('Domingo', '13:00:00', '14:00:00'),
+('Domingo', '14:00:00', '15:00:00'), ('Domingo', '15:00:00', '16:00:00'),
+('Domingo', '16:00:00', '17:00:00'), ('Domingo', '17:00:00', '18:00:00'),
+('Domingo', '18:00:00', '19:00:00'), ('Domingo', '19:00:00', '20:00:00'),
+('Domingo', '20:00:00', '21:00:00'), ('Domingo', '21:00:00', '22:00:00'),
+('Domingo', '22:00:00', '23:00:00');
+
+SELECT
+    id_horario AS ID,
+    dia_semana AS Dia,
+    hora_inicio AS Inicio,
+    hora_fim AS Fim
+FROM horario
+WHERE dia_semana = 'Segunda-feira'
+ORDER BY hora_inicio ASC;
