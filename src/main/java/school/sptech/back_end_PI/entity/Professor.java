@@ -16,7 +16,7 @@ public class Professor implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "professor_id")
+    @Column(name = "id_professor")
     private Integer id;
 
     @NotBlank
@@ -33,7 +33,7 @@ public class Professor implements UserDetails {
 
     // Relacionamento com a tabela de tipos
     @ManyToOne
-    @JoinColumn(name = "tipo_professor_idtipo_professor")
+    @JoinColumn(name = "tipo_professor_id_tipo_professor")
     private TipoProfessor tipo;
 
     @Override
