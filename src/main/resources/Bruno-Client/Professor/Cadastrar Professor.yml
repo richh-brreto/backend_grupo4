@@ -10,8 +10,8 @@ http:
     type: json
     data: |-
       {
-        "nome": "Ricardo",
-        "email": "ricasrdo@email.com",
+        "nome": "Pedro",
+        "email": "pedro@gmail.com",
         "telefone": 119999999,
         "senha": "senha123",
         "idTipoProfessor": 1

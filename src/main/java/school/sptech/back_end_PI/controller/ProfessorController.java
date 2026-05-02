@@ -5,13 +5,13 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import school.sptech.back_end_PI.dto.CreateProfessorRequest;
+import school.sptech.back_end_PI.dto.ProfessorResponse;
 import school.sptech.back_end_PI.entity.Professor;
 import school.sptech.back_end_PI.services.ProfessorService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/professores")
@@ -31,5 +31,25 @@ public class ProfessorController {
     ) {
         Professor professorSalvo = service.create(dto);
         return ResponseEntity.status(201).body(professorSalvo);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ProfessorResponse>> listar() {
+        List<ProfessorResponse> lista = service.findAll();
+        if (lista.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(lista);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProfessorResponse> buscarPorId(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.findById(id));
     }
 }

@@ -1,8 +1,13 @@
 package school.sptech.back_end_PI.mapper;
 
 import school.sptech.back_end_PI.dto.CreateProfessorRequest;
+import school.sptech.back_end_PI.dto.TipoProfessorResponse;
 import school.sptech.back_end_PI.entity.Professor;
 import school.sptech.back_end_PI.entity.TipoProfessor;
+import school.sptech.back_end_PI.dto.ProfessorResponse;
+
+import java.util.List;
+
 
 public class ProfessorMapper {
 
@@ -23,5 +28,26 @@ public class ProfessorMapper {
         return professor;
     }
 
-    // Você também pode criar um método para transformar a Entity de volta em DTO de resposta
+    public static ProfessorResponse toResponse(Professor professor) {
+        if (professor == null) return null;
+
+        ProfessorResponse dto = new ProfessorResponse();
+        dto.setId(professor.getId());
+        dto.setNome(professor.getNome());
+        dto.setEmail(professor.getEmail());
+        dto.setTelefone(professor.getTelefone());
+
+        // Mapeamento hierárquico:
+        if (professor.getTipo() != null) {
+            dto.setTipo(TipoProfessorMapper.toResponse(professor.getTipo()));
+        }
+
+        return dto;
+    }
+
+    public static List<ProfessorResponse> toResponseList(List<Professor> professores) {
+        return professores.stream()
+                .map(ProfessorMapper::toResponse)
+                .toList();
+    }
 }
