@@ -1,0 +1,7 @@
+info:
+  name: Professor
+  type: folder
+  seq: 2
+
+request:
+  auth: inherit

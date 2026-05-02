@@ -1,0 +1,24 @@
+info:
+  name: Atualizar Alunos
+  type: http
+  seq: 2
+
+http:
+  method: PUT
+  url: http://localhost:8080/alunos/1
+  body:
+    type: json
+    data: |-
+      {
+        "nome": "Joao ATUALIZADO",
+        "email": "joao@gmail.com",
+        "telefone": "1995751002",
+        "senha": "senha123",
+        "nivel": "b2"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

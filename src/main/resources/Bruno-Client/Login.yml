@@ -1,12 +1,18 @@
 info:
   name: Login
   type: http
-  seq: 4
+  seq: 1
 
 http:
   method: POST
   url: http://localhost:8080/login
-  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "email": "admin@sptech.school",
+        "senha": "admin123"
+      }
 
 settings:
   encodeUrl: true
