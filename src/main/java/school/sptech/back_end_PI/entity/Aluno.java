@@ -1,40 +1,50 @@
 package school.sptech.back_end_PI.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "aluno")
 public class Aluno {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_aluno")
     private Long id;
 
-    @NotNull
     @NotBlank
     private String nome;
 
-    @NotNull @NotBlank
+    @NotBlank
     private String email;
 
-    @NotNull @Size(max = 11)
+    @Size(max = 11)
     private String telefone;
 
     @NotBlank
     private String nivel;
 
+    @ManyToMany
+    @JoinTable(
+            name = "disponibilidade_aluno",
+            joinColumns = @JoinColumn(name = "aluno_id_aluno"),
+            inverseJoinColumns = @JoinColumn(name = "horario_id_horario")
+    )
+    private List<Horario> horarios = new ArrayList<>();
 
     public Aluno() {
     }
 
-    public Aluno(Long id, String nome, String email, String telefone, String nivel) {
+    public Aluno(Long id, String nome, String email, String telefone, String nivel, List<Horario> horarios) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.telefone = telefone;
         this.nivel = nivel;
+        this.horarios = horarios;
     }
 
     public Long getId() {
@@ -75,5 +85,13 @@ public class Aluno {
 
     public void setNivel(String nivel) {
         this.nivel = nivel;
+    }
+
+    public List<Horario> getHorarios() {
+        return horarios;
+    }
+
+    public void setHorarios(List<Horario> horarios) {
+        this.horarios = horarios;
     }
 }

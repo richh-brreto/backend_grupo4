@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import school.sptech.back_end_PI.Exception.ConflictException;
 import school.sptech.back_end_PI.Exception.EntityNotFound;
 import school.sptech.back_end_PI.dto.CreateProfessorRequest;
+import school.sptech.back_end_PI.dto.HorarioAlunoProfessorRequest;
 import school.sptech.back_end_PI.dto.ProfessorResponse;
 import school.sptech.back_end_PI.entity.Professor;
 import school.sptech.back_end_PI.entity.TipoProfessor;
@@ -61,6 +62,11 @@ public class ProfessorService {
         }
 
         professorRepository.deleteById(id);
+    }
+
+
+    public List<Professor> buscarCompativeis(HorarioAlunoProfessorRequest request) {
+        return professorRepository.buscarProfessoresCompativeis(request.getAlunoHorariosIds());
     }
 
 }

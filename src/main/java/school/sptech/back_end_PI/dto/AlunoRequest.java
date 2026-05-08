@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
+
 public class AlunoRequest {
 
     @NotBlank
@@ -15,12 +17,14 @@ public class AlunoRequest {
     @Email
     private String email;
 
-    @NotNull
+    @NotBlank
     @Size(max = 11)
     private String telefone;
 
     @NotBlank
     private String nivel;
+
+    private List<Long> horariosIds;
 
     public String getNome() {
         return nome;
@@ -52,5 +56,13 @@ public class AlunoRequest {
 
     public void setNivel(String nivel) {
         this.nivel = nivel;
+    }
+
+    public List<Long> getHorariosIds() {
+        return horariosIds;
+    }
+
+    public void setHorariosIds(List<Long> horariosIds) {
+        this.horariosIds = horariosIds;
     }
 }
