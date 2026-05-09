@@ -1,0 +1,21 @@
+spring.application.name=backend_grupo4
+
+spring.web.error.include-message=always
+spring.web.error.include-binding-errors=always
+
+# URL do banco
+spring.datasource.url=jdbc:mysql://localhost:3306/boost?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+
+# Usuário e senha
+spring.datasource.username=SEU-USUARIO
+spring.datasource.password=SUA-SENHA
+
+# JPA / Hibernate
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+# JWT
+jwt.secret="yIO5VMua+5+GtUGzAWXPD+zGcGRClVTXGZRQWagQSMk"
+jwt.expiration=3600000
+
+#DEBUG
+logging.level.org.springframework.security=DEBUG

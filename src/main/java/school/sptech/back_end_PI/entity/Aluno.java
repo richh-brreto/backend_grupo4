@@ -25,6 +25,9 @@ public class Aluno {
     @NotBlank
     private String nivel;
 
+    @ManyToOne
+    @JoinColumn(name = "turma_id_turma")
+    private Turma turma;
 
     public Aluno() {
     }
@@ -75,5 +78,13 @@ public class Aluno {
 
     public void setNivel(String nivel) {
         this.nivel = nivel;
+    }
+
+    public Turma getTurma() {
+        return turma;
+    }
+
+    public void setTurma(Turma turma) {
+        this.turma = turma;
     }
 }
