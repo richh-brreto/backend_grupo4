@@ -1,5 +1,8 @@
 package school.sptech.back_end_PI.dto;
 
+import java.time.LocalTime;
+import java.util.List;
+
 public class AlunoResponse {
 
     private Long id;
@@ -7,17 +10,53 @@ public class AlunoResponse {
     private String email;
     private String telefone;
     private String nivel;
+    private List<HorarioAlunoDto> horarios;
+
+
+    public class HorarioAlunoDto {
+
+        private Long id;
+        private String diaSemana;
+        private LocalTime horaInicio;
+        private LocalTime horaFim;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getDiaSemana() {
+            return diaSemana;
+        }
+
+        public void setDiaSemana(String diaSemana) {
+            this.diaSemana = diaSemana;
+        }
+
+        public LocalTime getHoraInicio() {
+            return horaInicio;
+        }
+
+        public void setHoraInicio(LocalTime horaInicio) {
+            this.horaInicio = horaInicio;
+        }
+
+        public LocalTime getHoraFim() {
+            return horaFim;
+        }
+
+        public void setHoraFim(LocalTime horaFim) {
+            this.horaFim = horaFim;
+        }
+    }
+
 
     public AlunoResponse() {
     }
 
-    public AlunoResponse(Long id, String nome, String email, String telefone, String nivel) {
-        this.id = id;
-        this.nome = nome;
-        this.email = email;
-        this.telefone = telefone;
-        this.nivel = nivel;
-    }
 
     public Long getId() {
         return id;
@@ -57,5 +96,13 @@ public class AlunoResponse {
 
     public void setNivel(String nivel) {
         this.nivel = nivel;
+    }
+
+    public List<HorarioAlunoDto> getHorarios() {
+        return horarios;
+    }
+
+    public void setHorarios(List<HorarioAlunoDto> horarios) {
+        this.horarios = horarios;
     }
 }

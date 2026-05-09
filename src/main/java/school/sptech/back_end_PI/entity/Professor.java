@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -36,6 +37,14 @@ public class Professor implements UserDetails {
     @JoinColumn(name = "tipo_professor_id_tipo_professor")
     private TipoProfessor tipo;
 
+    @ManyToMany
+    @JoinTable(
+            name = "disponibilidade_professor",
+            joinColumns = @JoinColumn(name = "professor_id_professor"),
+            inverseJoinColumns = @JoinColumn(name = "horario_id_horario")
+    )
+    private List<Horario> horarios = new ArrayList<>();
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_PROFESSOR"));
@@ -63,13 +72,14 @@ public class Professor implements UserDetails {
     public Professor() {
     }
 
-    public Professor(Integer id, String nome, String email, Integer telefone, String senha, TipoProfessor tipo) {
+    public Professor(Integer id, String nome, String email, Integer telefone, String senha, TipoProfessor tipo, List<Horario> horarios) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.telefone = telefone;
         this.senha = senha;
         this.tipo = tipo;
+        this.horarios = horarios;
     }
 
     public Integer getId() {
@@ -118,5 +128,13 @@ public class Professor implements UserDetails {
 
     public void setTipo(TipoProfessor tipo) {
         this.tipo = tipo;
+    }
+
+    public List<Horario> getHorarios() {
+        return horarios;
+    }
+
+    public void setHorarios(List<Horario> horarios) {
+        this.horarios = horarios;
     }
 }
