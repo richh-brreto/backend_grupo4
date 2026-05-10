@@ -7,8 +7,10 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import school.sptech.back_end_PI.dto.CreateProfessorRequest;
+import school.sptech.back_end_PI.dto.HorarioAlunoProfessorRequest;
 import school.sptech.back_end_PI.dto.ProfessorResponse;
 import school.sptech.back_end_PI.entity.Professor;
+import school.sptech.back_end_PI.mapper.ProfessorMapper;
 import school.sptech.back_end_PI.services.ProfessorService;
 
 import java.util.List;
@@ -51,5 +53,16 @@ public class ProfessorController {
     @GetMapping("/{id}")
     public ResponseEntity<ProfessorResponse> buscarPorId(@PathVariable Integer id) {
         return ResponseEntity.ok(service.findById(id));
+    }
+
+    @PostMapping("/compatibilidade")
+    public ResponseEntity<List<ProfessorResponse>> buscarCompativeis(@RequestBody HorarioAlunoProfessorRequest request) {
+
+        List<ProfessorResponse> response = service.buscarCompativeis(request)
+                .stream()
+                .map(ProfessorMapper::toResponse)
+                .toList();
+
+        return ResponseEntity.ok(response);
     }
 }

@@ -3,8 +3,24 @@ package school.sptech.back_end_PI.mapper;
 import school.sptech.back_end_PI.dto.AlunoRequest;
 import school.sptech.back_end_PI.dto.AlunoResponse;
 import school.sptech.back_end_PI.entity.Aluno;
+import school.sptech.back_end_PI.entity.Horario;
+
+import java.util.List;
 
 public class AlunoMapper {
+
+    public static Aluno toEntity(AlunoRequest request, List<Horario> horarios) {
+        if (request == null) return null;
+
+        Aluno aluno = new Aluno();
+        aluno.setNome(request.getNome());
+        aluno.setEmail(request.getEmail());
+        aluno.setTelefone(request.getTelefone());
+        aluno.setNivel(request.getNivel());
+        aluno.setHorarios(horarios);
+
+        return aluno;
+    }
 
     public static Aluno toEntity(AlunoRequest request) {
         if (request == null) return null;
@@ -21,12 +37,33 @@ public class AlunoMapper {
     public static AlunoResponse toResponse(Aluno aluno) {
         if (aluno == null) return null;
 
-        return new AlunoResponse(
-                aluno.getId(),
-                aluno.getNome(),
-                aluno.getEmail(),
-                aluno.getTelefone(),
-                aluno.getNivel()
-        );
+        AlunoResponse response = new AlunoResponse();
+
+        response.setId(aluno.getId());
+        response.setNome(aluno.getNome());
+        response.setEmail(aluno.getEmail());
+        response.setTelefone(aluno.getTelefone());
+        response.setNivel(aluno.getNivel());
+
+        List<AlunoResponse.HorarioAlunoDto> horarios =
+                aluno.getHorarios()
+                        .stream()
+                        .map(horario -> {
+
+                            AlunoResponse.HorarioAlunoDto dto =
+                                    new AlunoResponse().new HorarioAlunoDto();
+
+                            dto.setId(horario.getId());
+                            dto.setDiaSemana(horario.getDiaSemana());
+                            dto.setHoraInicio(horario.getHoraInicio());
+                            dto.setHoraFim(horario.getHoraFim());
+
+                            return dto;
+                        })
+                        .toList();
+
+        response.setHorarios(horarios);
+
+        return response;
     }
 }
