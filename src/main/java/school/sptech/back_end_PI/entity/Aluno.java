@@ -27,6 +27,10 @@ public class Aluno {
     @NotBlank
     private String nivel;
 
+    @ManyToOne
+    @JoinColumn(name = "turma_id_turma")
+    private Turma turma;
+  
     @ManyToMany
     @JoinTable(
             name = "disponibilidade_aluno",
@@ -87,6 +91,12 @@ public class Aluno {
         this.nivel = nivel;
     }
 
+    public Turma getTurma() {
+        return turma;
+    }
+
+    public void setTurma(Turma turma) {
+        this.turma = turma;
     public List<Horario> getHorarios() {
         return horarios;
     }
