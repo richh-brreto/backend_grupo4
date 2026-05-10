@@ -97,11 +97,15 @@ public class Aluno {
 
     public void setTurma(Turma turma) {
         this.turma = turma;
-    public List<Horario> getHorarios() {
-        return horarios;
     }
 
-    public void setHorarios(List<Horario> horarios) {
-        this.horarios = horarios;
+        public List<Horario> getHorarios () {
+            return horarios;
+        }
+
+
+        public void setHorarios (List < Horario > horarios) {
+            this.horarios = horarios;
+        }
     }
 }
