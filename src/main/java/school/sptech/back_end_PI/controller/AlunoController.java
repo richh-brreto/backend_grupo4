@@ -49,13 +49,9 @@ public class AlunoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AlunoResponse> update(
-            @PathVariable Long id,
-            @Valid @RequestBody AlunoRequest request) {
+    public ResponseEntity<AlunoResponse> update(@PathVariable Long id, @Valid @RequestBody AlunoRequest request) {
 
-        Aluno aluno = AlunoMapper.toEntity(request);
-        Aluno atualizado = service.update(id, aluno);
-
+        Aluno atualizado = service.update(id, request);
         return ResponseEntity.ok(AlunoMapper.toResponse(atualizado));
     }
 }

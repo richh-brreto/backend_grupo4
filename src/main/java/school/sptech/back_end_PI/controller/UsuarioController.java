@@ -9,7 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import school.sptech.back_end_PI.dto.ProfessorRequest;
+import school.sptech.back_end_PI.dto.ProfessorLoginRequest;
 import school.sptech.back_end_PI.services.JwtService;
 
 @RestController
@@ -26,7 +26,7 @@ public class UsuarioController {
 
     @PostMapping("/login")
     @io.swagger.v3.oas.annotations.security.SecurityRequirements // Isso remove o cadeado no Swagger
-    public ResponseEntity<?> login(@RequestBody ProfessorRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> login(@RequestBody ProfessorLoginRequest request, HttpServletResponse response) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

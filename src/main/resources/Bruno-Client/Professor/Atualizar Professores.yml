@@ -1,21 +1,21 @@
 info:
-  name: Cadastrar Professor
+  name: Atualizar Professores
   type: http
-  seq: 1
+  seq: 6
 
 http:
-  method: POST
-  url: http://localhost:8080/professores
+  method: PUT
+  url: http://localhost:8080/professores/6
   body:
     type: json
     data: |-
       {
-        "nome": "Pedro",
+        "nome": "Pedro Atualizado",
         "email": "pedro@gmail.com",
         "telefone": 119999999,
         "senha": "senha123",
         "idTipoProfessor": 1,
-        "horariosIds": [1,2]
+        "horariosIds": [1,2,3]
       }
 
 settings:

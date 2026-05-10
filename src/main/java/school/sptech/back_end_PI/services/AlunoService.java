@@ -53,7 +53,7 @@ public class AlunoService {
     }
 
 
-    public Aluno update(Long id, Aluno alunoDetails) {
+    public Aluno update(Long id, AlunoRequest alunoDetails) {
         Aluno aluno = alunoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFound("Aluno não encontrado"));
 
@@ -66,6 +66,11 @@ public class AlunoService {
         aluno.setEmail(alunoDetails.getEmail());
         aluno.setTelefone(alunoDetails.getTelefone());
         aluno.setNivel(alunoDetails.getNivel());
+
+        if (alunoDetails.getHorariosIds() != null && !alunoDetails.getHorariosIds().isEmpty()) {
+            List<Horario> novosHorarios = horarioRepository.findAllById(alunoDetails.getHorariosIds());
+            aluno.setHorarios(novosHorarios);
+        }
 
         return alunoRepository.save(aluno);
     }
