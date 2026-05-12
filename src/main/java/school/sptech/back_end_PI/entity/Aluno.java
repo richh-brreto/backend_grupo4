@@ -97,6 +97,8 @@ public class Aluno {
 
     public void setTurma(Turma turma) {
         this.turma = turma;
+    }
+
     public List<Horario> getHorarios() {
         return horarios;
     }
