@@ -108,4 +108,3 @@ public class Aluno {
             this.horarios = horarios;
         }
     }
-}
