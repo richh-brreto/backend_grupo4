@@ -2,7 +2,9 @@ package school.sptech.back_end_PI.services;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import school.sptech.back_end_PI.Exception.ConflictException;
 import school.sptech.back_end_PI.Exception.EntityNotFound;
 import school.sptech.back_end_PI.dto.ProfessorRequest;
@@ -40,6 +42,10 @@ public class ProfessorService {
                 .orElseThrow(() -> new EntityNotFoundException("Tipo não encontrado"));
 
         List<Horario> horarios = horarioRepository.findAllById(dto.getHorariosIds());
+
+        if (horarios.isEmpty()) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Horários não informados ou inválidos");
+        }
 
         Professor novoProfessor = ProfessorMapper.toEntity(dto, tipo, horarios);
 
