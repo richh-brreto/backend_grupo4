@@ -1,0 +1,20 @@
+info:
+  name: Buscar Compatibilidade
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: http://localhost:8080/professores/compatibilidade
+  body:
+    type: json
+    data: |-
+      {
+        "alunoHorariosIds": [1,2]
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

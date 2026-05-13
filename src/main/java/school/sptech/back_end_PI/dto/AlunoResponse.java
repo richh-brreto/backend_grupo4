@@ -1,8 +1,11 @@
 package school.sptech.back_end_PI.dto;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import java.time.LocalTime;
 import java.util.List;
 
+@JsonPropertyOrder({ "id", "nome", "email", "telefone", "tipo", "nivel", "horarios" })
 public class AlunoResponse {
 
     private Long id;

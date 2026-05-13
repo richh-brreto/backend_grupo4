@@ -2,15 +2,19 @@ package school.sptech.back_end_PI.services;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import school.sptech.back_end_PI.Exception.ConflictException;
 import school.sptech.back_end_PI.Exception.EntityNotFound;
-import school.sptech.back_end_PI.dto.CreateProfessorRequest;
+import school.sptech.back_end_PI.dto.ProfessorRequest;
 import school.sptech.back_end_PI.dto.HorarioAlunoProfessorRequest;
 import school.sptech.back_end_PI.dto.ProfessorResponse;
+import school.sptech.back_end_PI.entity.Horario;
 import school.sptech.back_end_PI.entity.Professor;
 import school.sptech.back_end_PI.entity.TipoProfessor;
 import school.sptech.back_end_PI.mapper.ProfessorMapper;
+import school.sptech.back_end_PI.repository.HorarioRepository;
 import school.sptech.back_end_PI.repository.ProfessorRepository;
 import school.sptech.back_end_PI.repository.TipoProfessorRepository;
 
@@ -20,26 +24,31 @@ import java.util.List;
 public class ProfessorService {
     private final ProfessorRepository professorRepository;
     private final TipoProfessorRepository tipoProfessorRepository;
+    private final HorarioRepository horarioRepository;
 
-    public ProfessorService(ProfessorRepository professorRepository, TipoProfessorRepository tipoProfessorRepository) {
+    public ProfessorService(ProfessorRepository professorRepository, TipoProfessorRepository tipoProfessorRepository, HorarioRepository horarioRepository) {
         this.professorRepository = professorRepository;
         this.tipoProfessorRepository = tipoProfessorRepository;
+        this.horarioRepository = horarioRepository;
     }
 
-    public Professor create(CreateProfessorRequest dto) {
-        // 1. Validação de negócio
+    public Professor create(ProfessorRequest dto) {
+
         if (professorRepository.existsByEmail(dto.getEmail())) {
             throw new ConflictException("Email já cadastrado");
         }
 
-        // 2. Busca a dependência (TipoProfessor)
         TipoProfessor tipo = tipoProfessorRepository.findById(dto.getIdTipoProfessor())
                 .orElseThrow(() -> new EntityNotFoundException("Tipo não encontrado"));
 
-        // 3. Usa o Mapper para converter DTO -> Entity
-        Professor novoProfessor = ProfessorMapper.toEntity(dto, tipo);
+        List<Horario> horarios = horarioRepository.findAllById(dto.getHorariosIds());
 
-        // 4. Salva no banco
+        if (horarios.isEmpty()) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Horários não informados ou inválidos");
+        }
+
+        Professor novoProfessor = ProfessorMapper.toEntity(dto, tipo, horarios);
+
         return professorRepository.save(novoProfessor);
     }
 
@@ -62,6 +71,32 @@ public class ProfessorService {
         }
 
         professorRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Professor atualizar(Integer id, ProfessorRequest dto) {
+        Professor professorExistente = professorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFound("Professor não encontrado!"));
+
+        TipoProfessor tipo = tipoProfessorRepository.findById(dto.getIdTipoProfessor())
+                .orElseThrow(() -> new EntityNotFound("Tipo do professor não encontrado!"));
+
+        if (!professorExistente.getEmail().equals(dto.getEmail()) &&
+                professorRepository.existsProfessorByEmail(dto.getEmail())) {
+            throw new ConflictException("Email já cadastrado");
+        }
+
+        professorExistente.setNome(dto.getNome());
+        professorExistente.setEmail(dto.getEmail());
+        professorExistente.setTelefone(dto.getTelefone());
+        professorExistente.setTipo(tipo);
+
+        if (dto.getHorariosIds() != null && !dto.getHorariosIds().isEmpty()) {
+            List<Horario> novosHorarios = horarioRepository.findAllById(dto.getHorariosIds());
+            professorExistente.setHorarios(novosHorarios);
+        }
+
+        return professorRepository.save(professorExistente);
     }
 
 
