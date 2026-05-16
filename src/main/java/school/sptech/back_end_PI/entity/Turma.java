@@ -1,5 +1,6 @@
 package school.sptech.back_end_PI.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
@@ -25,6 +26,7 @@ public class Turma {
     private String tipo;
 
     @OneToMany(mappedBy = "turma")
+    @JsonManagedReference
     private List<Aluno> alunos;
 
     public Integer getId() {

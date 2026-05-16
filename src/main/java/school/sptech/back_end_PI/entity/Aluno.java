@@ -1,4 +1,5 @@
 package school.sptech.back_end_PI.entity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -29,6 +30,7 @@ public class Aluno {
 
     @ManyToOne
     @JoinColumn(name = "turma_id_turma")
+    @JsonBackReference
     private Turma turma;
   
     @ManyToMany
