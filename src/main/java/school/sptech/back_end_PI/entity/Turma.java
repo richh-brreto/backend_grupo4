@@ -11,7 +11,7 @@ public class Turma {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_turma")
-    private Integer id;
+    private Long id;
 
     @NotBlank
     @Column(name = "nome_turma")
@@ -27,11 +27,11 @@ public class Turma {
     @OneToMany(mappedBy = "turma")
     private List<Aluno> alunos;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
