@@ -18,6 +18,7 @@ import school.sptech.back_end_PI.mapper.AlunoMapper;
 import school.sptech.back_end_PI.repository.AlunoRepository;
 import school.sptech.back_end_PI.repository.HorarioRepository;
 import school.sptech.back_end_PI.repository.ProfessorRepository;
+import school.sptech.back_end_PI.repository.TurmaRepository;
 
 @Service
 public class AlunoService {
@@ -25,11 +26,13 @@ public class AlunoService {
     private final AlunoRepository alunoRepository;
     private final ProfessorRepository professorRepository;
     private final HorarioRepository horarioRepository;
+    private final TurmaRepository turmaRepository;
 
-    public AlunoService(AlunoRepository alunoRepository, ProfessorRepository professorRepository, HorarioRepository horarioRepository) {
+    public AlunoService(AlunoRepository alunoRepository, ProfessorRepository professorRepository, HorarioRepository horarioRepository, TurmaRepository turmaRepository) {
         this.alunoRepository = alunoRepository;
         this.professorRepository = professorRepository;
         this.horarioRepository = horarioRepository;
+        this.turmaRepository = turmaRepository;
     }
 
     public List<Aluno> getAll() {
@@ -40,6 +43,14 @@ public class AlunoService {
         return alunoRepository.findById(id).orElseThrow(() -> new EntityNotFound("Aluno não encontrado"));
     }
 
+    public List<Aluno> getByTurmaId(Integer id){
+
+        if (!turmaRepository.existsById(id)){
+            throw new EntityNotFound("Não foi possível encontrar a turma de ID " + id);
+        }
+
+        return alunoRepository.findByTurmaId(id);
+    }
 
     public Aluno create(AlunoRequest aluno) {
 

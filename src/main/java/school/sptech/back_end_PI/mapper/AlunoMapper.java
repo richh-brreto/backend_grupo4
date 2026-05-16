@@ -2,8 +2,10 @@ package school.sptech.back_end_PI.mapper;
 
 import school.sptech.back_end_PI.dto.AlunoRequest;
 import school.sptech.back_end_PI.dto.AlunoResponse;
+import school.sptech.back_end_PI.dto.ProfessorResponse;
 import school.sptech.back_end_PI.entity.Aluno;
 import school.sptech.back_end_PI.entity.Horario;
+import school.sptech.back_end_PI.entity.Professor;
 
 import java.util.List;
 
@@ -65,5 +67,11 @@ public class AlunoMapper {
         response.setHorarios(horarios);
 
         return response;
+    }
+
+    public static List<AlunoResponse> toResponseList(List<Aluno> alunos) {
+        return alunos.stream()
+                .map(AlunoMapper::toResponse)
+                .toList();
     }
 }
