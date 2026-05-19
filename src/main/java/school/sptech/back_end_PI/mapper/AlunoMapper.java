@@ -1,11 +1,9 @@
 package school.sptech.back_end_PI.mapper;
 
-import school.sptech.back_end_PI.dto.AlunoRequest;
-import school.sptech.back_end_PI.dto.AlunoResponse;
-import school.sptech.back_end_PI.dto.ProfessorResponse;
+import school.sptech.back_end_PI.dto.aluno.AlunoRequest;
+import school.sptech.back_end_PI.dto.aluno.AlunoResponse;
 import school.sptech.back_end_PI.entity.Aluno;
 import school.sptech.back_end_PI.entity.Horario;
-import school.sptech.back_end_PI.entity.Professor;
 
 import java.util.List;
 

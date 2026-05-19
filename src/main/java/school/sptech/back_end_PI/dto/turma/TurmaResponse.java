@@ -1,4 +1,6 @@
-package school.sptech.back_end_PI.dto;
+package school.sptech.back_end_PI.dto.turma;
+
+import school.sptech.back_end_PI.dto.aluno.AlunoResponse;
 
 import java.util.List;
 

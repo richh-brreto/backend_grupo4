@@ -1,13 +1,11 @@
-package school.sptech.back_end_PI.controller;
+package school.sptech.back_end_PI.dto.professor.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import school.sptech.back_end_PI.dto.AlunoRequest;
-import school.sptech.back_end_PI.dto.AlunoResponse;
-import school.sptech.back_end_PI.dto.HorarioAlunoProfessorRequest;
+import school.sptech.back_end_PI.dto.aluno.AlunoRequest;
+import school.sptech.back_end_PI.dto.aluno.AlunoResponse;
 import school.sptech.back_end_PI.entity.Aluno;
-import school.sptech.back_end_PI.entity.Horario;
 import school.sptech.back_end_PI.mapper.AlunoMapper;
 import school.sptech.back_end_PI.services.AlunoService;
 import java.util.List;

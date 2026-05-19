@@ -1,17 +1,14 @@
-package school.sptech.back_end_PI.controller;
+package school.sptech.back_end_PI.dto.professor.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import school.sptech.back_end_PI.dto.AlunoResponse;
-import school.sptech.back_end_PI.dto.TurmaRequest;
-import school.sptech.back_end_PI.dto.TurmaResponse;
+import school.sptech.back_end_PI.dto.turma.TurmaRequest;
+import school.sptech.back_end_PI.dto.turma.TurmaResponse;
 import school.sptech.back_end_PI.entity.Turma;
 import school.sptech.back_end_PI.mapper.TurmaMapper;
 import school.sptech.back_end_PI.services.TurmaService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/turmas")

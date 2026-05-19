@@ -1,4 +1,4 @@
-package school.sptech.back_end_PI.controller;
+package school.sptech.back_end_PI.dto.professor.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,7 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import school.sptech.back_end_PI.dto.ProfessorLoginRequest;
+import school.sptech.back_end_PI.dto.professor.ProfessorLoginRequest;
 import school.sptech.back_end_PI.services.JwtService;
 
 @RestController
