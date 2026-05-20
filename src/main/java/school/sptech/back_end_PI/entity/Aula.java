@@ -12,7 +12,7 @@ public class Aula {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_aula")
-    private Integer id;
+    private Long id;
 
     @Column(name = "data", nullable = false)
     private LocalDate data;
@@ -40,7 +40,7 @@ public class Aula {
     }
 
     public Aula(
-            Integer id,
+            Long id,
             LocalDate data,
             Boolean presenca,
             String status,
@@ -57,11 +57,11 @@ public class Aula {
         this.contrato = contrato;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
