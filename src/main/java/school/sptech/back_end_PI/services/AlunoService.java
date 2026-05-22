@@ -41,7 +41,7 @@ public class AlunoService {
         return alunoRepository.findById(id).orElseThrow(() -> new EntityNotFound("Aluno não encontrado"));
     }
 
-    public List<Aluno> getByTurmaId(Integer id){
+    public List<Aluno> getByTurmaId(Long id){
 
         if (!turmaRepository.existsById(id)){
             throw new EntityNotFound("Não foi possível encontrar a turma de ID " + id);

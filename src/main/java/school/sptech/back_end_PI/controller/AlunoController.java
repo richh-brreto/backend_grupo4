@@ -47,7 +47,7 @@ public class AlunoController {
     }
 
     @GetMapping("/turma/{id}")
-    public ResponseEntity<List<AlunoResponse>> getByTurmaId(@PathVariable Integer id){
+    public ResponseEntity<List<AlunoResponse>> getByTurmaId(@PathVariable Long id){
         List<Aluno> alunos = service.getByTurmaId(id);
         return ResponseEntity.ok(AlunoMapper.toResponseList(alunos));
     }

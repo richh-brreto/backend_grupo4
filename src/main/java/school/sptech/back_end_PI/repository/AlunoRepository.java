@@ -11,5 +11,5 @@ public interface AlunoRepository extends JpaRepository<Aluno, Long> {
 
     Aluno findByEmail(String email);
 
-    List<Aluno> findByTurmaId(Integer id);
+    List<Aluno> findByTurmaId(Long id);
 }
