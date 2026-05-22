@@ -1,10 +1,9 @@
 package school.sptech.back_end_PI.mapper;
 
-import school.sptech.back_end_PI.dto.ContratoResponse;
-import school.sptech.back_end_PI.dto.ProfessorResponse;
+import school.sptech.back_end_PI.dto.contrato.ContratoResponse;
+import school.sptech.back_end_PI.dto.professor.ProfessorResponse;
 import school.sptech.back_end_PI.entity.Contrato;
 import school.sptech.back_end_PI.entity.Professor;
-import school.sptech.back_end_PI.entity.Turma;
 
 public class ContratoMapper {
 

@@ -1,8 +1,8 @@
 package school.sptech.back_end_PI.mapper;
 
-import school.sptech.back_end_PI.dto.AlunoResponse;
-import school.sptech.back_end_PI.dto.TurmaRequest;
-import school.sptech.back_end_PI.dto.TurmaResponse;
+import school.sptech.back_end_PI.dto.aluno.AlunoResponse;
+import school.sptech.back_end_PI.dto.turma.TurmaRequest;
+import school.sptech.back_end_PI.dto.turma.TurmaResponse;
 import school.sptech.back_end_PI.entity.Turma;
 
 import java.util.List;

@@ -1,10 +1,10 @@
 package school.sptech.back_end_PI.mapper;
 
-import school.sptech.back_end_PI.dto.ProfessorRequest;
+import school.sptech.back_end_PI.dto.professor.ProfessorRequest;
 import school.sptech.back_end_PI.entity.Horario;
 import school.sptech.back_end_PI.entity.Professor;
 import school.sptech.back_end_PI.entity.TipoProfessor;
-import school.sptech.back_end_PI.dto.ProfessorResponse;
+import school.sptech.back_end_PI.dto.professor.ProfessorResponse;
 
 import java.util.List;
 

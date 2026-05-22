@@ -1,7 +1,8 @@
-package school.sptech.back_end_PI.dto;
+package school.sptech.back_end_PI.dto.contrato;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.validation.constraints.NotNull;
+import school.sptech.back_end_PI.dto.professor.ProfessorResponse;
 import school.sptech.back_end_PI.entity.Turma;
 import java.time.LocalDate;
 

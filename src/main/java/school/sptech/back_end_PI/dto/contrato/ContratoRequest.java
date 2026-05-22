@@ -1,7 +1,6 @@
-package school.sptech.back_end_PI.dto;
+package school.sptech.back_end_PI.dto.contrato;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.Date;
 
 public class ContratoRequest {
 
@@ -12,7 +11,7 @@ public class ContratoRequest {
     private LocalDate dataFim;
 
     @NotNull
-    private Integer TurmaId;
+    private Long TurmaId;
 
     @NotNull
     private Integer ProfessorId;
@@ -25,7 +24,7 @@ public class ContratoRequest {
         return dataFim;
     }
 
-    public Integer getTurmaId() {
+    public Long getTurmaId() {
         return TurmaId;
     }
 
@@ -41,7 +40,7 @@ public class ContratoRequest {
         this.dataFim = dataFim;
     }
 
-    public void setTurmaId(Integer turmaId) {
+    public void setTurmaId(Long turmaId) {
         TurmaId = turmaId;
     }
 

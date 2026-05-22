@@ -1,10 +1,10 @@
 package school.sptech.back_end_PI.services;
 
 import org.springframework.stereotype.Service;
-import school.sptech.back_end_PI.Exception.BusinessException;
+import school.sptech.back_end_PI.Exception.BusinessRuleException;
 import school.sptech.back_end_PI.Exception.EntityNotFound;
-import school.sptech.back_end_PI.dto.ContratoRequest;
-import school.sptech.back_end_PI.dto.ContratoResponse;
+import school.sptech.back_end_PI.dto.contrato.ContratoRequest;
+import school.sptech.back_end_PI.dto.contrato.ContratoResponse;
 import school.sptech.back_end_PI.entity.Contrato;
 import school.sptech.back_end_PI.entity.Professor;
 import school.sptech.back_end_PI.entity.Turma;
@@ -29,7 +29,7 @@ public class ContratoService {
     public ContratoResponse criarContrato(ContratoRequest request) {
 
         if (request.getDataInicio().isAfter(request.getDataFim())) {
-            throw new BusinessException("Data de início não pode ser maior que a data de fim");
+            throw new BusinessRuleException("Data de início não pode ser maior que a data de fim");
         }
 
         Turma turma = turmaRepository.findById(request.getTurmaId())
@@ -43,11 +43,11 @@ public class ContratoService {
                         turma, professor, request.getDataInicio(), request.getDataFim());
 
         if (turma.getAlunos().size() >= turma.getLimiteAlunos()) {
-            throw new BusinessException("Turma já atingiu o limite de alunos");
+            throw new BusinessRuleException("Turma já atingiu o limite de alunos");
         }
 
         if (contratoExistente) {
-            throw new BusinessException("Contrato já existe para essa turma/professor/período");
+            throw new BusinessRuleException("Contrato já existe para essa turma/professor/período");
         }
 
         // Criação do contrato

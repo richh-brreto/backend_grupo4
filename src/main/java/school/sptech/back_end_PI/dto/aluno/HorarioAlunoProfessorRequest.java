@@ -1,4 +1,4 @@
-package school.sptech.back_end_PI.dto;
+package school.sptech.back_end_PI.dto.aluno;
 
 import java.util.List;
 

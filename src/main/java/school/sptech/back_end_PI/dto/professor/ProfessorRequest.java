@@ -1,4 +1,4 @@
-package school.sptech.back_end_PI.dto;
+package school.sptech.back_end_PI.dto.professor;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
