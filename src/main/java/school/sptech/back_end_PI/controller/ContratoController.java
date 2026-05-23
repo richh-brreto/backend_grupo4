@@ -1,10 +1,7 @@
 package school.sptech.back_end_PI.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import school.sptech.back_end_PI.dto.contrato.ContratoRequest;
 import school.sptech.back_end_PI.dto.contrato.ContratoResponse;
 import school.sptech.back_end_PI.services.ContratoService;
@@ -23,6 +20,12 @@ public class ContratoController {
     public ResponseEntity<ContratoResponse> criarContrato(@RequestBody ContratoRequest request){
         ContratoResponse contratoCriado = service.criarContrato(request);
         return ResponseEntity.status(201).body(contratoCriado);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ContratoResponse> atualizarContrato(@PathVariable Long id, @RequestBody ContratoRequest request){
+        ContratoResponse contratoAtualizado = service.atualizarContrato(id,request);
+        return ResponseEntity.status(200).body(contratoAtualizado);
     }
 
 }

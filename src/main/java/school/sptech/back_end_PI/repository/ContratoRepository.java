@@ -20,4 +20,6 @@ public interface ContratoRepository extends JpaRepository<Contrato, Long> {
 
     // 3. Valida duplicidade em contratos Individuais (Evita o mesmo aluno com o mesmo professor no mesmo período)
     boolean existsByAlunoAndProfessorAndDataInicioAndDataFim(Aluno aluno, Professor professor, LocalDate dataInicio, LocalDate dataFim);
+
+    boolean existsByAlunoAndTurmaAndDataInicioAndDataFimAndIdNot(Aluno aluno, Turma turma, LocalDate dataInicio, LocalDate dataFim, Long contratoId);
 }

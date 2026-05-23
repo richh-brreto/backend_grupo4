@@ -1,0 +1,27 @@
+info:
+  name: Atualizar Contrato Individual
+  type: http
+  seq: 3
+
+http:
+  method: PUT
+  url: http://localhost:8080/contratos/1
+  body:
+    type: json
+    data: |-
+      {
+        "dataInicio": "2026-05-22",
+        "dataFim": "2026-06-11",
+        "tipo": "Individual",
+        "alunoId": 1,
+        "professorId": 1,
+        "horariosIds": [
+          14
+        ]
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
