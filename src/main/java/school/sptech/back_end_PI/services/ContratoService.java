@@ -28,7 +28,6 @@ public class ContratoService {
     @Autowired
     private HorarioRepository horarioRepository;
 
-    // MÉTODO PRINCIPAL: Valida as datas gerais e delega para o fluxo correto baseado no tipo
     @Transactional
     public ContratoResponse criarContrato(ContratoRequest request) {
         validarDatas(request);
@@ -222,6 +221,37 @@ public class ContratoService {
         if (!professor.getHorarios().containsAll(horariosSolicitados)) {
             throw new BusinessRuleException("O professor não possui disponibilidade para um ou mais horários selecionados");
         }
+    }
+
+    @Transactional
+    public void deletarContrato(Long id) {
+        Contrato contrato = contratoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFound("Contrato não encontrado com o ID: " + id));
+
+        if (contrato.getHorarios() != null) {
+            contrato.getHorarios().clear();
+        }
+
+        contratoRepository.delete(contrato);
+
+        System.out.println("Contrato deletado com sucesso!");
+    }
+
+    @Transactional(readOnly = true)
+    public List<ContratoResponse> listarTodosContratos() {
+        List<Contrato> contratos = contratoRepository.findAll();
+
+        return contratos.stream()
+                .map(ContratoMapper::toResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public ContratoResponse buscarContratoPorId(Long id) {
+        Contrato contrato = contratoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFound("Contrato não encontrado com o ID: " + id));
+
+        return ContratoMapper.toResponse(contrato);
     }
 
     private Aluno buscarAluno(Long id) {

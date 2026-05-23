@@ -13,8 +13,8 @@ http:
         "dataInicio": "2026-05-22",
         "dataFim": "2026-05-30",
         "tipo": "Grupo",
-        "alunoId": 2,
-        "turmaId": 1
+        "alunoId": 1,
+        "turmaId": 2
       }
 
 settings:
