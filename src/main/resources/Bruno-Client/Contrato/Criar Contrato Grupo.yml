@@ -1,0 +1,24 @@
+info:
+  name: Criar Contrato Grupo
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:8080/contratos
+  body:
+    type: json
+    data: |-
+      {
+        "dataInicio": "2026-05-22",
+        "dataFim": "2026-05-30",
+        "tipo": "Grupo",
+        "alunoId": 2,
+        "turmaId": 1
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

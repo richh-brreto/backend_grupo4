@@ -8,8 +8,4 @@ import java.util.List;
 public interface AlunoRepository extends JpaRepository<Aluno, Long> {
 
     boolean existsAlunoByEmail(String email);
-
-    Aluno findByEmail(String email);
-
-    List<Aluno> findByTurmaId(Long id);
 }

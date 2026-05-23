@@ -5,8 +5,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import school.sptech.back_end_PI.Exception.ConflictException;
-import school.sptech.back_end_PI.Exception.EntityNotFound;
+import school.sptech.back_end_PI.exception.ConflictException;
+import school.sptech.back_end_PI.exception.EntityNotFound;
 import school.sptech.back_end_PI.dto.professor.ProfessorRequest;
 import school.sptech.back_end_PI.dto.aluno.HorarioAlunoProfessorRequest;
 import school.sptech.back_end_PI.dto.professor.ProfessorResponse;
@@ -56,14 +56,14 @@ public class ProfessorService {
         return ProfessorMapper.toResponseList(professorRepository.findAll());
     }
 
-    public ProfessorResponse findById(Integer id) {
+    public ProfessorResponse findById(Long id) {
         return professorRepository.findById(id)
                 .map(ProfessorMapper::toResponse)
                 .orElseThrow(() -> new EntityNotFoundException("Professor não encontrado com ID: " + id));
     }
 
     @Transactional
-    public void delete(Integer id) {
+    public void delete(Long id) {
         //Dependencia Tecnica, limpar tabela de disponibilidade de professor e de contratos.
 
         if (!professorRepository.existsById(id)) {
@@ -74,7 +74,7 @@ public class ProfessorService {
     }
 
     @Transactional
-    public Professor atualizar(Integer id, ProfessorRequest dto) {
+    public Professor atualizar(Long id, ProfessorRequest dto) {
         Professor professorExistente = professorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFound("Professor não encontrado!"));
 

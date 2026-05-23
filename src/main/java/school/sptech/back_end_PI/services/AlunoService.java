@@ -7,8 +7,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import school.sptech.back_end_PI.Exception.ConflictException;
-import school.sptech.back_end_PI.Exception.EntityNotFound;
+import school.sptech.back_end_PI.exception.ConflictException;
+import school.sptech.back_end_PI.exception.EntityNotFound;
 import school.sptech.back_end_PI.dto.aluno.AlunoRequest;
 import school.sptech.back_end_PI.entity.Aluno;
 import school.sptech.back_end_PI.entity.Horario;
@@ -41,14 +41,14 @@ public class AlunoService {
         return alunoRepository.findById(id).orElseThrow(() -> new EntityNotFound("Aluno não encontrado"));
     }
 
-    public List<Aluno> getByTurmaId(Long id){
-
-        if (!turmaRepository.existsById(id)){
-            throw new EntityNotFound("Não foi possível encontrar a turma de ID " + id);
-        }
-
-        return alunoRepository.findByTurmaId(id);
-    }
+//    public List<Aluno> getByTurmaId(Long id){
+//
+//        if (!turmaRepository.existsById(id)){
+//            throw new EntityNotFound("Não foi possível encontrar a turma de ID " + id);
+//        }
+//
+//        return alunoRepository.findByTurmaId(id);
+//    }
 
     public Aluno create(AlunoRequest aluno) {
 

@@ -46,11 +46,12 @@ public class AlunoController {
         return ResponseEntity.ok(AlunoMapper.toResponse(aluno));
     }
 
-    @GetMapping("/turma/{id}")
-    public ResponseEntity<List<AlunoResponse>> getByTurmaId(@PathVariable Long id){
-        List<Aluno> alunos = service.getByTurmaId(id);
-        return ResponseEntity.ok(AlunoMapper.toResponseList(alunos));
-    }
+//    Refatorar esse metodo
+//    @GetMapping("/turma/{id}")
+//    public ResponseEntity<List<AlunoResponse>> getByTurmaId(@PathVariable Long id){
+//        List<Aluno> alunos = service.getByTurmaId(id);
+//        return ResponseEntity.ok(AlunoMapper.toResponseList(alunos));
+//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<AlunoResponse> update(@PathVariable Long id, @Valid @RequestBody AlunoRequest request) {

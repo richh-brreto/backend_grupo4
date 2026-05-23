@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import school.sptech.back_end_PI.Exception.BusinessRuleException;
+import school.sptech.back_end_PI.exception.BusinessRuleException;
 import school.sptech.back_end_PI.dto.turma.TurmaRequest;
 import school.sptech.back_end_PI.entity.Aluno;
 import school.sptech.back_end_PI.entity.Turma;
@@ -31,20 +31,22 @@ public class TurmaService {
     }
 
 
-    public Turma alocar(Long idTurma, Long idAluno) {
-        Turma turma = turmaRepository.findById(idTurma)
-                .orElseThrow(() -> new EntityNotFoundException("Turma não encontrada"));
+// !!!!! Esse metodo não sera mais usado visto que a alocação de alunos sera realizada no contrato
 
-        Aluno aluno = alunoRepository.findById(idAluno)
-                .orElseThrow(() -> new EntityNotFoundException("Aluno não encontrado"));
-
-        if (turma.getAlunos().size() >= turma.getLimiteAlunos()) {
-            throw new BusinessRuleException("A turma já está cheia! (Limite de alunos batido)");
-        }
-
-        aluno.setTurma(turma);
-        turma.getAlunos().add(aluno);
-
-        return turmaRepository.save(turma);
-    }
+//    public Turma alocar(Long idTurma, Long idAluno) {
+//        Turma turma = turmaRepository.findById(idTurma)
+//                .orElseThrow(() -> new EntityNotFoundException("Turma não encontrada"));
+//
+//        Aluno aluno = alunoRepository.findById(idAluno)
+//                .orElseThrow(() -> new EntityNotFoundException("Aluno não encontrado"));
+//
+//        if (turma.getAlunos().size() >= turma.getLimiteAlunos()) {
+//            throw new BusinessRuleException("A turma já está cheia! (Limite de alunos batido)");
+//        }
+//
+//        aluno.setTurma(turma);
+//        turma.getAlunos().add(aluno);
+//
+//        return turmaRepository.save(turma);
+//    }
 }

@@ -26,13 +26,6 @@ public class TurmaMapper {
         turmaResponse.setNome(entity.getNome());
         turmaResponse.setLimiteAlunos(entity.getLimiteAlunos());
 
-        if (entity.getAlunos() != null) {
-            List<AlunoResponse> alunosResponse = entity.getAlunos().stream()
-                    .map(AlunoMapper::toResponse)
-                    .toList();
-            turmaResponse.setAlunos(alunosResponse);
-        }
-
         return turmaResponse;
     }
 }

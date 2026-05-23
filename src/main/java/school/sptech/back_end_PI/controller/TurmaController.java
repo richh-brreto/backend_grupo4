@@ -23,12 +23,12 @@ public class TurmaController {
         return ResponseEntity.status(201).body(turmaSalva);
     }
 
-    @PatchMapping("/{idTurma}/alocar-aluno/{idAluno}")
-    public ResponseEntity<TurmaResponse> alocar(@PathVariable @Valid Long idTurma, @PathVariable @Valid Long idAluno) {
-        Turma turmaSalva = service.alocar(idTurma, idAluno);
-
-        TurmaResponse response = TurmaMapper.toResponse(turmaSalva);
-
-        return ResponseEntity.status(200).body(response);
-    }
+//    @PatchMapping("/{idTurma}/alocar-aluno/{idAluno}")
+//    public ResponseEntity<TurmaResponse> alocar(@PathVariable @Valid Long idTurma, @PathVariable @Valid Long idAluno) {
+//        Turma turmaSalva = service.alocar(idTurma, idAluno);
+//
+//        TurmaResponse response = TurmaMapper.toResponse(turmaSalva);
+//
+//        return ResponseEntity.status(200).body(response);
+//    }
 }

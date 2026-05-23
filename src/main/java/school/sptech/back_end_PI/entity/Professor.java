@@ -18,7 +18,7 @@ public class Professor implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_professor")
-    private Integer id;
+    private Long id;
 
     @NotBlank
     private String nome;
@@ -72,7 +72,7 @@ public class Professor implements UserDetails {
     public Professor() {
     }
 
-    public Professor(Integer id, String nome, String email, Integer telefone, String senha, TipoProfessor tipo, List<Horario> horarios) {
+    public Professor(Long id, String nome, String email, Integer telefone, String senha, TipoProfessor tipo, List<Horario> horarios) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -82,7 +82,7 @@ public class Professor implements UserDetails {
         this.horarios = horarios;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
@@ -106,7 +106,7 @@ public class Professor implements UserDetails {
         return tipo;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -5,10 +5,23 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "horario")
 public class Horario {
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Horario horario = (Horario) o;
+        return Objects.equals(id, horario.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
