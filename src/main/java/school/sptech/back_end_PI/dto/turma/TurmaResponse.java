@@ -1,4 +1,6 @@
-package school.sptech.back_end_PI.dto;
+package school.sptech.back_end_PI.dto.turma;
+
+import school.sptech.back_end_PI.dto.aluno.AlunoResponse;
 
 import java.util.List;
 
@@ -6,6 +8,8 @@ public class TurmaResponse {
 
     private Long id;
     private String nome;
+    private String nivel;
+    private String tipo;
     private Integer limiteAlunos;
     List<AlunoResponse> alunos;
 
@@ -39,5 +43,21 @@ public class TurmaResponse {
 
     public void setAlunos(List<AlunoResponse> alunos) {
         this.alunos = alunos;
+    }
+
+    public String getNivel() {
+        return nivel;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setNivel(String nivel) {
+        this.nivel = nivel;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 }

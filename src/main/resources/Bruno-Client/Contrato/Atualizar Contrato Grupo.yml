@@ -1,0 +1,24 @@
+info:
+  name: Atualizar Contrato Grupo
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: http://localhost:8080/contratos/1
+  body:
+    type: json
+    data: |-
+      {
+        "dataInicio": "2026-05-22",
+        "dataFim": "2026-06-30",
+        "tipo": "Grupo",
+        "alunoId": 1,
+        "turmaId": 2
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
