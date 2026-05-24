@@ -3,11 +3,9 @@ package school.sptech.back_end_PI.controller;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import school.sptech.back_end_PI.dto.AlunoRequest;
-import school.sptech.back_end_PI.dto.AlunoResponse;
-import school.sptech.back_end_PI.dto.HorarioAlunoProfessorRequest;
+import school.sptech.back_end_PI.dto.aluno.AlunoRequest;
+import school.sptech.back_end_PI.dto.aluno.AlunoResponse;
 import school.sptech.back_end_PI.entity.Aluno;
-import school.sptech.back_end_PI.entity.Horario;
 import school.sptech.back_end_PI.mapper.AlunoMapper;
 import school.sptech.back_end_PI.services.AlunoService;
 import java.util.List;
@@ -48,11 +46,12 @@ public class AlunoController {
         return ResponseEntity.ok(AlunoMapper.toResponse(aluno));
     }
 
-    @GetMapping("/turma/{id}")
-    public ResponseEntity<List<AlunoResponse>> getByTurmaId(@PathVariable Integer id){
-        List<Aluno> alunos = service.getByTurmaId(id);
-        return ResponseEntity.ok(AlunoMapper.toResponseList(alunos));
-    }
+//    Refatorar esse metodo
+//    @GetMapping("/turma/{id}")
+//    public ResponseEntity<List<AlunoResponse>> getByTurmaId(@PathVariable Long id){
+//        List<Aluno> alunos = service.getByTurmaId(id);
+//        return ResponseEntity.ok(AlunoMapper.toResponseList(alunos));
+//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<AlunoResponse> update(@PathVariable Long id, @Valid @RequestBody AlunoRequest request) {

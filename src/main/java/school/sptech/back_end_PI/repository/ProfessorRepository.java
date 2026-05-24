@@ -8,7 +8,7 @@ import school.sptech.back_end_PI.entity.Professor;
 import java.util.List;
 import java.util.Optional;
 
-public interface ProfessorRepository extends JpaRepository<Professor, Integer> {
+public interface ProfessorRepository extends JpaRepository<Professor, Long> {
 
     boolean existsProfessorByEmail(String email);
 

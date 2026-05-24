@@ -1,4 +1,4 @@
-package school.sptech.back_end_PI.dto;
+package school.sptech.back_end_PI.dto.professor;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -7,7 +7,7 @@ import java.util.List;
 
 @JsonPropertyOrder({ "id", "nome", "email", "telefone", "tipo", "horarios" })
 public class ProfessorResponse {
-    private Integer id;
+    private Long id;
     private String nome;
     private String email;
     private Integer telefone;
@@ -58,8 +58,8 @@ public class ProfessorResponse {
     public ProfessorResponse() {}
 
     // Getters e Setters
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }

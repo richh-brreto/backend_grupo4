@@ -3,12 +3,11 @@ package school.sptech.back_end_PI.controller;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import school.sptech.back_end_PI.dto.TurmaRequest;
+import org.springframework.web.bind.annotation.*;
+import school.sptech.back_end_PI.dto.turma.TurmaRequest;
+import school.sptech.back_end_PI.dto.turma.TurmaResponse;
 import school.sptech.back_end_PI.entity.Turma;
+import school.sptech.back_end_PI.mapper.TurmaMapper;
 import school.sptech.back_end_PI.services.TurmaService;
 
 @RestController
@@ -23,4 +22,13 @@ public class TurmaController {
         Turma turmaSalva = service.salvar(dto);
         return ResponseEntity.status(201).body(turmaSalva);
     }
+
+//    @PatchMapping("/{idTurma}/alocar-aluno/{idAluno}")
+//    public ResponseEntity<TurmaResponse> alocar(@PathVariable @Valid Long idTurma, @PathVariable @Valid Long idAluno) {
+//        Turma turmaSalva = service.alocar(idTurma, idAluno);
+//
+//        TurmaResponse response = TurmaMapper.toResponse(turmaSalva);
+//
+//        return ResponseEntity.status(200).body(response);
+//    }
 }

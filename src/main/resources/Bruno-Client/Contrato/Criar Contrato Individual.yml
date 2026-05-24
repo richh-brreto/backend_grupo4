@@ -1,0 +1,28 @@
+info:
+  name: Criar Contrato Individual
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:8080/contratos
+  body:
+    type: json
+    data: |-
+      {
+        "dataInicio": "2026-05-22",
+        "dataFim": "2026-05-30",
+        "tipo": "Individual",
+        "alunoId": 1,
+        "professorId": 1,
+        "horariosIds": [
+          14
+        ]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

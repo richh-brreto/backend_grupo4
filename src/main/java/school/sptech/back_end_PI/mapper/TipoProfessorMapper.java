@@ -1,5 +1,5 @@
 package school.sptech.back_end_PI.mapper;
-import school.sptech.back_end_PI.dto.TipoProfessorResponse;
+import school.sptech.back_end_PI.dto.professor.TipoProfessorResponse;
 import school.sptech.back_end_PI.entity.TipoProfessor;
 
 public class TipoProfessorMapper {

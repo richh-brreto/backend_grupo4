@@ -1,4 +1,4 @@
-package school.sptech.back_end_PI.Exception;
+package school.sptech.back_end_PI.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

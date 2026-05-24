@@ -6,9 +6,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import school.sptech.back_end_PI.dto.ProfessorRequest;
-import school.sptech.back_end_PI.dto.HorarioAlunoProfessorRequest;
-import school.sptech.back_end_PI.dto.ProfessorResponse;
+import school.sptech.back_end_PI.dto.professor.ProfessorRequest;
+import school.sptech.back_end_PI.dto.aluno.HorarioAlunoProfessorRequest;
+import school.sptech.back_end_PI.dto.professor.ProfessorResponse;
 import school.sptech.back_end_PI.entity.Professor;
 import school.sptech.back_end_PI.mapper.ProfessorMapper;
 import school.sptech.back_end_PI.services.ProfessorService;
@@ -36,7 +36,7 @@ public class ProfessorController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
@@ -51,7 +51,7 @@ public class ProfessorController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProfessorResponse> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<ProfessorResponse> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
@@ -67,7 +67,7 @@ public class ProfessorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProfessorResponse> atualizar(@PathVariable Integer id, @RequestBody ProfessorRequest request){
+    public ResponseEntity<ProfessorResponse> atualizar(@PathVariable Long id, @RequestBody ProfessorRequest request){
 
         Professor professorAtualizado = service.atualizar(id, request);
         ProfessorResponse response = ProfessorMapper.toResponse(professorAtualizado);
