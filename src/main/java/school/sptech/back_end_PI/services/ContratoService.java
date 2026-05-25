@@ -27,6 +27,8 @@ public class ContratoService {
     private AlunoRepository alunoRepository;
     @Autowired
     private HorarioRepository horarioRepository;
+    @Autowired
+    private AulaService aulaService;
 
     @Transactional
     public ContratoResponse criarContrato(ContratoRequest request) {
@@ -60,7 +62,7 @@ public class ContratoService {
         }
 
         contratoRepository.save(contrato);
-        System.out.println("Chegou até o fim do service!");
+        aulaService.gerarAulasParaContrato(contrato);
         return ContratoMapper.toResponse(contrato);
     }
 
@@ -82,6 +84,7 @@ public class ContratoService {
         contrato.setHorarios(horarios); // Salva na tabela auxiliar ids_horario_contrato
 
         contratoRepository.save(contrato);
+        aulaService.gerarAulasParaContrato(contrato);
         return ContratoMapper.toResponse(contrato);
     }
 
@@ -233,8 +236,6 @@ public class ContratoService {
         }
 
         contratoRepository.delete(contrato);
-
-        System.out.println("Contrato deletado com sucesso!");
     }
 
     @Transactional(readOnly = true)
