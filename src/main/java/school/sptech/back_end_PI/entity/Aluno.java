@@ -1,14 +1,18 @@
 package school.sptech.back_end_PI.entity;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "aluno")
+@SQLDelete(sql = "UPDATE aluno SET ativo = 0 WHERE id_aluno = ?")
+@SQLRestriction("ativo = 1") // Filtra automaticamente tirando os inativos dos findall/findbyid
 public class Aluno {
 
     @Id
@@ -27,7 +31,10 @@ public class Aluno {
 
     @NotBlank
     private String nivel;
-  
+
+    @Column(name = "ativo", nullable = false)
+    private Boolean ativo = true;
+
     @ManyToMany
     @JoinTable(
             name = "disponibilidade_aluno",
@@ -39,12 +46,13 @@ public class Aluno {
     public Aluno() {
     }
 
-    public Aluno(Long id, String nome, String email, String telefone, String nivel, List<Horario> horarios) {
+    public Aluno(Long id, String nome, String email, String telefone, String nivel, Boolean ativo, List<Horario> horarios) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.telefone = telefone;
         this.nivel = nivel;
+        this.ativo = ativo;
         this.horarios = horarios;
     }
 
@@ -88,12 +96,19 @@ public class Aluno {
         this.nivel = nivel;
     }
 
-    public List<Horario> getHorarios () {
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public List<Horario> getHorarios() {
         return horarios;
     }
 
-    public void setHorarios (List < Horario > horarios) {
+    public void setHorarios(List<Horario> horarios) {
         this.horarios = horarios;
     }
-
 }

@@ -1,5 +1,6 @@
 package school.sptech.back_end_PI.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,12 +47,19 @@ public class AlunoController {
         return ResponseEntity.ok(AlunoMapper.toResponse(aluno));
     }
 
-//    Refatorar esse metodo
-//    @GetMapping("/turma/{id}")
-//    public ResponseEntity<List<AlunoResponse>> getByTurmaId(@PathVariable Long id){
-//        List<Aluno> alunos = service.getByTurmaId(id);
-//        return ResponseEntity.ok(AlunoMapper.toResponseList(alunos));
-//    }
+
+    @GetMapping("/turma/{id}")
+    public ResponseEntity<List<AlunoResponse>> getByTurmaId(@PathVariable Long id){
+        List<Aluno> alunos = service.getByTurmaId(id);
+        return ResponseEntity.ok(AlunoMapper.toResponseList(alunos));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Inativar um aluno (Soft Delete)", description = "Altera o status do aluno para inativo")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<AlunoResponse> update(@PathVariable Long id, @Valid @RequestBody AlunoRequest request) {

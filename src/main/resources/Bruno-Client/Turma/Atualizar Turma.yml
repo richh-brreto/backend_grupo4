@@ -1,22 +1,21 @@
 info:
-  name: Criar Turma
+  name: Atualizar Turma
   type: http
-  seq: 1
+  seq: 2
 
 http:
-  method: POST
-  url: http://localhost:8080/turmas
+  method: PUT
+  url: http://localhost:8080/turmas/1
   body:
     type: json
     data: |-
       {
-        "nome": "Turma de Java Backend - Noite",
+        "nome": "Turma de Java Backend - Noites",
         "nivel": "Intermediário",
         "limiteAlunos": 15,
-        "tipo": "Regular",
-        "horariosIds": [1, 2]
+        "tipo": "Grupo",
+        "horariosIds": [1]
       }
-  auth: inherit
 
 settings:
   encodeUrl: true

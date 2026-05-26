@@ -1,0 +1,14 @@
+info:
+  name: Listar turma por id
+  type: http
+  seq: 6
+
+http:
+  method: GET
+  url: http://localhost:8080/turmas/4
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -36,6 +36,7 @@ public class ProfessorController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Inativar um professor (Soft Delete)", description = "Altera o status do professor para inativo")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
@@ -74,5 +75,7 @@ public class ProfessorController {
 
         return ResponseEntity.ok(response);
     }
+
+
 
 }

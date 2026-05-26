@@ -1,13 +1,13 @@
 package school.sptech.back_end_PI.mapper;
 
 import school.sptech.back_end_PI.dto.professor.ProfessorRequest;
+import school.sptech.back_end_PI.dto.professor.ProfessorResponse;
 import school.sptech.back_end_PI.entity.Horario;
 import school.sptech.back_end_PI.entity.Professor;
 import school.sptech.back_end_PI.entity.TipoProfessor;
-import school.sptech.back_end_PI.dto.professor.ProfessorResponse;
 
+import java.util.ArrayList;
 import java.util.List;
-
 
 public class ProfessorMapper {
 
@@ -15,13 +15,13 @@ public class ProfessorMapper {
         if (dto == null) return null;
 
         Professor professor = new Professor();
-
         professor.setNome(dto.getNome());
         professor.setEmail(dto.getEmail());
         professor.setTelefone(dto.getTelefone());
         professor.setSenha(dto.getSenha());
         professor.setTipo(tipo);
         professor.setHorarios(horarios);
+        professor.setAtivo(true); // Nasce ativo por padrão
 
         return professor;
     }
@@ -34,19 +34,17 @@ public class ProfessorMapper {
         dto.setNome(professor.getNome());
         dto.setEmail(professor.getEmail());
         dto.setTelefone(professor.getTelefone());
+        dto.setAtivo(professor.getAtivo());
 
-        // Mapeamento do Tipo de Professor
         if (professor.getTipo() != null) {
             dto.setTipo(TipoProfessorMapper.toResponse(professor.getTipo()));
         }
 
-        // Mapeamento da lista de horários seguindo o padrão do AlunoMapper
         if (professor.getHorarios() != null) {
             List<ProfessorResponse.HorarioProfessorDto> horarios = professor.getHorarios()
                     .stream()
                     .map(horario -> {
-                        // Instanciando a inner class de AlunoResponse conforme o seu padrão
-                        ProfessorResponse.HorarioProfessorDto horarioDto = new ProfessorResponse().new HorarioProfessorDto();
+                        ProfessorResponse.HorarioProfessorDto horarioDto = new ProfessorResponse.HorarioProfessorDto();
 
                         horarioDto.setId(horario.getId());
                         horarioDto.setDiaSemana(horario.getDiaSemana());
@@ -58,12 +56,15 @@ public class ProfessorMapper {
                     .toList();
 
             dto.setHorarios(horarios);
+        } else {
+            dto.setHorarios(new ArrayList<>());
         }
 
         return dto;
     }
 
     public static List<ProfessorResponse> toResponseList(List<Professor> professores) {
+        if (professores == null) return new ArrayList<>();
         return professores.stream()
                 .map(ProfessorMapper::toResponse)
                 .toList();

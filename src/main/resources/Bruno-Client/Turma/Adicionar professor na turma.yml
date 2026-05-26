@@ -1,0 +1,17 @@
+info:
+  name: Adicionar professor na turma
+  type: http
+  seq: 5
+
+http:
+  method: PATCH
+  url: http://localhost:8080/turmas/3/professor/1
+  body:
+    type: json
+    data: ""
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

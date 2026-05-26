@@ -64,13 +64,16 @@ public class ProfessorService {
 
     @Transactional
     public void delete(Long id) {
-        //Dependencia Tecnica, limpar tabela de disponibilidade de professor e de contratos.
+        // 1. Busca a entidade completa (Obrigatório para o @SQLDelete funcionar)
+        Professor professor = professorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Professor não encontrado com ID: " + id));
 
-        if (!professorRepository.existsById(id)) {
-            throw new EntityNotFoundException("Professor não encontrado com ID: " + id);
-        }
+        // 2. Limpa a lista de horários da tabela associativa disponibilidade_professor
+        professor.getHorarios().clear();
+        professorRepository.saveAndFlush(professor); // Força a sincronização
 
-        professorRepository.deleteById(id);
+        // 3. Executa o delete passando o objeto (O Hibernate interceptará e rodará o UPDATE)
+        professorRepository.delete(professor);
     }
 
     @Transactional

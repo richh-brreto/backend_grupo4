@@ -1,5 +1,5 @@
 info:
-  name: Deletar professor
+  name: Desativar professor
   type: http
   seq: 2
 

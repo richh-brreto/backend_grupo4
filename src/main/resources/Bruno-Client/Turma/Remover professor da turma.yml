@@ -1,0 +1,17 @@
+info:
+  name: Remover professor da turma
+  type: http
+  seq: 4
+
+http:
+  method: DELETE
+  url: http://localhost:8080/turmas/3/professor
+  body:
+    type: json
+    data: ""
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
