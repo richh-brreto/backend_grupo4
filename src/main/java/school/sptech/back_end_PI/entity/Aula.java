@@ -1,7 +1,6 @@
 package school.sptech.back_end_PI.entity;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -20,8 +19,9 @@ public class Aula {
     @Column(name = "presenca")
     private Boolean presenca;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 45)
-    private String status;
+    private StatusAula status;
 
     @Column(name = "hora_inicio")
     private LocalTime horaInicio;
@@ -30,86 +30,29 @@ public class Aula {
     private LocalTime horaFim;
 
     @ManyToOne
-    @JoinColumn(
-            name = "contrato_id_contrato",
-            nullable = false
-    )
+    @JoinColumn(name = "contrato_id_contrato", nullable = false)
     private Contrato contrato;
 
-    public Aula() {
-    }
+    public Aula() {}
 
-    public Aula(
-            Long id,
-            LocalDate data,
-            Boolean presenca,
-            String status,
-            LocalTime horaInicio,
-            LocalTime horaFim,
-            Contrato contrato
-    ) {
-        this.id = id;
-        this.data = data;
-        this.presenca = presenca;
-        this.status = status;
-        this.horaInicio = horaInicio;
-        this.horaFim = horaFim;
-        this.contrato = contrato;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Long getId() {
-        return id;
-    }
+    public LocalDate getData() { return data; }
+    public void setData(LocalDate data) { this.data = data; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Boolean getPresenca() { return presenca; }
+    public void setPresenca(Boolean presenca) { this.presenca = presenca; }
 
-    public LocalDate getData() {
-        return data;
-    }
+    public StatusAula getStatus() { return status; }
+    public void setStatus(StatusAula status) { this.status = status; }
 
-    public void setData(LocalDate data) {
-        this.data = data;
-    }
+    public LocalTime getHoraInicio() { return horaInicio; }
+    public void setHoraInicio(LocalTime horaInicio) { this.horaInicio = horaInicio; }
 
-    public Boolean getPresenca() {
-        return presenca;
-    }
+    public LocalTime getHoraFim() { return horaFim; }
+    public void setHoraFim(LocalTime horaFim) { this.horaFim = horaFim; }
 
-    public void setPresenca(Boolean presenca) {
-        this.presenca = presenca;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public LocalTime getHoraInicio() {
-        return horaInicio;
-    }
-
-    public void setHoraInicio(LocalTime horaInicio) {
-        this.horaInicio = horaInicio;
-    }
-
-    public LocalTime getHoraFim() {
-        return horaFim;
-    }
-
-    public void setHoraFim(LocalTime horaFim) {
-        this.horaFim = horaFim;
-    }
-
-    public Contrato getContrato() {
-        return contrato;
-    }
-
-    public void setContrato(Contrato contrato) {
-        this.contrato = contrato;
-    }
+    public Contrato getContrato() { return contrato; }
+    public void setContrato(Contrato contrato) { this.contrato = contrato; }
 }
