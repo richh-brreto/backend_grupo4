@@ -8,7 +8,7 @@ CREATE TABLE tipo_professor (
     tipo_professor VARCHAR(45) NOT NULL
 );
 
--- 2. Tabela Professor
+-- 2. Tabela Professor (Refatorada com Soft Delete)
 CREATE TABLE professor (
     id_professor INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(45) NOT NULL,
@@ -16,6 +16,7 @@ CREATE TABLE professor (
     telefone INT,
     senha VARCHAR(45) NOT NULL,
     tipo_professor_id_tipo_professor INT NOT NULL,
+    ativo TINYINT DEFAULT 1, -- 1 para Ativo, 0 para Inativo (Soft Delete)
     CONSTRAINT fk_professor_tipo FOREIGN KEY (tipo_professor_id_tipo_professor)
         REFERENCES tipo_professor(id_tipo_professor)
 );
@@ -32,13 +33,14 @@ CREATE TABLE turma (
         REFERENCES professor(id_professor)
 );
 
--- 4. Tabela Aluno (Sem a coluna turma_id_turma para tirar a redundância)
+-- 4. Tabela Aluno (Refatorada com Soft Delete)
 CREATE TABLE aluno (
     id_aluno INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     telefone VARCHAR(20),
-    nivel VARCHAR(45)
+    nivel VARCHAR(45),
+    ativo TINYINT DEFAULT 1 -- 1 para Ativo, 0 para Inativo (Soft Delete)
 );
 
 -- 5. Tabela Horário
@@ -211,16 +213,16 @@ CREATE TABLE logs (
 INSERT INTO tipo_professor (tipo_professor) VALUES ('ADM'), ('Professor'); -- Gerará o id_tipo_professor = 1
 
 -- Inserindo o Professor
-INSERT INTO professor (nome, email, telefone, senha, tipo_professor_id_tipo_professor)
-VALUES ('Administrador Sistema', 'admin@sptech.school', 1199999888, 'admin123', 1); -- Gerará o id_professor = 1
+INSERT INTO professor (nome, email, telefone, senha, tipo_professor_id_tipo_professor, ativo)
+VALUES ('Administrador Sistema', 'admin@sptech.school', 1199999888, 'admin123', 1, 1); -- Gerará o id_professor = 1
 
 -- Inserindo a Turma (Vinculada ao Professor 1)
 INSERT INTO turma (nome_turma, nivel, limite_alunos, tipo, professor_id_professor)
 VALUES ('ADS-2B', 'Intermediário', 30, 'Grupo', 1); -- Gerará o id_turma = 1
 
 -- Inserindo o Aluno
-INSERT INTO aluno (nome, email, telefone, nivel)
-VALUES ('Guilherme Silva', 'guilherme.silva@sptech.school', '11977776666', 'Intermediário'); -- Gerará o id_aluno = 1
+INSERT INTO aluno (nome, email, telefone, nivel, ativo)
+VALUES ('Guilherme Silva2', 'guilherme.silva@sptech.school', '11977776666', 'Intermediário', 1); -- Gerará o id_aluno = 1
 
 
 -- ============================================================================
@@ -252,8 +254,8 @@ INSERT INTO disponibilidade_turma (turma_id_turma, horario_id_horario) VALUES
 -- ID 33: Terça-feira (21h - 22h)
 INSERT INTO disponibilidade_aluno (horario_id_horario, aluno_id_aluno) VALUES
 (14, 1),
-(32, 1),
-(33, 1);
+(18, 1),
+(19, 1);
 
 SELECT
     a.nome AS Aluno,
@@ -273,5 +275,8 @@ JOIN horario h ON da.horario_id_horario = h.id_horario;
 
 select * from contrato;
 select * from horario;
+select * from professor;
 
+select * from ids_horario_contrato;
+use boost;
 drop database boost;
