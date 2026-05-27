@@ -1,11 +1,11 @@
 info:
   name: Atualizar Professores
   type: http
-  seq: 6
+  seq: 3
 
 http:
   method: PUT
-  url: http://localhost:8080/professores/3
+  url: http://localhost:8080/professores/2
   body:
     type: json
     data: |-

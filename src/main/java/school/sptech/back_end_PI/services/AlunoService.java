@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 import school.sptech.back_end_PI.entity.Contrato;
 import school.sptech.back_end_PI.exception.ConflictException;
 import school.sptech.back_end_PI.exception.EntityNotFound;
@@ -111,5 +112,23 @@ public class AlunoService {
 
         // 3. Agora o soft delete roda sem travas do banco
         alunoRepository.delete(aluno);
+    }
+
+    @Transactional
+    public Aluno reativar(Long id) {
+        // 1. Busca o aluno ignorando o filtro global para verificar se ele realmente existe
+        Aluno aluno = alunoRepository.buscarPorIdIgnorandoFiltro(id)
+                .orElseThrow(() -> new EntityNotFound("Aluno não encontrado com o ID: " + id));
+
+        if (aluno.getAtivo()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Este aluno já está ativo.");
+        }
+
+        // 2. Executa a query de atualização direta (Retorna a quantidade de linhas afetadas)
+        alunoRepository.reativarPorId(id);
+
+        // 3. Atualiza o objeto na memória apenas para o JSON do Mapper não ir desatualizado
+        aluno.setAtivo(true);
+        return aluno;
     }
 }

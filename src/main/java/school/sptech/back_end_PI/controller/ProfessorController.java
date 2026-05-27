@@ -76,6 +76,10 @@ public class ProfessorController {
         return ResponseEntity.ok(response);
     }
 
-
-
+    @PatchMapping("/{id}/reativar")
+    @Operation(summary = "Reativar um professor inativo", description = "Restaura o status ativo e devolve as permissões de login ao professor")
+    public ResponseEntity<ProfessorResponse> reativar(@PathVariable Long id) {
+        Professor professorReativado = service.reativar(id);
+        return ResponseEntity.ok(ProfessorMapper.toResponse(professorReativado));
+    }
 }

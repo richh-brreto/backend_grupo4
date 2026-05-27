@@ -9,7 +9,7 @@ import school.sptech.back_end_PI.dto.horario.HorarioResponse;
 import java.time.LocalDate;
 import java.util.List;
 
-@JsonPropertyOrder({ "id", "tipo", "dataInicio", "dataFim", "aluno", "turma", "professor", "horarios" })
+@JsonPropertyOrder({ "id", "tipo", "dataInicio", "dataFim", "turma","professor","aluno","horarios" })
 public class ContratoResponse {
 
     private Long id;

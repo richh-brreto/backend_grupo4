@@ -67,4 +67,11 @@ public class AlunoController {
         Aluno atualizado = service.update(id, request);
         return ResponseEntity.ok(AlunoMapper.toResponse(atualizado));
     }
+
+    @PatchMapping("/{id}/reativar")
+    @Operation(summary = "Reativar um aluno inativo", description = "Restaura o acesso e o status do aluno para ativo")
+    public ResponseEntity<AlunoResponse> reativar(@PathVariable Long id) {
+        Aluno alunoReativado = service.reativar(id);
+        return ResponseEntity.ok(AlunoMapper.toResponse(alunoReativado));
+    }
 }

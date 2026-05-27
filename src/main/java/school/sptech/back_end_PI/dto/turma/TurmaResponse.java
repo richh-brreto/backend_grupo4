@@ -6,7 +6,7 @@ import school.sptech.back_end_PI.dto.aluno.AlunoResponse;
 import java.time.LocalTime;
 import java.util.List;
 
-@JsonPropertyOrder({ "id", "nome", "nivel", "tipo", "limiteAlunos", "professorId", "nomeProfessor", "horarios", "alunos" })
+@JsonPropertyOrder({ "id", "nome", "nivel", "tipo", "limiteAlunos", "professorId", "nomeProfessor", "horarios"})
 public class TurmaResponse {
 
     private Long id;
@@ -21,7 +21,6 @@ public class TurmaResponse {
 
     // Listas vinculadas
     private List<HorarioTurmaDto> horarios;
-    private List<AlunoResponse> alunos;
 
     // Classe interna STATIC para os horários da Turma (usada no Mapper)
     public static class HorarioTurmaDto {
@@ -67,7 +66,4 @@ public class TurmaResponse {
 
     public List<HorarioTurmaDto> getHorarios() { return horarios; }
     public void setHorarios(List<HorarioTurmaDto> horarios) { this.horarios = horarios; }
-
-    public List<AlunoResponse> getAlunos() { return alunos; }
-    public void setAlunos(List<AlunoResponse> alunos) { this.alunos = alunos; }
 }

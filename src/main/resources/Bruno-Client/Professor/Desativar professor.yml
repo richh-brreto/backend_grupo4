@@ -1,11 +1,11 @@
 info:
   name: Desativar professor
   type: http
-  seq: 2
+  seq: 4
 
 http:
   method: DELETE
-  url: http://localhost:8080/professores/2
+  url: http://localhost:8080/professores/3
   auth: inherit
 
 settings:

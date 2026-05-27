@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 import school.sptech.back_end_PI.exception.ConflictException;
 import school.sptech.back_end_PI.exception.EntityNotFound;
 import school.sptech.back_end_PI.dto.professor.ProfessorRequest;
@@ -105,6 +106,24 @@ public class ProfessorService {
 
     public List<Professor> buscarCompativeis(HorarioAlunoProfessorRequest request) {
         return professorRepository.buscarProfessoresCompativeis(request.getAlunoHorariosIds());
+    }
+
+    @Transactional
+    public Professor reativar(Long id) {
+        // 1. Busca o professor ignorando o filtro global para verificar se ele realmente existe
+        Professor professor = professorRepository.buscarPorIdIgnorandoFiltro(id)
+                .orElseThrow(() -> new EntityNotFoundException("Professor não encontrado com o ID: " + id));
+
+        if (professor.getAtivo()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Este professor já está ativo.");
+        }
+
+        // 2. Executa a query de atualização direta (Retorna a quantidade de linhas afetadas)
+        professorRepository.reativarPorId(id);
+
+        // 3. Atualiza o objeto na memória apenas para o JSON do Mapper não ir desatualizado
+        professor.setAtivo(true);
+        return professor;
     }
 
 }

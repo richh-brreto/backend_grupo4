@@ -10,7 +10,7 @@ http:
     type: json
     data: |-
       {
-        "nome": "Turma de Java Backend - Noites",
+        "nome": "Turma de Java Backend Atualizada",
         "nivel": "Intermediário",
         "limiteAlunos": 15,
         "tipo": "Grupo",

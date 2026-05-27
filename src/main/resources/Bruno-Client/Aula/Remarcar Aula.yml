@@ -1,0 +1,24 @@
+info:
+  name: "Remarcar Aula "
+  type: http
+  seq: 2
+
+http:
+  method: PATCH
+  url: http://localhost:8080/aulas/14/remarcar
+  body:
+    type: json
+    data: |-
+      {
+        "novaData": "2026-05-27",
+        "novaHoraInicio": "08:00:00",
+        "novaHoraFim": "09:00:00",
+        "motivo": "Aluno terá um compromisso"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

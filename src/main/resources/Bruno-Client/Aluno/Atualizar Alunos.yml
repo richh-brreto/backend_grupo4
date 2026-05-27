@@ -5,13 +5,13 @@ info:
 
 http:
   method: PUT
-  url: http://localhost:8080/alunos/6
+  url: http://localhost:8080/alunos/2
   body:
     type: json
     data: |-
       {
         "nome": "João Silva Atualizado",
-        "email": "joao2@gmail.com",
+        "email": "joao@gmail.com",
         "telefone": "11988887777",
         "nivel": "Intermediário",
         "horariosIds": [1,2]

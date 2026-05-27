@@ -1,17 +1,18 @@
 info:
-  name: Buscar Compatibilidade
+  name: Cancelar Aula
   type: http
-  seq: 2
+  seq: 4
 
 http:
-  method: POST
-  url: http://localhost:8080/professores/compatibilidade
+  method: PATCH
+  url: http://localhost:8080/aulas/4/cancelar
   body:
     type: json
     data: |-
       {
-        "alunoHorariosIds": [2]
+        "motivo": "Aluno não conseguiu comparecer"
       }
+  auth: inherit
 
 settings:
   encodeUrl: true

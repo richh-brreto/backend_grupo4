@@ -1,0 +1,23 @@
+info:
+  name: Adicionar Aula Extra
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:8080/aulas/extra
+  body:
+    type: json
+    data: |-
+      {
+        "contratoId": 3,
+        "data": "2026-05-27",
+        "horaInicio": "07:00:00",
+        "horaFim": "08:00:00"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
