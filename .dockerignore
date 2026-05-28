@@ -1,0 +1,17 @@
+# Ignore build output and VCS/IDE files
+target/
+.git
+.idea
+.vscode
+.classpath
+.project
+*.iml
+logs
+tmp
+**/node_modules
+.env
+
+# Important: do NOT ignore mvnw or .mvn since the Docker build uses them
+# .mvn/
+# mvnw
+
