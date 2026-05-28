@@ -1,14 +1,11 @@
 info:
-  name: Listar alunos ID
+  name: Desativar Aluno
   type: http
-  seq: 5
+  seq: 3
 
 http:
-  method: GET
+  method: DELETE
   url: http://localhost:8080/alunos/1
-  body:
-    type: json
-    data: ""
 
 settings:
   encodeUrl: true

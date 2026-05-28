@@ -1,5 +1,6 @@
 package school.sptech.back_end_PI.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import school.sptech.back_end_PI.entity.Aluno;
@@ -25,4 +26,11 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
     List<Professor> buscarProfessoresCompativeis(
             @Param("horariosIds") List<Long> horariosIds
     );
+
+    @Query(value = "SELECT * FROM professor WHERE id_professor = :id", nativeQuery = true)
+    Optional<Professor> buscarPorIdIgnorandoFiltro(@Param("id") Long id);
+
+    @Modifying
+    @Query("UPDATE Professor p SET p.ativo = true WHERE p.id = :id")
+    int reativarPorId(@Param("id") Long id);
 }

@@ -8,9 +8,12 @@ import school.sptech.back_end_PI.entity.Professor;
 import school.sptech.back_end_PI.entity.Turma;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface ContratoRepository extends JpaRepository<Contrato, Long> {
+
+    List<Contrato> findByTurmaId(Long turmaId);
 
     // 1. Conta quantos contratos de grupo ativos existem para uma determinada turma
     Long countByTurmaAndDataFimGreaterThanEqual(Turma turma, LocalDate dataInicio);
@@ -22,4 +25,6 @@ public interface ContratoRepository extends JpaRepository<Contrato, Long> {
     boolean existsByAlunoAndProfessorAndDataInicioAndDataFim(Aluno aluno, Professor professor, LocalDate dataInicio, LocalDate dataFim);
 
     boolean existsByAlunoAndTurmaAndDataInicioAndDataFimAndIdNot(Aluno aluno, Turma turma, LocalDate dataInicio, LocalDate dataFim, Long contratoId);
+
+    List<Contrato> findByAlunoId(Long id);
 }

@@ -1,20 +1,20 @@
 info:
-  name: Atualizar Alunos
+  name: Atualizar Turma
   type: http
   seq: 2
 
 http:
   method: PUT
-  url: http://localhost:8080/alunos/2
+  url: http://localhost:8080/turmas/1
   body:
     type: json
     data: |-
       {
-        "nome": "João Silva Atualizado",
-        "email": "joao@gmail.com",
-        "telefone": "11988887777",
+        "nome": "Turma de Java Backend Atualizada",
         "nivel": "Intermediário",
-        "horariosIds": [1,2]
+        "limiteAlunos": 15,
+        "tipo": "Grupo",
+        "horariosIds": [1]
       }
 
 settings:

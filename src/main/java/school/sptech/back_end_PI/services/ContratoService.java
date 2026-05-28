@@ -256,8 +256,13 @@ public class ContratoService {
     }
 
     private Aluno buscarAluno(Long id) {
-        return alunoRepository.findById(id)
+        Aluno aluno = alunoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFound("Aluno não encontrado"));
+
+        if (aluno.getAtivo() != null && !aluno.getAtivo()) {
+            throw new BusinessRuleException("Não é possível criar ou atualizar contratos para um aluno inativo.");
+        }
+        return aluno;
     }
 
     private Turma buscarTurma(Long id) {

@@ -1,8 +1,11 @@
 package school.sptech.back_end_PI.dto.turma;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+
+import java.util.List;
 
 public class TurmaRequest {
     @NotBlank
@@ -13,6 +16,12 @@ public class TurmaRequest {
     private Integer limiteAlunos;
     @NotBlank
     private String tipo;
+    @NotEmpty
+    private List<Long> horariosIds;
+
+    public List<Long> getHorariosIds() { return horariosIds; }
+
+    public void setHorariosIds(List<Long> horariosIds) { this.horariosIds = horariosIds; }
 
     public String getNome() {
         return nome;

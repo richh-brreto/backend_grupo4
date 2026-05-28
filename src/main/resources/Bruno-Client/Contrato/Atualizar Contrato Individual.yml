@@ -5,18 +5,18 @@ info:
 
 http:
   method: PUT
-  url: http://localhost:8080/contratos/1
+  url: http://localhost:8080/contratos/2
   body:
     type: json
     data: |-
       {
         "dataInicio": "2026-05-22",
-        "dataFim": "2026-06-11",
+        "dataFim": "2026-06-22",
         "tipo": "Individual",
-        "alunoId": 1,
-        "professorId": 1,
+        "alunoId": 2,
+        "professorId": 2,
         "horariosIds": [
-          15
+          1
         ]
       }
 

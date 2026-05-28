@@ -10,10 +10,11 @@ http:
     type: json
     data: |-
       {
-        "nome": "Turma 1",
-        "nivel": "B2",
-        "limiteAlunos": 10,
-        "tipo": "Grupo"
+        "nome": "Turma de Java Backend - Noites",
+        "nivel": "Intermediário",
+        "limiteAlunos": 15,
+        "tipo": "Regular",
+        "horariosIds": [1, 2]
       }
   auth: inherit
 

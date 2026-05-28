@@ -7,16 +7,15 @@ import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
+import school.sptech.back_end_PI.entity.Contrato;
 import school.sptech.back_end_PI.exception.ConflictException;
 import school.sptech.back_end_PI.exception.EntityNotFound;
 import school.sptech.back_end_PI.dto.aluno.AlunoRequest;
 import school.sptech.back_end_PI.entity.Aluno;
 import school.sptech.back_end_PI.entity.Horario;
 import school.sptech.back_end_PI.mapper.AlunoMapper;
-import school.sptech.back_end_PI.repository.AlunoRepository;
-import school.sptech.back_end_PI.repository.HorarioRepository;
-import school.sptech.back_end_PI.repository.ProfessorRepository;
-import school.sptech.back_end_PI.repository.TurmaRepository;
+import school.sptech.back_end_PI.repository.*;
 
 @Service
 public class AlunoService {
@@ -25,12 +24,14 @@ public class AlunoService {
     private final ProfessorRepository professorRepository;
     private final HorarioRepository horarioRepository;
     private final TurmaRepository turmaRepository;
+    private final ContratoRepository contratoRepository;
 
-    public AlunoService(AlunoRepository alunoRepository, ProfessorRepository professorRepository, HorarioRepository horarioRepository, TurmaRepository turmaRepository) {
+    public AlunoService(AlunoRepository alunoRepository, ProfessorRepository professorRepository, HorarioRepository horarioRepository, TurmaRepository turmaRepository, ContratoRepository contratoRepository) {
         this.alunoRepository = alunoRepository;
         this.professorRepository = professorRepository;
         this.horarioRepository = horarioRepository;
         this.turmaRepository = turmaRepository;
+        this.contratoRepository = contratoRepository;
     }
 
     public List<Aluno> getAll() {
@@ -41,14 +42,17 @@ public class AlunoService {
         return alunoRepository.findById(id).orElseThrow(() -> new EntityNotFound("Aluno não encontrado"));
     }
 
-//    public List<Aluno> getByTurmaId(Long id){
-//
-//        if (!turmaRepository.existsById(id)){
-//            throw new EntityNotFound("Não foi possível encontrar a turma de ID " + id);
-//        }
-//
-//        return alunoRepository.findByTurmaId(id);
-//    }
+    public List<Aluno> getByTurmaId(Long id) {
+        if (!turmaRepository.existsById(id)) {
+            throw new EntityNotFound("Não foi possível encontrar a turma de ID " + id);
+        }
+
+        // Traz os contratos daquela turma e filtra os alunos ativos
+        return contratoRepository.findByTurmaId(id).stream()
+                .map(Contrato::getAluno)
+                .filter(aluno -> aluno != null && aluno.getAtivo())
+                .toList();
+    }
 
     public Aluno create(AlunoRequest aluno) {
 
@@ -94,8 +98,37 @@ public class AlunoService {
     @Transactional
     public void delete(Long id) {
         Aluno aluno = alunoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Aluno não encontrado"));
+                .orElseThrow(() -> new EntityNotFound("Aluno não encontrado"));
 
+        // 1. Limpa os horários (disponibilidade_aluno)
+        aluno.getHorarios().clear();
+
+        // 2. NOVO: Deleta os contratos atrelados a este aluno para liberar a FK
+        // Certifique-se de ter o contratoRepository injetado no AlunoService
+        List<Contrato> contratosDoAluno = contratoRepository.findByAlunoId(id); // se tiver esse método
+        contratoRepository.deleteAll(contratosDoAluno);
+
+        alunoRepository.saveAndFlush(aluno);
+
+        // 3. Agora o soft delete roda sem travas do banco
         alunoRepository.delete(aluno);
+    }
+
+    @Transactional
+    public Aluno reativar(Long id) {
+        // 1. Busca o aluno ignorando o filtro global para verificar se ele realmente existe
+        Aluno aluno = alunoRepository.buscarPorIdIgnorandoFiltro(id)
+                .orElseThrow(() -> new EntityNotFound("Aluno não encontrado com o ID: " + id));
+
+        if (aluno.getAtivo()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Este aluno já está ativo.");
+        }
+
+        // 2. Executa a query de atualização direta (Retorna a quantidade de linhas afetadas)
+        alunoRepository.reativarPorId(id);
+
+        // 3. Atualiza o objeto na memória apenas para o JSON do Mapper não ir desatualizado
+        aluno.setAtivo(true);
+        return aluno;
     }
 }
