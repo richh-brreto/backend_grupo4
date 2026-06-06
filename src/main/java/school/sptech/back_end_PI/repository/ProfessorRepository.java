@@ -33,4 +33,11 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
     @Modifying
     @Query("UPDATE Professor p SET p.ativo = true WHERE p.id = :id")
     int reativarPorId(@Param("id") Long id);
+
+    @Modifying
+    @Query(value = "UPDATE disponibilidade_professor SET is_disponivel = :status WHERE professor_id_professor = :professorId AND horario_id_horario IN (:horariosIds)", nativeQuery = true)
+    void atualizarDisponibilidadeHorarios(@Param("professorId") Long professorId, @Param("horariosIds") List<Long> horariosIds, @Param("status") boolean status);
+
+    @Query(value = "SELECT COUNT(*) FROM disponibilidade_professor WHERE professor_id_professor = :professorId AND horario_id_horario IN (:horariosIds) AND is_disponivel = false", nativeQuery = true)
+    int contarHorariosIndisponiveis(@Param("professorId") Long professorId, @Param("horariosIds") List<Long> horariosIds);
 }
