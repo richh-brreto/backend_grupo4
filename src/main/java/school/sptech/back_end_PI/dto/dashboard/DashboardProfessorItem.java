@@ -3,7 +3,7 @@ package school.sptech.back_end_PI.dto.dashboard;
 public class DashboardProfessorItem {
     private Long professorId;
     private String nome;
-    private Integer turmasCount;
+    private Integer aulasCount;
     private Double horasSemanais;
     private Double horasLivres;
     private String status;
@@ -11,10 +11,10 @@ public class DashboardProfessorItem {
     public DashboardProfessorItem() {
     }
 
-    public DashboardProfessorItem(Long professorId, String nome, Integer turmasCount, Double horasSemanais, Double horasLivres, String status) {
+    public DashboardProfessorItem(Long professorId, String nome, Integer aulasCount, Double horasSemanais, Double horasLivres, String status) {
         this.professorId = professorId;
         this.nome = nome;
-        this.turmasCount = turmasCount;
+        this.aulasCount = aulasCount;
         this.horasSemanais = horasSemanais;
         this.horasLivres = horasLivres;
         this.status = status;
@@ -36,12 +36,12 @@ public class DashboardProfessorItem {
         this.nome = nome;
     }
 
-    public Integer getTurmasCount() {
-        return turmasCount;
+    public Integer getAulasCount() {
+        return aulasCount;
     }
 
-    public void setTurmasCount(Integer turmasCount) {
-        this.turmasCount = turmasCount;
+    public void setAulasCount(Integer aulasCount) {
+        this.aulasCount = aulasCount;
     }
 
     public Double getHorasSemanais() {
