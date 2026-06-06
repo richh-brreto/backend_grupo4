@@ -4,7 +4,7 @@ import java.util.List;
 
 public class DashboardResponse {
     private Integer totalProfessores;
-    private Integer totalTurmas;
+    private Integer totalAulas;
     private Double totalHorasLivres;
     private Integer professoresSobrecarregados;
     private List<DashboardProfessorItem> detalhes;
@@ -12,9 +12,9 @@ public class DashboardResponse {
     public DashboardResponse() {
     }
 
-    public DashboardResponse(Integer totalProfessores, Integer totalTurmas, Double totalHorasLivres, Integer professoresSobrecarregados, List<DashboardProfessorItem> detalhes) {
+    public DashboardResponse(Integer totalProfessores, Integer totalAulas, Double totalHorasLivres, Integer professoresSobrecarregados, List<DashboardProfessorItem> detalhes) {
         this.totalProfessores = totalProfessores;
-        this.totalTurmas = totalTurmas;
+        this.totalAulas = totalAulas;
         this.totalHorasLivres = totalHorasLivres;
         this.professoresSobrecarregados = professoresSobrecarregados;
         this.detalhes = detalhes;
@@ -28,12 +28,12 @@ public class DashboardResponse {
         this.totalProfessores = totalProfessores;
     }
 
-    public Integer getTotalTurmas() {
-        return totalTurmas;
+    public Integer getTotalAulas() {
+        return totalAulas;
     }
 
-    public void setTotalTurmas(Integer totalTurmas) {
-        this.totalTurmas = totalTurmas;
+    public void setTotalAulas(Integer totalAulas) {
+        this.totalAulas = totalAulas;
     }
 
     public Double getTotalHorasLivres() {
@@ -60,4 +60,3 @@ public class DashboardResponse {
         this.detalhes = detalhes;
     }
 }
-
