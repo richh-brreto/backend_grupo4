@@ -38,6 +38,20 @@ public class AlunoService {
         return alunoRepository.findAll();
     }
 
+    public Aluno buscarPorIdComHorariosDisponiveis(Long id) {
+        Aluno aluno = alunoRepository.findByIdWithDisponivelHorarios(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Aluno não encontrado ou inativo."));
+
+        if (aluno.getHorarios() != null) {
+            List<school.sptech.back_end_PI.entity.Horario> horariosDisponiveis = aluno.getHorarios().stream()
+                    .filter(horario -> alunoRepository.contarHorariosIndisponiveis(id, List.of(horario.getId())) == 0)
+                    .toList();
+            aluno.setHorarios(horariosDisponiveis);
+        }
+
+        return aluno;
+    }
+
     public Aluno getById(Long id) {
         return alunoRepository.findById(id).orElseThrow(() -> new EntityNotFound("Aluno não encontrado"));
     }

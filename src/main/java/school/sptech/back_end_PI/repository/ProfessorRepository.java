@@ -40,4 +40,7 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
 
     @Query(value = "SELECT COUNT(*) FROM disponibilidade_professor WHERE professor_id_professor = :professorId AND horario_id_horario IN (:horariosIds) AND is_disponivel = false", nativeQuery = true)
     int contarHorariosIndisponiveis(@Param("professorId") Long professorId, @Param("horariosIds") List<Long> horariosIds);
+
+    @Query(value = "SELECT p.* FROM professor p WHERE p.id_professor = :id AND p.ativo = 1", nativeQuery = true)
+    Optional<Professor> findByIdWithDisponivelHorarios(@Param("id") Long id);
 }

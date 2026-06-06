@@ -56,6 +56,12 @@ public class ProfessorController {
         return ResponseEntity.ok(service.findById(id));
     }
 
+    @GetMapping("/disponiveis/{id}")
+    public ResponseEntity<ProfessorResponse> getProfessorComHorariosDisponiveis(@PathVariable Long id) {
+        Professor professor = service.buscarPorIdComHorariosDisponiveis(id);
+        return ResponseEntity.ok(ProfessorMapper.toResponse(professor));
+    }
+
     @PostMapping("/compatibilidade")
     public ResponseEntity<List<ProfessorResponse>> buscarCompativeis(@RequestBody HorarioAlunoProfessorRequest request) {
 
