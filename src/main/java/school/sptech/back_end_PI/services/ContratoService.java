@@ -64,7 +64,7 @@ public class ContratoService {
 
         contratoRepository.save(contrato);
 
-        // 🔒 Consome os horários da TURMA na agenda do ALUNO
+        // Consome os horários da TURMA na agenda do ALUNO
         bloquearHorariosDoAlunoPorTurma(aluno.getId(), turma);
 
         aulaService.gerarAulasParaContrato(contrato);
@@ -89,7 +89,7 @@ public class ContratoService {
 
         contratoRepository.save(contrato);
 
-        // 🔒 Consome os horários na agenda do PROFESSOR e do ALUNO
+        // Consome os horários na agenda do PROFESSOR e do ALUNO
         alterarDisponibilidadeHorarios(request.getAlunoId(), request.getProfessorId(), request.getHorariosIds(), false);
 
         aulaService.gerarAulasParaContrato(contrato);
@@ -103,7 +103,7 @@ public class ContratoService {
 
         validarDatas(request);
 
-        // 🔓 Devolve os horários antigos dependendo do tipo antes de aplicar as novas mudanças
+        // Devolve os horários antigos dependendo do tipo antes de aplicar as novas mudanças
         if ("Individual".equalsIgnoreCase(contratoExistente.getTipo())) {
             liberarHorariosDeContratoIndividual(contratoExistente);
         } else if ("Grupo".equalsIgnoreCase(contratoExistente.getTipo())) {
@@ -120,7 +120,7 @@ public class ContratoService {
 
         Contrato contratoAtualizado = contratoRepository.save(contratoExistente);
 
-        // 🔒 Aplica os novos bloqueios com base no novo estado do contrato
+        // Aplica os novos bloqueios com base no novo estado do contrato
         if ("Individual".equalsIgnoreCase(contratoAtualizado.getTipo())) {
             alterarDisponibilidadeHorarios(
                     contratoAtualizado.getAluno().getId(),
@@ -176,7 +176,7 @@ public class ContratoService {
         Contrato contrato = contratoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFound("Contrato não encontrado com o ID: " + id));
 
-        // 🔓 Libera as horas dependendo da modalidade que está sendo destruída
+        // Libera as horas dependendo da modalidade que está sendo destruída
         if ("Individual".equalsIgnoreCase(contrato.getTipo())) {
             liberarHorariosDeContratoIndividual(contrato);
         } else if ("Grupo".equalsIgnoreCase(contrato.getTipo())) {
@@ -252,7 +252,7 @@ public class ContratoService {
             }
 
             List<Long> idsHorariosTurma = turma.getHorarios().stream().map(Horario::getId).toList();
-            // 🔄 Correção aqui: se a contagem for maior que 0, lança o erro
+            // se a contagem for maior que 0, lança o erro
             if (alunoRepository.contarHorariosIndisponiveis(aluno.getId(), idsHorariosTurma) > 0) {
                 throw new BusinessRuleException("O aluno já possui um ou mais horários desta turma ocupados por outro contrato");
             }
@@ -276,7 +276,7 @@ public class ContratoService {
 
         List<Long> idsHorarios = horariosSolicitados.stream().map(Horario::getId).toList();
 
-        // 🔄 Correção aqui: usando a contagem numérica inteira para evitar erros de cast do driver MySQL
+        // usando a contagem numérica inteira para evitar erros de cast do driver MySQL
         if (alunoRepository.contarHorariosIndisponiveis(aluno.getId(), idsHorarios) > 0) {
             throw new BusinessRuleException("O aluno já possui um ou mais horários selecionados ocupados por outro contrato");
         }
@@ -309,7 +309,7 @@ public class ContratoService {
             }
 
             List<Long> idsHorariosTurma = turma.getHorarios().stream().map(Horario::getId).toList();
-            // 🔄 Correção aqui
+            // Correção aqui
             if (alunoRepository.contarHorariosIndisponiveis(aluno.getId(), idsHorariosTurma) > 0) {
                 throw new BusinessRuleException("O aluno já possui um ou mais horários desta turma ocupados por outro contrato");
             }
@@ -327,7 +327,7 @@ public class ContratoService {
 
         List<Long> idsHorarios = horariosSolicitados.stream().map(Horario::getId).toList();
 
-        // 🔄 Correção aqui
+        // Correção aqui
         if (alunoRepository.contarHorariosIndisponiveis(aluno.getId(), idsHorarios) > 0) {
             throw new BusinessRuleException("O aluno já possui um ou mais horários selecionados ocupados por outro contrato");
         }
