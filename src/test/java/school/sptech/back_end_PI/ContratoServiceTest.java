@@ -294,6 +294,169 @@ public class ContratoServiceTest {
             Mockito.verify(contratoRepository, Mockito.times(1)).save(Mockito.any(Contrato.class));
             Mockito.verify(aulaService, Mockito.times(1)).gerarAulasParaContrato(Mockito.any(Contrato.class));
         }
+
+        @Test
+        @DisplayName("Deve lançar EntityNotFound quando horários informados não são encontrados")
+        void deveLancarEntityNotFoundQuandoHorariosNaoEncontrados() {
+            Aluno aluno = new Aluno();
+            aluno.setId(1L);
+            aluno.setAtivo(true);
+
+            Professor professor = new Professor();
+            professor.setId(1L);
+
+            ContratoRequest request = new ContratoRequest();
+            request.setTipo("Individual");
+            request.setDataInicio(LocalDate.now());
+            request.setDataFim(LocalDate.now().plusMonths(1));
+            request.setAlunoId(1L);
+            request.setProfessorId(1L);
+            request.setHorariosIds(List.of(1L, 2L));
+
+            Mockito.when(alunoRepository.findById(1L)).thenReturn(Optional.of(aluno));
+            Mockito.when(professorRepository.findById(1L)).thenReturn(Optional.of(professor));
+            Mockito.when(horarioRepository.findAllById(List.of(1L, 2L))).thenReturn(List.of(new Horario()));
+
+            Assertions.assertThrows(EntityNotFound.class,
+                    () -> contratoService.criarContrato(request));
+        }
+
+        @Test
+        @DisplayName("Deve lançar BusinessRuleException quando aluno não tem compatibilidade de horário no individual")
+        void deveLancarExcecaoQuandoAlunoSemCompatibilidadeHorarioIndividual() {
+            Horario horarioSolicitado = new Horario();
+            horarioSolicitado.setId(1L);
+
+            Aluno aluno = new Aluno();
+            aluno.setId(1L);
+            aluno.setAtivo(true);
+            aluno.setHorarios(new ArrayList<>());
+
+            Professor professor = new Professor();
+            professor.setId(1L);
+            professor.setHorarios(List.of(horarioSolicitado));
+
+            ContratoRequest request = new ContratoRequest();
+            request.setTipo("Individual");
+            request.setDataInicio(LocalDate.now());
+            request.setDataFim(LocalDate.now().plusMonths(1));
+            request.setAlunoId(1L);
+            request.setProfessorId(1L);
+            request.setHorariosIds(List.of(1L));
+
+            Mockito.when(alunoRepository.findById(1L)).thenReturn(Optional.of(aluno));
+            Mockito.when(professorRepository.findById(1L)).thenReturn(Optional.of(professor));
+            Mockito.when(horarioRepository.findAllById(List.of(1L))).thenReturn(List.of(horarioSolicitado));
+            Mockito.when(contratoRepository.existsByAlunoAndProfessorAndDataInicioAndDataFim(
+                    aluno, professor, request.getDataInicio(), request.getDataFim())).thenReturn(false);
+
+            Assertions.assertThrows(BusinessRuleException.class,
+                    () -> contratoService.criarContrato(request));
+        }
+
+        @Test
+        @DisplayName("Deve lançar BusinessRuleException quando professor não tem compatibilidade de horário no individual")
+        void deveLancarExcecaoQuandoProfessorSemCompatibilidadeHorarioIndividual() {
+            Horario horarioSolicitado = new Horario();
+            horarioSolicitado.setId(1L);
+
+            Aluno aluno = new Aluno();
+            aluno.setId(1L);
+            aluno.setAtivo(true);
+            aluno.setHorarios(List.of(horarioSolicitado));
+
+            Professor professor = new Professor();
+            professor.setId(1L);
+            professor.setHorarios(new ArrayList<>());
+
+            ContratoRequest request = new ContratoRequest();
+            request.setTipo("Individual");
+            request.setDataInicio(LocalDate.now());
+            request.setDataFim(LocalDate.now().plusMonths(1));
+            request.setAlunoId(1L);
+            request.setProfessorId(1L);
+            request.setHorariosIds(List.of(1L));
+
+            Mockito.when(alunoRepository.findById(1L)).thenReturn(Optional.of(aluno));
+            Mockito.when(professorRepository.findById(1L)).thenReturn(Optional.of(professor));
+            Mockito.when(horarioRepository.findAllById(List.of(1L))).thenReturn(List.of(horarioSolicitado));
+            Mockito.when(contratoRepository.existsByAlunoAndProfessorAndDataInicioAndDataFim(
+                    aluno, professor, request.getDataInicio(), request.getDataFim())).thenReturn(false);
+
+            Assertions.assertThrows(BusinessRuleException.class,
+                    () -> contratoService.criarContrato(request));
+        }
+
+        @Test
+        @DisplayName("Deve lançar BusinessRuleException quando aluno não tem compatibilidade de horário no grupo")
+        void deveLancarExcecaoQuandoAlunoSemCompatibilidadeHorarioGrupo() {
+            Horario horarioTurma = new Horario();
+            horarioTurma.setId(1L);
+
+            Aluno aluno = new Aluno();
+            aluno.setId(1L);
+            aluno.setAtivo(true);
+            aluno.setHorarios(new ArrayList<>());
+
+            Turma turma = new Turma();
+            turma.setId(1L);
+            turma.setNome("Turma A");
+            turma.setLimiteAlunos(10);
+            turma.setHorarios(List.of(horarioTurma));
+
+            ContratoRequest request = new ContratoRequest();
+            request.setTipo("Grupo");
+            request.setDataInicio(LocalDate.now());
+            request.setDataFim(LocalDate.now().plusMonths(1));
+            request.setAlunoId(1L);
+            request.setTurmaId(1L);
+
+            Mockito.when(alunoRepository.findById(1L)).thenReturn(Optional.of(aluno));
+            Mockito.when(turmaRepository.findById(1L)).thenReturn(Optional.of(turma));
+            Mockito.when(contratoRepository.countByTurmaAndDataFimGreaterThanEqual(turma, request.getDataInicio()))
+                    .thenReturn(0L);
+            Mockito.when(contratoRepository.existsByAlunoAndTurmaAndDataInicioAndDataFim(
+                    aluno, turma, request.getDataInicio(), request.getDataFim())).thenReturn(false);
+
+            Assertions.assertThrows(BusinessRuleException.class,
+                    () -> contratoService.criarContrato(request));
+        }
+
+        @Test
+        @DisplayName("Deve criar contrato em grupo com sucesso quando turma tem horários")
+        void deveCriarContratoGrupoComHorariosNaTurmaComSucesso() {
+            Horario horario = new Horario();
+            horario.setId(1L);
+
+            Aluno aluno = new Aluno();
+            aluno.setId(1L);
+            aluno.setAtivo(true);
+            aluno.setHorarios(List.of(horario));
+
+            Turma turma = new Turma();
+            turma.setId(1L);
+            turma.setNome("Turma A");
+            turma.setLimiteAlunos(10);
+            turma.setHorarios(List.of(horario));
+
+            ContratoRequest request = new ContratoRequest();
+            request.setTipo("Grupo");
+            request.setDataInicio(LocalDate.now());
+            request.setDataFim(LocalDate.now().plusMonths(1));
+            request.setAlunoId(1L);
+            request.setTurmaId(1L);
+
+            Mockito.when(alunoRepository.findById(1L)).thenReturn(Optional.of(aluno));
+            Mockito.when(turmaRepository.findById(1L)).thenReturn(Optional.of(turma));
+            Mockito.when(contratoRepository.countByTurmaAndDataFimGreaterThanEqual(turma, request.getDataInicio()))
+                    .thenReturn(0L);
+            Mockito.when(contratoRepository.existsByAlunoAndTurmaAndDataInicioAndDataFim(
+                    aluno, turma, request.getDataInicio(), request.getDataFim())).thenReturn(false);
+
+            Assertions.assertDoesNotThrow(() -> contratoService.criarContrato(request));
+
+            Mockito.verify(contratoRepository, Mockito.times(1)).save(Mockito.any(Contrato.class));
+        }
     }
 
     @Nested
@@ -366,6 +529,398 @@ public class ContratoServiceTest {
             List<ContratoResponse> resultado = contratoService.listarTodosContratos();
 
             Assertions.assertTrue(resultado.isEmpty());
+        }
+    }
+
+    @Nested
+    public class AtualizarContratoTestes {
+
+        @Test
+        @DisplayName("Deve lançar EntityNotFound quando contrato não encontrado para atualização")
+        void deveLancarEntityNotFoundQuandoContratoNaoEncontrado() {
+            ContratoRequest request = new ContratoRequest();
+            request.setTipo("Grupo");
+            request.setDataInicio(LocalDate.now());
+            request.setDataFim(LocalDate.now().plusMonths(1));
+
+            Mockito.when(contratoRepository.findById(99L)).thenReturn(Optional.empty());
+
+            Assertions.assertThrows(EntityNotFound.class,
+                    () -> contratoService.atualizarContrato(99L, request));
+        }
+
+        @Test
+        @DisplayName("Deve lançar BusinessRuleException quando datas inválidas na atualização")
+        void deveLancarExcecaoQuandoDatasInvalidasNaAtualizacao() {
+            Contrato contrato = new Contrato();
+            contrato.setId(1L);
+
+            ContratoRequest request = new ContratoRequest();
+            request.setTipo("Grupo");
+            request.setDataInicio(LocalDate.now().plusDays(10));
+            request.setDataFim(LocalDate.now());
+
+            Mockito.when(contratoRepository.findById(1L)).thenReturn(Optional.of(contrato));
+
+            Assertions.assertThrows(BusinessRuleException.class,
+                    () -> contratoService.atualizarContrato(1L, request));
+        }
+
+        @Test
+        @DisplayName("Deve lançar BusinessRuleException quando tipo inválido na atualização")
+        void deveLancarExcecaoQuandoTipoInvalidoNaAtualizacao() {
+            Contrato contrato = new Contrato();
+            contrato.setId(1L);
+
+            ContratoRequest request = new ContratoRequest();
+            request.setTipo("Invalido");
+            request.setDataInicio(LocalDate.now());
+            request.setDataFim(LocalDate.now().plusMonths(1));
+
+            Mockito.when(contratoRepository.findById(1L)).thenReturn(Optional.of(contrato));
+
+            Assertions.assertThrows(BusinessRuleException.class,
+                    () -> contratoService.atualizarContrato(1L, request));
+        }
+
+        @Test
+        @DisplayName("Deve atualizar contrato em grupo com sucesso quando turma não tem horários")
+        void deveAtualizarContratoGrupoSemHorariosComSucesso() {
+            Turma turma = new Turma();
+            turma.setId(1L);
+            turma.setNome("Turma A");
+            turma.setLimiteAlunos(10);
+            turma.setHorarios(null);
+
+            Aluno aluno = new Aluno();
+            aluno.setId(1L);
+            aluno.setAtivo(true);
+            aluno.setHorarios(new ArrayList<>());
+
+            Contrato contrato = new Contrato();
+            contrato.setId(1L);
+            contrato.setTurma(turma);
+
+            ContratoRequest request = new ContratoRequest();
+            request.setTipo("Grupo");
+            request.setDataInicio(LocalDate.now());
+            request.setDataFim(LocalDate.now().plusMonths(1));
+            request.setAlunoId(1L);
+            request.setTurmaId(1L);
+
+            Mockito.when(contratoRepository.findById(1L)).thenReturn(Optional.of(contrato));
+            Mockito.when(alunoRepository.findById(1L)).thenReturn(Optional.of(aluno));
+            Mockito.when(turmaRepository.findById(1L)).thenReturn(Optional.of(turma));
+            Mockito.when(contratoRepository.countByTurmaAndDataFimGreaterThanEqual(turma, request.getDataInicio()))
+                    .thenReturn(0L);
+            Mockito.when(contratoRepository.existsByAlunoAndTurmaAndDataInicioAndDataFimAndIdNot(
+                    aluno, turma, request.getDataInicio(), request.getDataFim(), 1L)).thenReturn(false);
+            Mockito.when(contratoRepository.save(Mockito.any(Contrato.class))).thenReturn(contrato);
+
+            Assertions.assertDoesNotThrow(() -> contratoService.atualizarContrato(1L, request));
+
+            Mockito.verify(contratoRepository, Mockito.times(1)).save(Mockito.any(Contrato.class));
+        }
+
+        @Test
+        @DisplayName("Deve atualizar contrato em grupo com sucesso quando turma tem horários")
+        void deveAtualizarContratoGrupoComHorariosComSucesso() {
+            Horario horario = new Horario();
+            horario.setId(1L);
+
+            Turma turma = new Turma();
+            turma.setId(1L);
+            turma.setNome("Turma A");
+            turma.setLimiteAlunos(10);
+            turma.setHorarios(new ArrayList<>(List.of(horario)));
+
+            Aluno aluno = new Aluno();
+            aluno.setId(1L);
+            aluno.setAtivo(true);
+            aluno.setHorarios(List.of(horario));
+
+            Contrato contrato = new Contrato();
+            contrato.setId(1L);
+            contrato.setTurma(turma);
+
+            ContratoRequest request = new ContratoRequest();
+            request.setTipo("Grupo");
+            request.setDataInicio(LocalDate.now());
+            request.setDataFim(LocalDate.now().plusMonths(1));
+            request.setAlunoId(1L);
+            request.setTurmaId(1L);
+
+            Mockito.when(contratoRepository.findById(1L)).thenReturn(Optional.of(contrato));
+            Mockito.when(alunoRepository.findById(1L)).thenReturn(Optional.of(aluno));
+            Mockito.when(turmaRepository.findById(1L)).thenReturn(Optional.of(turma));
+            Mockito.when(contratoRepository.countByTurmaAndDataFimGreaterThanEqual(turma, request.getDataInicio()))
+                    .thenReturn(0L);
+            Mockito.when(contratoRepository.existsByAlunoAndTurmaAndDataInicioAndDataFimAndIdNot(
+                    aluno, turma, request.getDataInicio(), request.getDataFim(), 1L)).thenReturn(false);
+            Mockito.when(contratoRepository.save(Mockito.any(Contrato.class))).thenReturn(contrato);
+
+            Assertions.assertDoesNotThrow(() -> contratoService.atualizarContrato(1L, request));
+
+            Mockito.verify(contratoRepository, Mockito.times(1)).save(Mockito.any(Contrato.class));
+        }
+
+        @Test
+        @DisplayName("Deve lançar BusinessRuleException quando turma está lotada e aluno não estava nela")
+        void deveLancarExcecaoQuandoTurmaLotadaNaAtualizacao() {
+            Turma turmaAntiga = new Turma();
+            turmaAntiga.setId(2L);
+
+            Turma turmaNova = new Turma();
+            turmaNova.setId(1L);
+            turmaNova.setNome("Turma Cheia");
+            turmaNova.setLimiteAlunos(5);
+            turmaNova.setHorarios(null);
+
+            Aluno aluno = new Aluno();
+            aluno.setId(1L);
+            aluno.setAtivo(true);
+            aluno.setHorarios(new ArrayList<>());
+
+            Contrato contrato = new Contrato();
+            contrato.setId(1L);
+            contrato.setTurma(turmaAntiga);
+
+            ContratoRequest request = new ContratoRequest();
+            request.setTipo("Grupo");
+            request.setDataInicio(LocalDate.now());
+            request.setDataFim(LocalDate.now().plusMonths(1));
+            request.setAlunoId(1L);
+            request.setTurmaId(1L);
+
+            Mockito.when(contratoRepository.findById(1L)).thenReturn(Optional.of(contrato));
+            Mockito.when(alunoRepository.findById(1L)).thenReturn(Optional.of(aluno));
+            Mockito.when(turmaRepository.findById(1L)).thenReturn(Optional.of(turmaNova));
+            Mockito.when(contratoRepository.countByTurmaAndDataFimGreaterThanEqual(turmaNova, request.getDataInicio()))
+                    .thenReturn(5L);
+
+            Assertions.assertThrows(BusinessRuleException.class,
+                    () -> contratoService.atualizarContrato(1L, request));
+        }
+
+        @Test
+        @DisplayName("Não deve lançar exceção quando aluno já estava na mesma turma mesmo com limite atingido")
+        void naoDeveLancarExcecaoQuandoAlunoJaEstavaNaMesmaTurma() {
+            Turma turma = new Turma();
+            turma.setId(1L);
+            turma.setNome("Turma A");
+            turma.setLimiteAlunos(5);
+            turma.setHorarios(null);
+
+            Aluno aluno = new Aluno();
+            aluno.setId(1L);
+            aluno.setAtivo(true);
+            aluno.setHorarios(new ArrayList<>());
+
+            Contrato contrato = new Contrato();
+            contrato.setId(1L);
+            contrato.setTurma(turma);
+
+            ContratoRequest request = new ContratoRequest();
+            request.setTipo("Grupo");
+            request.setDataInicio(LocalDate.now());
+            request.setDataFim(LocalDate.now().plusMonths(1));
+            request.setAlunoId(1L);
+            request.setTurmaId(1L);
+
+            Mockito.when(contratoRepository.findById(1L)).thenReturn(Optional.of(contrato));
+            Mockito.when(alunoRepository.findById(1L)).thenReturn(Optional.of(aluno));
+            Mockito.when(turmaRepository.findById(1L)).thenReturn(Optional.of(turma));
+            Mockito.when(contratoRepository.countByTurmaAndDataFimGreaterThanEqual(turma, request.getDataInicio()))
+                    .thenReturn(5L);
+            Mockito.when(contratoRepository.existsByAlunoAndTurmaAndDataInicioAndDataFimAndIdNot(
+                    aluno, turma, request.getDataInicio(), request.getDataFim(), 1L)).thenReturn(false);
+            Mockito.when(contratoRepository.save(Mockito.any(Contrato.class))).thenReturn(contrato);
+
+            Assertions.assertDoesNotThrow(() -> contratoService.atualizarContrato(1L, request));
+        }
+
+        @Test
+        @DisplayName("Deve lançar BusinessRuleException quando já existe contrato duplicado na atualização de grupo")
+        void deveLancarExcecaoQuandoContratoDuplicadoNaAtualizacaoGrupo() {
+            Turma turma = new Turma();
+            turma.setId(1L);
+            turma.setNome("Turma A");
+            turma.setLimiteAlunos(10);
+            turma.setHorarios(null);
+
+            Aluno aluno = new Aluno();
+            aluno.setId(1L);
+            aluno.setAtivo(true);
+            aluno.setHorarios(new ArrayList<>());
+
+            Contrato contrato = new Contrato();
+            contrato.setId(1L);
+            contrato.setTurma(turma);
+
+            ContratoRequest request = new ContratoRequest();
+            request.setTipo("Grupo");
+            request.setDataInicio(LocalDate.now());
+            request.setDataFim(LocalDate.now().plusMonths(1));
+            request.setAlunoId(1L);
+            request.setTurmaId(1L);
+
+            Mockito.when(contratoRepository.findById(1L)).thenReturn(Optional.of(contrato));
+            Mockito.when(alunoRepository.findById(1L)).thenReturn(Optional.of(aluno));
+            Mockito.when(turmaRepository.findById(1L)).thenReturn(Optional.of(turma));
+            Mockito.when(contratoRepository.countByTurmaAndDataFimGreaterThanEqual(turma, request.getDataInicio()))
+                    .thenReturn(0L);
+            Mockito.when(contratoRepository.existsByAlunoAndTurmaAndDataInicioAndDataFimAndIdNot(
+                    aluno, turma, request.getDataInicio(), request.getDataFim(), 1L)).thenReturn(true);
+
+            Assertions.assertThrows(BusinessRuleException.class,
+                    () -> contratoService.atualizarContrato(1L, request));
+        }
+
+        @Test
+        @DisplayName("Deve lançar BusinessRuleException quando aluno não tem compatibilidade na atualização de grupo")
+        void deveLancarExcecaoQuandoAlunoSemCompatibilidadeNaAtualizacaoGrupo() {
+            Horario horarioTurma = new Horario();
+            horarioTurma.setId(1L);
+
+            Turma turma = new Turma();
+            turma.setId(1L);
+            turma.setNome("Turma A");
+            turma.setLimiteAlunos(10);
+            turma.setHorarios(List.of(horarioTurma));
+
+            Aluno aluno = new Aluno();
+            aluno.setId(1L);
+            aluno.setAtivo(true);
+            aluno.setHorarios(new ArrayList<>());
+
+            Contrato contrato = new Contrato();
+            contrato.setId(1L);
+            contrato.setTurma(turma);
+
+            ContratoRequest request = new ContratoRequest();
+            request.setTipo("Grupo");
+            request.setDataInicio(LocalDate.now());
+            request.setDataFim(LocalDate.now().plusMonths(1));
+            request.setAlunoId(1L);
+            request.setTurmaId(1L);
+
+            Mockito.when(contratoRepository.findById(1L)).thenReturn(Optional.of(contrato));
+            Mockito.when(alunoRepository.findById(1L)).thenReturn(Optional.of(aluno));
+            Mockito.when(turmaRepository.findById(1L)).thenReturn(Optional.of(turma));
+            Mockito.when(contratoRepository.countByTurmaAndDataFimGreaterThanEqual(turma, request.getDataInicio()))
+                    .thenReturn(0L);
+            Mockito.when(contratoRepository.existsByAlunoAndTurmaAndDataInicioAndDataFimAndIdNot(
+                    aluno, turma, request.getDataInicio(), request.getDataFim(), 1L)).thenReturn(false);
+
+            Assertions.assertThrows(BusinessRuleException.class,
+                    () -> contratoService.atualizarContrato(1L, request));
+        }
+
+        @Test
+        @DisplayName("Deve atualizar contrato individual com sucesso")
+        void deveAtualizarContratoIndividualComSucesso() {
+            Horario horario = new Horario();
+            horario.setId(1L);
+
+            Aluno aluno = new Aluno();
+            aluno.setId(1L);
+            aluno.setAtivo(true);
+            aluno.setHorarios(List.of(horario));
+
+            Professor professor = new Professor();
+            professor.setId(1L);
+            professor.setHorarios(List.of(horario));
+
+            Contrato contrato = new Contrato();
+            contrato.setId(1L);
+
+            ContratoRequest request = new ContratoRequest();
+            request.setTipo("Individual");
+            request.setDataInicio(LocalDate.now());
+            request.setDataFim(LocalDate.now().plusMonths(1));
+            request.setAlunoId(1L);
+            request.setProfessorId(1L);
+            request.setHorariosIds(List.of(1L));
+
+            Mockito.when(contratoRepository.findById(1L)).thenReturn(Optional.of(contrato));
+            Mockito.when(alunoRepository.findById(1L)).thenReturn(Optional.of(aluno));
+            Mockito.when(professorRepository.findById(1L)).thenReturn(Optional.of(professor));
+            Mockito.when(horarioRepository.findAllById(List.of(1L))).thenReturn(List.of(horario));
+            Mockito.when(contratoRepository.save(Mockito.any(Contrato.class))).thenReturn(contrato);
+
+            Assertions.assertDoesNotThrow(() -> contratoService.atualizarContrato(1L, request));
+
+            Mockito.verify(contratoRepository, Mockito.times(1)).save(Mockito.any(Contrato.class));
+        }
+
+        @Test
+        @DisplayName("Deve lançar BusinessRuleException quando aluno não tem compatibilidade na atualização individual")
+        void deveLancarExcecaoQuandoAlunoSemCompatibilidadeNaAtualizacaoIndividual() {
+            Horario horario = new Horario();
+            horario.setId(1L);
+
+            Aluno aluno = new Aluno();
+            aluno.setId(1L);
+            aluno.setAtivo(true);
+            aluno.setHorarios(new ArrayList<>());
+
+            Professor professor = new Professor();
+            professor.setId(1L);
+            professor.setHorarios(List.of(horario));
+
+            Contrato contrato = new Contrato();
+            contrato.setId(1L);
+
+            ContratoRequest request = new ContratoRequest();
+            request.setTipo("Individual");
+            request.setDataInicio(LocalDate.now());
+            request.setDataFim(LocalDate.now().plusMonths(1));
+            request.setAlunoId(1L);
+            request.setProfessorId(1L);
+            request.setHorariosIds(List.of(1L));
+
+            Mockito.when(contratoRepository.findById(1L)).thenReturn(Optional.of(contrato));
+            Mockito.when(alunoRepository.findById(1L)).thenReturn(Optional.of(aluno));
+            Mockito.when(professorRepository.findById(1L)).thenReturn(Optional.of(professor));
+            Mockito.when(horarioRepository.findAllById(List.of(1L))).thenReturn(List.of(horario));
+
+            Assertions.assertThrows(BusinessRuleException.class,
+                    () -> contratoService.atualizarContrato(1L, request));
+        }
+
+        @Test
+        @DisplayName("Deve lançar BusinessRuleException quando professor não tem compatibilidade na atualização individual")
+        void deveLancarExcecaoQuandoProfessorSemCompatibilidadeNaAtualizacaoIndividual() {
+            Horario horario = new Horario();
+            horario.setId(1L);
+
+            Aluno aluno = new Aluno();
+            aluno.setId(1L);
+            aluno.setAtivo(true);
+            aluno.setHorarios(List.of(horario));
+
+            Professor professor = new Professor();
+            professor.setId(1L);
+            professor.setHorarios(new ArrayList<>());
+
+            Contrato contrato = new Contrato();
+            contrato.setId(1L);
+
+            ContratoRequest request = new ContratoRequest();
+            request.setTipo("Individual");
+            request.setDataInicio(LocalDate.now());
+            request.setDataFim(LocalDate.now().plusMonths(1));
+            request.setAlunoId(1L);
+            request.setProfessorId(1L);
+            request.setHorariosIds(List.of(1L));
+
+            Mockito.when(contratoRepository.findById(1L)).thenReturn(Optional.of(contrato));
+            Mockito.when(alunoRepository.findById(1L)).thenReturn(Optional.of(aluno));
+            Mockito.when(professorRepository.findById(1L)).thenReturn(Optional.of(professor));
+            Mockito.when(horarioRepository.findAllById(List.of(1L))).thenReturn(List.of(horario));
+
+            Assertions.assertThrows(BusinessRuleException.class,
+                    () -> contratoService.atualizarContrato(1L, request));
         }
     }
 
