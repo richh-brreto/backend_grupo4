@@ -15,6 +15,15 @@ public interface ContratoRepository extends JpaRepository<Contrato, Long> {
 
     List<Contrato> findByTurmaId(Long turmaId);
 
+    // Busca contratos por professor
+    List<Contrato> findByProfessorId(Long professorId);
+
+    // Busca contratos para um conjunto de professores
+    List<Contrato> findByProfessorIdIn(List<Long> professorIds);
+
+    // Busca contratos para um conjunto de turmas
+    List<Contrato> findByTurmaIdIn(List<Long> turmaIds);
+
     // 1. Conta quantos contratos de grupo ativos existem para uma determinada turma
     Long countByTurmaAndDataFimGreaterThanEqual(Turma turma, LocalDate dataInicio);
 
