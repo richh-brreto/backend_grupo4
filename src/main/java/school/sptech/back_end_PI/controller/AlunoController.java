@@ -47,6 +47,12 @@ public class AlunoController {
         return ResponseEntity.ok(AlunoMapper.toResponse(aluno));
     }
 
+    @GetMapping("/disponiveis/{id}")
+    public ResponseEntity<Aluno> getAlunoComHorariosDisponiveis(@PathVariable Long id) {
+        Aluno aluno = service.buscarPorIdComHorariosDisponiveis(id);
+        return ResponseEntity.ok(aluno);
+    }
+
 
     @GetMapping("/turma/{id}")
     public ResponseEntity<List<AlunoResponse>> getByTurmaId(@PathVariable Long id){

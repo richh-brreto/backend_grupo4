@@ -28,7 +28,7 @@ CREATE TABLE turma (
     nivel VARCHAR(45),
     limite_alunos INT,
     tipo VARCHAR(45),
-    professor_id_professor INT NOT NULL,
+    professor_id_professor INT,
     CONSTRAINT fk_turma_professor FOREIGN KEY (professor_id_professor)
         REFERENCES professor(id_professor)
 );
@@ -55,6 +55,7 @@ CREATE TABLE horario (
 CREATE TABLE disponibilidade_professor (
     professor_id_professor INT NOT NULL,
     horario_id_horario INT NOT NULL,
+    is_disponivel BOOLEAN NOT NULL DEFAULT TRUE, -- 🔄 Atualizado: TRUE = Livre/Disponível, FALSE = Ocupado
     PRIMARY KEY (professor_id_professor, horario_id_horario),
     CONSTRAINT fk_disp_prof FOREIGN KEY (professor_id_professor) REFERENCES professor(id_professor),
     CONSTRAINT fk_disp_prof_horario FOREIGN KEY (horario_id_horario) REFERENCES horario(id_horario)
@@ -63,6 +64,7 @@ CREATE TABLE disponibilidade_professor (
 CREATE TABLE disponibilidade_aluno (
     horario_id_horario INT NOT NULL,
     aluno_id_aluno INT NOT NULL,
+    is_disponivel BOOLEAN NOT NULL DEFAULT TRUE, -- 🔄 Atualizado: TRUE = Livre/Disponível, FALSE = Ocupado
     PRIMARY KEY (horario_id_horario, aluno_id_aluno),
     CONSTRAINT fk_disp_aluno_horario FOREIGN KEY (horario_id_horario) REFERENCES horario(id_horario),
     CONSTRAINT fk_disp_aluno FOREIGN KEY (aluno_id_aluno) REFERENCES aluno(id_aluno)
@@ -108,7 +110,7 @@ CREATE TABLE aula (
     hora_inicio TIME,
     hora_fim TIME,
     contrato_id_contrato INT NOT NULL,
-    CONSTRAINT fk_aula_contrato FOREIGN KEY (contrato_id_contrato) REFERENCES contrato(id_contrato)
+    CONSTRAINT fk_aula_contrato FOREIGN KEY (contrato_id_contrato) REFERENCES contrato(id_contrato) ON DELETE CASCADE
 );
 
 -- 10. Tabela Logs
@@ -118,7 +120,7 @@ CREATE TABLE logs (
     descricao TEXT,
     data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     aula_id_aula INT,
-    CONSTRAINT fk_logs_aula FOREIGN KEY (aula_id_aula) REFERENCES aula(id_aula)
+    CONSTRAINT fk_logs_aula FOREIGN KEY (aula_id_aula) REFERENCES aula(id_aula) ON DELETE CASCADE
 );
 
 	-- Segunda-feira
@@ -276,6 +278,10 @@ JOIN horario h ON da.horario_id_horario = h.id_horario;
 select * from contrato;
 select * from horario;
 select * from professor;
+select * from disponibilidade_professor;
+select * from disponibilidade_aluno;
+select * from turma;
+select * from aluno;
 
 select * from ids_horario_contrato;
 use boost;

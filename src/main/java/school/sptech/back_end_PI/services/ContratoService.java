@@ -29,6 +29,8 @@ public class ContratoService {
     private HorarioRepository horarioRepository;
     @Autowired
     private AulaService aulaService;
+    @Autowired
+    private AulaRepository aulaRepository;
 
     @Transactional
     public ContratoResponse criarContrato(ContratoRequest request) {
@@ -43,7 +45,6 @@ public class ContratoService {
         throw new BusinessRuleException("Tipo de contrato inválido. Use 'Grupo' ou 'Individual'.");
     }
 
-    // FLUXO DE GRUPO
     private ContratoResponse criarContratoGrupo(ContratoRequest request) {
         Aluno aluno = buscarAluno(request.getAlunoId());
         Turma turma = buscarTurma(request.getTurmaId());
@@ -56,17 +57,20 @@ public class ContratoService {
         contrato.setDataFim(request.getDataFim());
         contrato.setAluno(aluno);
         contrato.setTurma(turma);
-        contrato.setProfessor(null); // No grupo, o professor vem da turma dinamicamente
+        contrato.setProfessor(null);
         if (turma.getHorarios() != null) {
             contrato.setHorarios(new ArrayList<>(turma.getHorarios()));
         }
 
         contratoRepository.save(contrato);
+
+        // Consome os horários da TURMA na agenda do ALUNO
+        bloquearHorariosDoAlunoPorTurma(aluno.getId(), turma);
+
         aulaService.gerarAulasParaContrato(contrato);
         return ContratoMapper.toResponse(contrato);
     }
 
-    // FLUXO INDIVIDUAL
     private ContratoResponse criarContratoIndividual(ContratoRequest request) {
         Aluno aluno = buscarAluno(request.getAlunoId());
         Professor professor = buscarProfessor(request.getProfessorId());
@@ -80,64 +84,17 @@ public class ContratoService {
         contrato.setDataFim(request.getDataFim());
         contrato.setAluno(aluno);
         contrato.setProfessor(professor);
-        contrato.setTurma(null); // Individual não tem turma fixa
-        contrato.setHorarios(horarios); // Salva na tabela auxiliar ids_horario_contrato
+        contrato.setTurma(null);
+        contrato.setHorarios(horarios);
 
         contratoRepository.save(contrato);
+
+        // Consome os horários na agenda do PROFESSOR e do ALUNO
+        alterarDisponibilidadeHorarios(request.getAlunoId(), request.getProfessorId(), request.getHorariosIds(), false);
+
         aulaService.gerarAulasParaContrato(contrato);
         return ContratoMapper.toResponse(contrato);
     }
-
-    // ============================================================================
-    // MÉTODOS AUXILIARES: VALIDAÇÕES DE REGRAS DE NEGÓCIO
-    // ============================================================================
-
-    private void validarDatas(ContratoRequest request) {
-        if (request.getDataInicio().isAfter(request.getDataFim())) {
-            throw new BusinessRuleException("Data de início não pode ser maior que a data de fim");
-        }
-    }
-
-    private void validarRegrasGrupo(Turma turma, Aluno aluno, ContratoRequest request) {
-        // 1. Verifica limite de alunos baseado nos contratos ativos daquela turma
-        Long totalAlunosMatriculados = contratoRepository.countByTurmaAndDataFimGreaterThanEqual(turma, request.getDataInicio());
-        if (totalAlunosMatriculados >= turma.getLimiteAlunos()) {
-            throw new BusinessRuleException("A turma " + turma.getNome() + " já atingiu o limite de alunos");
-        }
-
-        // 2. Evita duplicidade: Verifica se o aluno já tem um contrato ativo nessa mesma turma e período
-        boolean contratoExistente = contratoRepository.existsByAlunoAndTurmaAndDataInicioAndDataFim(
-                aluno, turma, request.getDataInicio(), request.getDataFim());
-        if (contratoExistente) {
-            throw new BusinessRuleException("Este aluno já possui um contrato ativo para esta turma neste período");
-        }
-
-        // 3. NOVA VALIDAÇÃO: Verifica se o aluno tem disponibilidade para TODOS os horários que essa turma exige
-        // Nota: Assumindo que sua Entidade Turma tem 'getHorarios()' e Aluno tem 'getHorarios()' mapeados do banco
-        if (turma.getHorarios() != null && !aluno.getHorarios().containsAll(turma.getHorarios())) {
-            throw new BusinessRuleException("O aluno não possui disponibilidade compatível com todos os horários desta turma");
-        }
-    }
-
-    private void validarRegrasIndividual(Aluno aluno, Professor professor, List<Horario> horariosSolicitados, ContratoRequest request) {
-        // 1. Evita duplicidade: Verifica se o aluno já tem uma aula particular agendada com o mesmo professor no mesmo período
-        boolean contratoExistente = contratoRepository.existsByAlunoAndProfessorAndDataInicioAndDataFim(
-                aluno, professor, request.getDataInicio(), request.getDataFim());
-        if (contratoExistente) {
-            throw new BusinessRuleException("Já existe um contrato individual entre este aluno e professor para este período");
-        }
-
-        // 2. NOVA VALIDAÇÃO: Verifica se o Aluno possui todos os horários solicitados em sua agenda de disponibilidade
-        if (!aluno.getHorarios().containsAll(horariosSolicitados)) {
-            throw new BusinessRuleException("O aluno não possui disponibilidade para um ou mais horários selecionados");
-        }
-
-        // 3. NOVA VALIDAÇÃO: Verifica se o Professor possui todos os horários solicitados em sua agenda de disponibilidade
-        if (!professor.getHorarios().containsAll(horariosSolicitados)) {
-            throw new BusinessRuleException("O professor não possui disponibilidade para um ou mais horários selecionados");
-        }
-    }
-
 
     @Transactional
     public ContratoResponse atualizarContrato(Long id, ContratoRequest request) {
@@ -145,6 +102,13 @@ public class ContratoService {
                 .orElseThrow(() -> new EntityNotFound("Contrato não encontrado com o ID: " + id));
 
         validarDatas(request);
+
+        // Devolve os horários antigos dependendo do tipo antes de aplicar as novas mudanças
+        if ("Individual".equalsIgnoreCase(contratoExistente.getTipo())) {
+            liberarHorariosDeContratoIndividual(contratoExistente);
+        } else if ("Grupo".equalsIgnoreCase(contratoExistente.getTipo())) {
+            liberarHorariosDeContratoGrupo(contratoExistente);
+        }
 
         if ("Grupo".equalsIgnoreCase(request.getTipo())) {
             atualizarContratoGrupo(contratoExistente, request);
@@ -155,6 +119,19 @@ public class ContratoService {
         }
 
         Contrato contratoAtualizado = contratoRepository.save(contratoExistente);
+
+        // Aplica os novos bloqueios com base no novo estado do contrato
+        if ("Individual".equalsIgnoreCase(contratoAtualizado.getTipo())) {
+            alterarDisponibilidadeHorarios(
+                    contratoAtualizado.getAluno().getId(),
+                    contratoAtualizado.getProfessor().getId(),
+                    request.getHorariosIds(),
+                    false
+            );
+        } else if ("Grupo".equalsIgnoreCase(contratoAtualizado.getTipo())) {
+            bloquearHorariosDoAlunoPorTurma(contratoAtualizado.getAluno().getId(), contratoAtualizado.getTurma());
+        }
+
         return ContratoMapper.toResponse(contratoAtualizado);
     }
 
@@ -194,6 +171,121 @@ public class ContratoService {
         contrato.setHorarios(horariosSolicitados);
     }
 
+    @Transactional
+    public void deletarContrato(Long id) {
+        Contrato contrato = contratoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFound("Contrato não encontrado com o ID: " + id));
+
+        // Libera as horas dependendo da modalidade que está sendo destruída
+        if ("Individual".equalsIgnoreCase(contrato.getTipo())) {
+            liberarHorariosDeContratoIndividual(contrato);
+        } else if ("Grupo".equalsIgnoreCase(contrato.getTipo())) {
+            liberarHorariosDeContratoGrupo(contrato);
+        }
+
+        if (contrato.getHorarios() != null) {
+            contrato.getHorarios().clear();
+        }
+
+        contratoRepository.delete(contrato);
+    }
+
+    // ============================================================================
+    // FUNÇÕES AUXILIARES DE CONTROLE DE DISPONIBILIDADE (INDIVIDUAL E GRUPO)
+    // ============================================================================
+
+    private void alterarDisponibilidadeHorarios(Long alunoId, Long professorId, List<Long> horariosIds, boolean status) {
+        if (horariosIds != null && !horariosIds.isEmpty()) {
+            if (professorId != null) {
+                professorRepository.atualizarDisponibilidadeHorarios(professorId, horariosIds, status);
+            }
+            alunoRepository.atualizarDisponibilidadeHorarios(alunoId, horariosIds, status);
+        }
+    }
+
+    private void bloquearHorariosDoAlunoPorTurma(Long alunoId, Turma turma) {
+        if (turma != null && turma.getHorarios() != null && !turma.getHorarios().isEmpty()) {
+            List<Long> idsHorarios = turma.getHorarios().stream().map(Horario::getId).toList();
+            alterarDisponibilidadeHorarios(alunoId, null, idsHorarios, false);
+        }
+    }
+
+    private void liberarHorariosDeContratoIndividual(Contrato contrato) {
+        if (contrato.getProfessor() != null && contrato.getAluno() != null && contrato.getHorarios() != null) {
+            List<Long> idsHorarios = contrato.getHorarios().stream().map(Horario::getId).toList();
+            alterarDisponibilidadeHorarios(contrato.getAluno().getId(), contrato.getProfessor().getId(), idsHorarios, true);
+        }
+    }
+
+    private void liberarHorariosDeContratoGrupo(Contrato contrato) {
+        if (contrato.getAluno() != null && contrato.getHorarios() != null && !contrato.getHorarios().isEmpty()) {
+            List<Long> idsHorarios = contrato.getHorarios().stream().map(Horario::getId).toList();
+            alterarDisponibilidadeHorarios(contrato.getAluno().getId(), null, idsHorarios, true);
+        }
+    }
+
+    // ============================================================================
+    // MÉTODOS AUXILIARES: VALIDAÇÕES DE REGRAS DE NEGÓCIO
+    // ============================================================================
+
+    private void validarDatas(ContratoRequest request) {
+        if (request.getDataInicio().isAfter(request.getDataFim())) {
+            throw new BusinessRuleException("Data de início não pode ser maior que a data de fim");
+        }
+    }
+
+    private void validarRegrasGrupo(Turma turma, Aluno aluno, ContratoRequest request) {
+        Long totalAlunosMatriculados = contratoRepository.countByTurmaAndDataFimGreaterThanEqual(turma, request.getDataInicio());
+        if (totalAlunosMatriculados >= turma.getLimiteAlunos()) {
+            throw new BusinessRuleException("A turma " + turma.getNome() + " já atingiu o limite de alunos");
+        }
+
+        boolean contratoExistente = contratoRepository.existsByAlunoAndTurmaAndDataInicioAndDataFim(
+                aluno, turma, request.getDataInicio(), request.getDataFim());
+        if (contratoExistente) {
+            throw new BusinessRuleException("Este aluno já possui um contrato ativo para esta turma neste período");
+        }
+
+        if (turma.getHorarios() != null) {
+            if (!aluno.getHorarios().containsAll(turma.getHorarios())) {
+                throw new BusinessRuleException("O aluno não possui esse horário cadastrado em sua grade de disponibilidade");
+            }
+
+            List<Long> idsHorariosTurma = turma.getHorarios().stream().map(Horario::getId).toList();
+            // se a contagem for maior que 0, lança o erro
+            if (alunoRepository.contarHorariosIndisponiveis(aluno.getId(), idsHorariosTurma) > 0) {
+                throw new BusinessRuleException("O aluno já possui um ou mais horários desta turma ocupados por outro contrato");
+            }
+        }
+    }
+
+    private void validarRegrasIndividual(Aluno aluno, Professor professor, List<Horario> horariosSolicitados, ContratoRequest request) {
+        boolean contratoExistente = contratoRepository.existsByAlunoAndProfessorAndDataInicioAndDataFim(
+                aluno, professor, request.getDataInicio(), request.getDataFim());
+        if (contratoExistente) {
+            throw new BusinessRuleException("Já existe um contrato individual entre este aluno e professor para este período");
+        }
+
+        if (!aluno.getHorarios().containsAll(horariosSolicitados)) {
+            throw new BusinessRuleException("O aluno não possui esse horário cadastrado em sua grade de disponibilidade");
+        }
+
+        if (!professor.getHorarios().containsAll(horariosSolicitados)) {
+            throw new BusinessRuleException("O professor não possui esse horário cadastrado em sua grade de disponibilidade");
+        }
+
+        List<Long> idsHorarios = horariosSolicitados.stream().map(Horario::getId).toList();
+
+        // usando a contagem numérica inteira para evitar erros de cast do driver MySQL
+        if (alunoRepository.contarHorariosIndisponiveis(aluno.getId(), idsHorarios) > 0) {
+            throw new BusinessRuleException("O aluno já possui um ou mais horários selecionados ocupados por outro contrato");
+        }
+
+        if (professorRepository.contarHorariosIndisponiveis(professor.getId(), idsHorarios) > 0) {
+            throw new BusinessRuleException("O professor já possui um ou mais horários selecionados ocupados por outro contrato");
+        }
+    }
+
     private void validarRegrasGrupoParaAtualizacao(Long contratoId, Turma turma, Aluno aluno, ContratoRequest request) {
         Long totalAlunosMatriculados = contratoRepository.countByTurmaAndDataFimGreaterThanEqual(turma, request.getDataInicio());
 
@@ -205,44 +297,49 @@ public class ContratoService {
         }
 
         boolean contratoExistente = contratoRepository.existsByAlunoAndTurmaAndDataInicioAndDataFimAndIdNot(
-            aluno, turma, request.getDataInicio(), request.getDataFim(), contratoId);
+                aluno, turma, request.getDataInicio(), request.getDataFim(), contratoId);
 
         if (contratoExistente) {
             throw new BusinessRuleException("Este aluno já possui outro contrato ativo para esta turma neste período");
         }
 
-        if (turma.getHorarios() != null && !aluno.getHorarios().containsAll(turma.getHorarios())) {
-            throw new BusinessRuleException("O aluno não possui disponibilidade compatível com todos os horários desta turma");
+        if (turma.getHorarios() != null) {
+            if (!aluno.getHorarios().containsAll(turma.getHorarios())) {
+                throw new BusinessRuleException("O aluno não possui esse horário cadastrado em sua grade de disponibilidade");
+            }
+
+            List<Long> idsHorariosTurma = turma.getHorarios().stream().map(Horario::getId).toList();
+            // Correção aqui
+            if (alunoRepository.contarHorariosIndisponiveis(aluno.getId(), idsHorariosTurma) > 0) {
+                throw new BusinessRuleException("O aluno já possui um ou mais horários desta turma ocupados por outro contrato");
+            }
         }
     }
 
     private void validarRegrasIndividualParaAtualizacao(Long contratoId, Aluno aluno, Professor professor, List<Horario> horariosSolicitados, ContratoRequest request) {
         if (!aluno.getHorarios().containsAll(horariosSolicitados)) {
-            throw new BusinessRuleException("O aluno não possui disponibilidade para um ou mais horários selecionados");
+            throw new BusinessRuleException("O aluno não possui esse horário cadastrado em sua grade de disponibilidade");
         }
 
         if (!professor.getHorarios().containsAll(horariosSolicitados)) {
-            throw new BusinessRuleException("O professor não possui disponibilidade para um ou mais horários selecionados");
-        }
-    }
-
-    @Transactional
-    public void deletarContrato(Long id) {
-        Contrato contrato = contratoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFound("Contrato não encontrado com o ID: " + id));
-
-        if (contrato.getHorarios() != null) {
-            contrato.getHorarios().clear();
+            throw new BusinessRuleException("O professor não possui esse horário cadastrado em sua grade de disponibilidade");
         }
 
-        contratoRepository.delete(contrato);
+        List<Long> idsHorarios = horariosSolicitados.stream().map(Horario::getId).toList();
+
+        // Correção aqui
+        if (alunoRepository.contarHorariosIndisponiveis(aluno.getId(), idsHorarios) > 0) {
+            throw new BusinessRuleException("O aluno já possui um ou mais horários selecionados ocupados por outro contrato");
+        }
+
+        if (professorRepository.contarHorariosIndisponiveis(professor.getId(), idsHorarios) > 0) {
+            throw new BusinessRuleException("O professor já possui um ou mais horários selecionados ocupados por outro contrato");
+        }
     }
 
     @Transactional(readOnly = true)
     public List<ContratoResponse> listarTodosContratos() {
-        List<Contrato> contratos = contratoRepository.findAll();
-
-        return contratos.stream()
+        return contratoRepository.findAll().stream()
                 .map(ContratoMapper::toResponse)
                 .toList();
     }

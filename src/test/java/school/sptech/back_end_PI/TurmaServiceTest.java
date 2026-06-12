@@ -205,7 +205,7 @@ public class TurmaServiceTest {
         @Test
         @DisplayName("Deve lançar ResponseStatusException quando turma não encontrada para deleção")
         void deveLancarExcecaoQuandoTurmaNaoEncontrada() {
-            Mockito.when(turmaRepository.existsById(1L)).thenReturn(false);
+            Mockito.when(turmaRepository.findById(1L)).thenReturn(Optional.empty());
 
             Assertions.assertThrows(ResponseStatusException.class, () -> turmaService.deletar(1L));
         }
@@ -213,11 +213,14 @@ public class TurmaServiceTest {
         @Test
         @DisplayName("Deve deletar turma com sucesso")
         void deveDeletarTurmaComSucesso() {
-            Mockito.when(turmaRepository.existsById(1L)).thenReturn(true);
+            Turma turma = new Turma();
+            turma.setId(1L);
+
+            Mockito.when(turmaRepository.findById(1L)).thenReturn(Optional.of(turma));
 
             Assertions.assertDoesNotThrow(() -> turmaService.deletar(1L));
 
-            Mockito.verify(turmaRepository, Mockito.times(1)).deleteById(1L);
+            Mockito.verify(turmaRepository, Mockito.times(1)).delete(turma);
         }
     }
 

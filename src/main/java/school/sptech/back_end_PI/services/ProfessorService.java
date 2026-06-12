@@ -57,6 +57,24 @@ public class ProfessorService {
         return ProfessorMapper.toResponseList(professorRepository.findAll());
     }
 
+    public Professor buscarPorIdComHorariosDisponiveis(Long id) {
+        // 1. Busca o professor básico do banco
+        Professor professor = professorRepository.findByIdWithDisponivelHorarios(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Professor não encontrado ou inativo."));
+
+        // 2. Filtra a lista de horários dele para manter APENAS os que estão com o status 'true' na tabela lógica
+        if (professor.getHorarios() != null) {
+            List<school.sptech.back_end_PI.entity.Horario> horariosDisponiveis = professor.getHorarios().stream()
+                    // Buscamos se há algum registro bloqueado para esse horário usando o método que já criamos
+                    .filter(horario -> professorRepository.contarHorariosIndisponiveis(id, List.of(horario.getId())) == 0)
+                    .toList();
+
+            professor.setHorarios(horariosDisponiveis);
+        }
+
+        return professor;
+    }
+
     public ProfessorResponse findById(Long id) {
         return professorRepository.findById(id)
                 .map(ProfessorMapper::toResponse)
