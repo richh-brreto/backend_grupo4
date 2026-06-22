@@ -68,6 +68,12 @@ public class TurmaService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe outra turma com este nome.");
         }
 
+        // Se a turma já tiver um professor vinculado, mudar os horários da turma pode bagunçar a agenda dele.
+        // O ideal é liberar os horários antigos dele antes de aplicar os novos.
+        if (turma.getProfessor() != null && turma.getHorarios() != null) {
+            alterarDisponibilidadeProfessor(turma.getProfessor().getId(), turma.getHorarios(), true);
+        }
+
         turma.setNome(request.getNome());
         turma.setNivel(request.getNivel());
         turma.setLimiteAlunos(request.getLimiteAlunos());
@@ -78,18 +84,36 @@ public class TurmaService {
         if (novosHorarios.size() != request.getHorariosIds().size()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Um ou mais IDs de horários são inválidos.");
         }
-        turma.setHorarios(novosHorarios);
 
+        // Se houver um professor vinculado, valida se ele está disponível para os NOVOS horários
+        if (turma.getProfessor() != null) {
+            List<Long> idsNovosHorarios = novosHorarios.stream().map(Horario::getId).toList();
+            if (!turma.getProfessor().getHorarios().containsAll(novosHorarios)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O professor atual não possui esses novos horários na grade dele.");
+            }
+            if (professorRepository.contarHorariosIndisponiveis(turma.getProfessor().getId(), idsNovosHorarios) > 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O professor atual já tem um ou mais destes novos horários ocupados.");
+            }
+            // Bloqueia os novos horários na agenda do professor
+            alterarDisponibilidadeProfessor(turma.getProfessor().getId(), novosHorarios, false);
+        }
+
+        turma.setHorarios(novosHorarios);
         return turmaRepository.save(turma);
     }
 
     // 2. DELETAR TURMA
     @Transactional
     public void deletar(Long id) {
-        if (!turmaRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Turma não encontrada.");
+        Turma turma = turmaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Turma não encontrada."));
+
+        // Se tiver professor, libera os horários dele de volta antes de apagar a turma
+        if (turma.getProfessor() != null && turma.getHorarios() != null) {
+            alterarDisponibilidadeProfessor(turma.getProfessor().getId(), turma.getHorarios(), true);
         }
-        turmaRepository.deleteById(id);
+
+        turmaRepository.delete(turma);
     }
 
     // 3. ADICIONAR PROFESSOR À TURMA
@@ -103,6 +127,31 @@ public class TurmaService {
 
         if (professor.getAtivo() != null && !professor.getAtivo()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Não é possível vincular um professor inativo.");
+        }
+
+        // Se a turma já tinha um professor diferente, precisamos liberar a agenda do professor antigo primeiro
+        if (turma.getProfessor() != null) {
+            if (turma.getProfessor().getId().equals(professorId)) {
+                return turma; // Já é o mesmo professor, não faz nada
+            }
+            alterarDisponibilidadeProfessor(turma.getProfessor().getId(), turma.getHorarios(), true);
+        }
+
+        // VALIDAÇÃO DE CONFLITO: Verifica se o novo professor pode assumir estes horários
+        if (turma.getHorarios() != null && !turma.getHorarios().isEmpty()) {
+            // A: Verifica se os horários existem no escopo base cadastrado do professor
+            if (!professor.getHorarios().containsAll(turma.getHorarios())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O professor não possui um ou mais horários desta turma cadastrados em sua grade básica.");
+            }
+
+            // B: Verifica se algum deles está indisponível (is_disponivel = false)
+            List<Long> idsHorariosTurma = turma.getHorarios().stream().map(Horario::getId).toList();
+            if (professorRepository.contarHorariosIndisponiveis(professorId, idsHorariosTurma) > 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O professor selecionado já possui um ou mais horários desta turma ocupados em outra atividade.");
+            }
+
+            // CONDUZIR O BLOQUEIO: Altera 'is_disponivel' para FALSE na agenda do professor
+            alterarDisponibilidadeProfessor(professorId, turma.getHorarios(), false);
         }
 
         turma.setProfessor(professor);
@@ -119,6 +168,11 @@ public class TurmaService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Esta turma já não possui nenhum professor vinculado.");
         }
 
+        // LIBERAÇÃO: Altera 'is_disponivel' para TRUE na agenda do professor que está saindo
+        if (turma.getHorarios() != null && !turma.getHorarios().isEmpty()) {
+            alterarDisponibilidadeProfessor(turma.getProfessor().getId(), turma.getHorarios(), true);
+        }
+
         turma.setProfessor(null); // Deixa a turma "órfã" novamente
         return turmaRepository.save(turma);
     }
@@ -132,4 +186,13 @@ public class TurmaService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Turma não encontrada com o ID: " + id));
     }
 
+    // ============================================================================
+    // MÉTODO AUXILIAR DE CONTROLE DE AGENDA DO PROFESSOR
+    // ============================================================================
+    private void alterarDisponibilidadeProfessor(Long professorId, List<Horario> horarios, boolean status) {
+        if (horarios != null && !horarios.isEmpty()) {
+            List<Long> ids = horarios.stream().map(Horario::getId).toList();
+            professorRepository.atualizarDisponibilidadeHorarios(professorId, ids, status);
+        }
+    }
 }
