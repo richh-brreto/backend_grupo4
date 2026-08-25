@@ -1,8 +1,10 @@
 package school.sptech.back_end_PI.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import school.sptech.back_end_PI.dto.aula.*;
 import school.sptech.back_end_PI.services.AulaService;
@@ -11,17 +13,20 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/aulas")
+@Tag(name = "Aulas", description = "Endpoints para gerenciamento de aulas")
 public class AulaController {
 
     @Autowired
     private AulaService aulaService;
 
     @PostMapping("/extra")
+    @PreAuthorize("hasRole('COORDENADOR')")
     public ResponseEntity<AulaResponse> adicionarAulaExtra(@RequestBody @Valid AulaExtraRequest request) {
         return ResponseEntity.status(201).body(aulaService.adicionarAulaExtra(request));
     }
 
     @PatchMapping("/{id}/remarcar")
+    @PreAuthorize("hasRole('COORDENADOR')")
     public ResponseEntity<AulaResponse> remarcarAula(
             @PathVariable Long id,
             @RequestBody @Valid RemarcarAulaRequest request) {
@@ -29,6 +34,7 @@ public class AulaController {
     }
 
     @PatchMapping("/{id}/cancelar")
+    @PreAuthorize("hasRole('COORDENADOR')")
     public ResponseEntity<AulaResponse> cancelarAula(
             @PathVariable Long id,
             @RequestBody(required = false) CancelarAulaRequest request) {
@@ -36,12 +42,14 @@ public class AulaController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('COORDENADOR')")
     public ResponseEntity<Void> deletarAula(@PathVariable Long id) {
         aulaService.deletarAula(id);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/presenca")
+    @PreAuthorize("hasRole('COORDENADOR')")
     public ResponseEntity<AulaResponse> atribuirPresenca(
             @PathVariable Long id,
             @RequestBody @Valid PresencaRequest request) {
@@ -49,11 +57,13 @@ public class AulaController {
     }
 
     @GetMapping("/{id}/logs")
+    @PreAuthorize("authenticated()")
     public ResponseEntity<List<LogAulaResponse>> listarLogs(@PathVariable Long id) {
         return ResponseEntity.ok(aulaService.listarLogsPorAula(id));
     }
 
     @GetMapping("/contrato/{contratoId}")
+    @PreAuthorize("authenticated()")
     public ResponseEntity<List<AulaResponse>> listarPorContrato(@PathVariable Long contratoId) {
         return ResponseEntity.ok(aulaService.listarAulasPorContrato(contratoId));
     }

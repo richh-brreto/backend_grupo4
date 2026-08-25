@@ -3,12 +3,15 @@ package school.sptech.back_end_PI.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import school.sptech.back_end_PI.dto.aluno.AlunoRequest;
 import school.sptech.back_end_PI.dto.aluno.AlunoResponse;
 import school.sptech.back_end_PI.entity.Aluno;
 import school.sptech.back_end_PI.mapper.AlunoMapper;
 import school.sptech.back_end_PI.services.AlunoService;
+import school.sptech.back_end_PI.security.AccessGuard;
+
 import java.util.List;
 
 @RestController
@@ -16,12 +19,14 @@ import java.util.List;
 public class AlunoController {
 
     private final AlunoService service;
+    private final AccessGuard accessGuard;
 
-    public AlunoController(AlunoService service) {
+    public AlunoController(AlunoService service, AccessGuard accessGuard) {
         this.service = service;
+        this.accessGuard = accessGuard;
     }
-
     @PostMapping
+    @PreAuthorize("hasRole('COORDENADOR')")
     public ResponseEntity<AlunoResponse> create(
             @Valid @RequestBody AlunoRequest request) {
 
@@ -32,6 +37,7 @@ public class AlunoController {
     }
 
     @GetMapping
+    @PreAuthorize("authenticated()")
     public ResponseEntity<List<AlunoResponse>> getAll() {
         List<AlunoResponse> response = service.getAll()
                 .stream()
@@ -42,12 +48,14 @@ public class AlunoController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("@accessGuard.canManageAluno(#id, authentication)")
     public ResponseEntity<AlunoResponse> getById(@PathVariable Long id) {
         Aluno aluno = service.getById(id);
         return ResponseEntity.ok(AlunoMapper.toResponse(aluno));
     }
 
     @GetMapping("/disponiveis/{id}")
+    @PreAuthorize("authenticated()")
     public ResponseEntity<Aluno> getAlunoComHorariosDisponiveis(@PathVariable Long id) {
         Aluno aluno = service.buscarPorIdComHorariosDisponiveis(id);
         return ResponseEntity.ok(aluno);
@@ -55,12 +63,14 @@ public class AlunoController {
 
 
     @GetMapping("/turma/{id}")
+    @PreAuthorize("authenticated()")
     public ResponseEntity<List<AlunoResponse>> getByTurmaId(@PathVariable Long id){
         List<Aluno> alunos = service.getByTurmaId(id);
         return ResponseEntity.ok(AlunoMapper.toResponseList(alunos));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('COORDENADOR')")
     @Operation(summary = "Inativar um aluno (Soft Delete)", description = "Altera o status do aluno para inativo")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
@@ -68,6 +78,7 @@ public class AlunoController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('COORDENADOR')")
     public ResponseEntity<AlunoResponse> update(@PathVariable Long id, @Valid @RequestBody AlunoRequest request) {
 
         Aluno atualizado = service.update(id, request);
@@ -75,6 +86,7 @@ public class AlunoController {
     }
 
     @PatchMapping("/{id}/reativar")
+    @PreAuthorize("hasRole('COORDENADOR')")
     @Operation(summary = "Reativar um aluno inativo", description = "Restaura o acesso e o status do aluno para ativo")
     public ResponseEntity<AlunoResponse> reativar(@PathVariable Long id) {
         Aluno alunoReativado = service.reativar(id);
