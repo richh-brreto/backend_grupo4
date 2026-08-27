@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 import school.sptech.back_end_PI.dto.aluno.HorarioAlunoProfessorRequest;
 import school.sptech.back_end_PI.dto.professor.ProfessorRequest;
@@ -40,6 +41,9 @@ public class ProfessorServiceTest {
 
     @Mock
     private HorarioRepository horarioRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private ProfessorService professorService;
