@@ -30,4 +30,7 @@ public interface AlunoRepository extends JpaRepository<Aluno, Long> {
 
     @Query(value = "SELECT a.* FROM aluno a WHERE a.id_aluno = :id AND a.ativo = 1", nativeQuery = true)
     Optional<Aluno> findByIdWithDisponivelHorarios(@Param("id") Long id);
+
+    @Query(value = "SELECT a.* FROM aluno a WHERE a.ativo = 0", nativeQuery = true)
+    List<Aluno> findAllInativos();
 }

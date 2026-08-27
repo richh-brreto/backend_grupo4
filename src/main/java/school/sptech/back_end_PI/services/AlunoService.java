@@ -38,6 +38,14 @@ public class AlunoService {
         return alunoRepository.findAll();
     }
 
+    public List<Aluno> getAllInativos() {
+        List<Aluno> inativos = alunoRepository.findAllInativos();
+        if (inativos.isEmpty()) {
+            throw new EntityNotFound("Nenhum aluno inativo encontrado");
+        }
+        return inativos;
+    }
+
     public Aluno buscarPorIdComHorariosDisponiveis(Long id) {
         Aluno aluno = alunoRepository.findByIdWithDisponivelHorarios(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Aluno não encontrado ou inativo."));
@@ -110,7 +118,7 @@ public class AlunoService {
 
 
     @Transactional
-    public void delete(Long id) {
+    public void inativar(Long id) {
         Aluno aluno = alunoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFound("Aluno não encontrado"));
 

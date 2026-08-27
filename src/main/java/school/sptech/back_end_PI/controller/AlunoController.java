@@ -41,6 +41,16 @@ public class AlunoController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/inativos")
+    public ResponseEntity<List<AlunoResponse>> getAllInativos() {
+        List<AlunoResponse> response = service.getAllInativos()
+                .stream()
+                .map(AlunoMapper::toResponse)
+                .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<AlunoResponse> getById(@PathVariable Long id) {
         Aluno aluno = service.getById(id);
@@ -62,8 +72,8 @@ public class AlunoController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Inativar um aluno (Soft Delete)", description = "Altera o status do aluno para inativo")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.delete(id);
+    public ResponseEntity<Void> inativar(@PathVariable Long id) {
+        service.inativar(id);
         return ResponseEntity.noContent().build();
     }
 

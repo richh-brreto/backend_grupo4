@@ -13,7 +13,7 @@ CREATE TABLE professor (
     id_professor INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(45) NOT NULL,
     email VARCHAR(45) NOT NULL,
-    telefone INT,
+    telefone VARCHAR(20),
     senha VARCHAR(45) NOT NULL,
     tipo_professor_id_tipo_professor INT NOT NULL,
     ativo TINYINT DEFAULT 1, -- 1 para Ativo, 0 para Inativo (Soft Delete)
