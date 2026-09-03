@@ -9,7 +9,7 @@ public class ProfessorResponse {
     private Long id;
     private String nome;
     private String email;
-    private Integer telefone;
+    private String telefone;
     private Boolean ativo; // Campo adicionado para o JSON
     private TipoProfessorResponse tipo;
     private List<HorarioProfessorDto> horarios;
@@ -38,8 +38,8 @@ public class ProfessorResponse {
     public void setNome(String nome) { this.nome = nome; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-    public Integer getTelefone() { return telefone; }
-    public void setTelefone(Integer telefone) { this.telefone = telefone; }
+    public String getTelefone() { return telefone; }
+    public void setTelefone(String telefone) { this.telefone = telefone; }
     public Boolean getAtivo() { return ativo; }
     public void setAtivo(Boolean ativo) { this.ativo = ativo; }
     public TipoProfessorResponse getTipo() { return tipo; }

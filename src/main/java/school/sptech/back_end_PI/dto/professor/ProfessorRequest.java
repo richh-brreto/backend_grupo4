@@ -17,8 +17,9 @@ public class ProfessorRequest {
     @Email
     private String email;
 
-    @NotNull
-    private Integer telefone;
+    @NotBlank
+    @Size(max = 20)
+    private String telefone;
 
     @NotBlank
     @Size(min = 6)
@@ -36,8 +37,8 @@ public class ProfessorRequest {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public Integer getTelefone() { return telefone; }
-    public void setTelefone(Integer telefone) { this.telefone = telefone; }
+    public String getTelefone() { return telefone; }
+    public void setTelefone(String telefone) { this.telefone = telefone; }
 
     public String getSenha() { return senha; }
     public void setSenha(String senha) { this.senha = senha; }

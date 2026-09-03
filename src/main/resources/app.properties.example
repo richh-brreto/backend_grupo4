@@ -4,11 +4,11 @@ spring.web.error.include-message=always
 spring.web.error.include-binding-errors=always
 
 # URL do banco
-spring.datasource.url=jdbc:mysql://localhost:3306/boost?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+spring.datasource.url=jdbc:mysql://10.0.4.11:3306/boost?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
 
 # Usuário e senha
-spring.datasource.username=SEU-USUARIO
-spring.datasource.password=SUA-SENHA
+spring.datasource.username=backend
+spring.datasource.password=root
 
 # JPA / Hibernate
 spring.jpa.show-sql=true
