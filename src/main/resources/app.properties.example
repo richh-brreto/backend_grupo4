@@ -14,7 +14,7 @@ spring.datasource.password=root
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 # JWT
-jwt.secret=${JWT_SECRET:mudar-esta-palavra-secreta-em-producao}
+jwt.secret=${JWT_SECRET:producao}
 jwt.expiration=3600000
 
 #DEBUG
