@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import school.sptech.back_end_PI.dto.professor.ProfessorRequest;
 import school.sptech.back_end_PI.dto.aluno.HorarioAlunoProfessorRequest;
@@ -12,6 +13,7 @@ import school.sptech.back_end_PI.dto.professor.ProfessorResponse;
 import school.sptech.back_end_PI.entity.Professor;
 import school.sptech.back_end_PI.mapper.ProfessorMapper;
 import school.sptech.back_end_PI.services.ProfessorService;
+import school.sptech.back_end_PI.security.AccessGuard;
 
 import java.util.List;
 
@@ -21,12 +23,16 @@ import java.util.List;
 public class ProfessorController {
 
     private final ProfessorService service;
-    public ProfessorController(ProfessorService service) {
+    private final AccessGuard accessGuard;
+
+    public ProfessorController(ProfessorService service, AccessGuard accessGuard) {
         this.service = service;
+        this.accessGuard = accessGuard;
     }
 
     @PostMapping
     @Operation(summary = "Cadastrar um professor", description = "Cadastrar um novo professor com um ID único")
+    @PreAuthorize("hasRole('COORDENADOR')")
     public ResponseEntity<Professor> cadastrar(
             @Parameter(description = "Um professor, contendo seu id, nome, email, telefone, senha e tipo de usuário (no caso: professor)", required = true)
             @Valid @RequestBody ProfessorRequest dto
@@ -37,12 +43,14 @@ public class ProfessorController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Inativar um professor (Soft Delete)", description = "Altera o status do professor para inativo")
+    @PreAuthorize("hasRole('COORDENADOR')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping
+    @PreAuthorize("authenticated()")
     public ResponseEntity<List<ProfessorResponse>> listar() {
         List<ProfessorResponse> lista = service.findAll();
         if (lista.isEmpty()) {
@@ -52,11 +60,13 @@ public class ProfessorController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("@accessGuard.canManageProfessor(#id, authentication)")
     public ResponseEntity<ProfessorResponse> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @GetMapping("/disponiveis/{id}")
+    @PreAuthorize("@accessGuard.canManageProfessor(#id, authentication)")
     public ResponseEntity<ProfessorResponse> getProfessorComHorariosDisponiveis(@PathVariable Long id) {
         Professor professor = service.buscarPorIdComHorariosDisponiveis(id);
         return ResponseEntity.ok(ProfessorMapper.toResponse(professor));
@@ -74,6 +84,7 @@ public class ProfessorController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('COORDENADOR')")
     public ResponseEntity<ProfessorResponse> atualizar(@PathVariable Long id, @RequestBody ProfessorRequest request){
 
         Professor professorAtualizado = service.atualizar(id, request);
@@ -84,6 +95,7 @@ public class ProfessorController {
 
     @PatchMapping("/{id}/reativar")
     @Operation(summary = "Reativar um professor inativo", description = "Restaura o status ativo e devolve as permissões de login ao professor")
+    @PreAuthorize("hasRole('COORDENADOR')")
     public ResponseEntity<ProfessorResponse> reativar(@PathVariable Long id) {
         Professor professorReativado = service.reativar(id);
         return ResponseEntity.ok(ProfessorMapper.toResponse(professorReativado));

@@ -19,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return professorRepository.findByEmail(username)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("Professor não encontrado: " + username)
+                        new UsernameNotFoundException("Credenciais inválidas")
                 );
     }
 }

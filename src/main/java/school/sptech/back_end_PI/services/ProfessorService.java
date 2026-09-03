@@ -19,6 +19,8 @@ import school.sptech.back_end_PI.repository.HorarioRepository;
 import school.sptech.back_end_PI.repository.ProfessorRepository;
 import school.sptech.back_end_PI.repository.TipoProfessorRepository;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.util.List;
 
 @Service
@@ -26,11 +28,13 @@ public class ProfessorService {
     private final ProfessorRepository professorRepository;
     private final TipoProfessorRepository tipoProfessorRepository;
     private final HorarioRepository horarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public ProfessorService(ProfessorRepository professorRepository, TipoProfessorRepository tipoProfessorRepository, HorarioRepository horarioRepository) {
+    public ProfessorService(ProfessorRepository professorRepository, TipoProfessorRepository tipoProfessorRepository, HorarioRepository horarioRepository, PasswordEncoder passwordEncoder) {
         this.professorRepository = professorRepository;
         this.tipoProfessorRepository = tipoProfessorRepository;
         this.horarioRepository = horarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Professor create(ProfessorRequest dto) {
@@ -49,6 +53,7 @@ public class ProfessorService {
         }
 
         Professor novoProfessor = ProfessorMapper.toEntity(dto, tipo, horarios);
+        novoProfessor.setSenha(passwordEncoder.encode(dto.getSenha()));
 
         return professorRepository.save(novoProfessor);
     }
