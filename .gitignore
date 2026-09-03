@@ -34,3 +34,4 @@ build/
 
 # Spring Boot
 application.properties
+application.properties.example
