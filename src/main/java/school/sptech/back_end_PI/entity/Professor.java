@@ -2,6 +2,7 @@ package school.sptech.back_end_PI.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,6 +32,7 @@ public class Professor implements UserDetails {
 
     @NotBlank
     @Column(length = 20)
+    @Size(min = 10, max = 14)
     private String telefone;
 
     @NotBlank

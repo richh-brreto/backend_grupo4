@@ -18,7 +18,7 @@ public class ProfessorRequest {
     private String email;
 
     @NotBlank
-    @Size(max = 20)
+    @Size(min = 10, max = 14)
     private String telefone;
 
     @NotBlank
