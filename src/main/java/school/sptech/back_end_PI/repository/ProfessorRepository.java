@@ -1,9 +1,10 @@
 package school.sptech.back_end_PI.repository;
+
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import school.sptech.back_end_PI.entity.Aluno;
 import school.sptech.back_end_PI.entity.Professor;
 
 import java.util.List;
@@ -13,9 +14,10 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
 
     boolean existsProfessorByEmail(String email);
 
-    Optional<Professor> findByEmail(String email);
-
     boolean existsByEmail(String email);
+
+    @EntityGraph(attributePaths = {"tipo"})
+    Optional<Professor> findByEmail(String email);
 
     @Query("""
         SELECT DISTINCT p
