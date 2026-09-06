@@ -38,6 +38,14 @@ public class AlunoService {
         return alunoRepository.findAll();
     }
 
+    public List<Aluno> getByProfessorId(Long professorId) {
+        return contratoRepository.findByProfessorId(professorId).stream()
+                .map(Contrato::getAluno)
+                .filter(aluno -> aluno != null && aluno.getAtivo())
+                .distinct()
+                .toList();
+    }
+
     public Aluno buscarPorIdComHorariosDisponiveis(Long id) {
         Aluno aluno = alunoRepository.findByIdWithDisponivelHorarios(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Aluno não encontrado ou inativo."));

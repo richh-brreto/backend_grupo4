@@ -39,10 +39,15 @@ public class AccessGuard {
         return null;
     }
 
-    private boolean isCoordenador(Authentication authentication) {
+    public boolean isCoordenador(Authentication authentication) {
         return authentication != null && authentication.getAuthorities()
                 .stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_COORDENADOR"));
+    }
+
+    public Long currentProfessorId(Authentication authentication) {
+        Professor professor = getProfessorFromAuthentication(authentication);
+        return professor != null ? professor.getId() : null;
     }
 
     private Professor getProfessorFromAuthentication(Authentication authentication) {

@@ -2,6 +2,7 @@ package school.sptech.back_end_PI.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import school.sptech.back_end_PI.dto.contrato.ContratoRequest;
 import school.sptech.back_end_PI.dto.contrato.ContratoResponse;
@@ -45,8 +46,14 @@ public class ContratoController {
 
     @GetMapping()
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<ContratoResponse>> listarContratos(){
-        List<ContratoResponse> response = service.listarTodosContratos();
+    public ResponseEntity<List<ContratoResponse>> listarContratos(Authentication authentication){
+        List<ContratoResponse> response;
+        if (accessGuard.isCoordenador(authentication)) {
+            response = service.listarTodosContratos();
+        } else {
+            Long professorId = accessGuard.currentProfessorId(authentication);
+            response = professorId == null ? List.of() : service.listarContratosPorProfessor(professorId);
+        }
         return ResponseEntity.status(200).body(response);
     }
 

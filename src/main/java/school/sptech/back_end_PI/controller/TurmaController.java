@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import school.sptech.back_end_PI.dto.turma.TurmaRequest;
 import school.sptech.back_end_PI.dto.turma.TurmaResponse;
@@ -31,8 +32,14 @@ public class TurmaController {
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Listar todas as turmas cadastradas")
-    public ResponseEntity<List<TurmaResponse>> listarTodas() {
-        List<Turma> turmas = service.listarTodas();
+    public ResponseEntity<List<TurmaResponse>> listarTodas(Authentication authentication) {
+        List<Turma> turmas;
+        if (accessGuard.isCoordenador(authentication)) {
+            turmas = service.listarTodas();
+        } else {
+            Long professorId = accessGuard.currentProfessorId(authentication);
+            turmas = professorId == null ? List.of() : service.listarPorProfessor(professorId);
+        }
 
         // Mapeia a lista de entidades para uma lista de TurmaResponse
         List<TurmaResponse> resposta = turmas.stream()

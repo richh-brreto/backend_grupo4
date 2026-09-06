@@ -57,13 +57,13 @@ public class AulaController {
     }
 
     @GetMapping("/{id}/logs")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("@accessGuard.canManageAula(#id, authentication)")
     public ResponseEntity<List<LogAulaResponse>> listarLogs(@PathVariable Long id) {
         return ResponseEntity.ok(aulaService.listarLogsPorAula(id));
     }
 
     @GetMapping("/contrato/{contratoId}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("@accessGuard.canManageContrato(#contratoId, authentication)")
     public ResponseEntity<List<AulaResponse>> listarPorContrato(@PathVariable Long contratoId) {
         return ResponseEntity.ok(aulaService.listarAulasPorContrato(contratoId));
     }

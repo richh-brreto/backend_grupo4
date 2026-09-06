@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import school.sptech.back_end_PI.dto.professor.ProfessorRequest;
 import school.sptech.back_end_PI.dto.aluno.HorarioAlunoProfessorRequest;
@@ -51,7 +52,14 @@ public class ProfessorController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<ProfessorResponse>> listar() {
+    public ResponseEntity<List<ProfessorResponse>> listar(Authentication authentication) {
+        if (!accessGuard.isCoordenador(authentication)) {
+            Long professorId = accessGuard.currentProfessorId(authentication);
+            if (professorId == null) {
+                return ResponseEntity.ok(List.of());
+            }
+            return ResponseEntity.ok(List.of(service.findById(professorId)));
+        }
         List<ProfessorResponse> lista = service.findAll();
         if (lista.isEmpty()) {
             return ResponseEntity.noContent().build();
