@@ -33,12 +33,12 @@ public class ProfessorController {
     @PostMapping
     @Operation(summary = "Cadastrar um professor", description = "Cadastrar um novo professor com um ID único")
     @PreAuthorize("hasRole('COORDENADOR')")
-    public ResponseEntity<Professor> cadastrar(
+    public ResponseEntity<ProfessorResponse> cadastrar(
             @Parameter(description = "Um professor, contendo seu id, nome, email, telefone, senha e tipo de usuário (no caso: professor)", required = true)
             @Valid @RequestBody ProfessorRequest dto
     ) {
         Professor professorSalvo = service.create(dto);
-        return ResponseEntity.status(201).body(professorSalvo);
+        return ResponseEntity.status(201).body(ProfessorMapper.toResponse(professorSalvo));
     }
 
     @DeleteMapping("/{id}")
@@ -50,7 +50,7 @@ public class ProfessorController {
     }
 
     @GetMapping
-    @PreAuthorize("authenticated()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<ProfessorResponse>> listar() {
         List<ProfessorResponse> lista = service.findAll();
         if (lista.isEmpty()) {
@@ -73,7 +73,8 @@ public class ProfessorController {
     }
 
     @PostMapping("/compatibilidade")
-    public ResponseEntity<List<ProfessorResponse>> buscarCompativeis(@RequestBody HorarioAlunoProfessorRequest request) {
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<ProfessorResponse>> buscarCompativeis(@Valid @RequestBody HorarioAlunoProfessorRequest request) {
 
         List<ProfessorResponse> response = service.buscarCompativeis(request)
                 .stream()

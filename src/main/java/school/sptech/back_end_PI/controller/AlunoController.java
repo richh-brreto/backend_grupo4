@@ -37,7 +37,7 @@ public class AlunoController {
     }
 
     @GetMapping
-    @PreAuthorize("authenticated()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<AlunoResponse>> getAll() {
         List<AlunoResponse> response = service.getAll()
                 .stream()
@@ -55,15 +55,15 @@ public class AlunoController {
     }
 
     @GetMapping("/disponiveis/{id}")
-    @PreAuthorize("authenticated()")
-    public ResponseEntity<Aluno> getAlunoComHorariosDisponiveis(@PathVariable Long id) {
+    @PreAuthorize("@accessGuard.canManageAluno(#id, authentication)")
+    public ResponseEntity<AlunoResponse> getAlunoComHorariosDisponiveis(@PathVariable Long id) {
         Aluno aluno = service.buscarPorIdComHorariosDisponiveis(id);
-        return ResponseEntity.ok(aluno);
+        return ResponseEntity.ok(AlunoMapper.toResponse(aluno));
     }
 
 
     @GetMapping("/turma/{id}")
-    @PreAuthorize("authenticated()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<AlunoResponse>> getByTurmaId(@PathVariable Long id){
         List<Aluno> alunos = service.getByTurmaId(id);
         return ResponseEntity.ok(AlunoMapper.toResponseList(alunos));

@@ -29,7 +29,7 @@ public class TurmaController {
     }
 
     @GetMapping
-    @PreAuthorize("authenticated()")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Listar todas as turmas cadastradas")
     public ResponseEntity<List<TurmaResponse>> listarTodas() {
         List<Turma> turmas = service.listarTodas();

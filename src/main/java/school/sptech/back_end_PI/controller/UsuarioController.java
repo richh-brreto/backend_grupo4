@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,16 +13,26 @@ import org.springframework.web.bind.annotation.*;
 import school.sptech.back_end_PI.dto.professor.ProfessorLoginRequest;
 import school.sptech.back_end_PI.services.JwtService;
 
+import java.util.Arrays;
+
 @RestController
 public class UsuarioController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final Environment environment;
 
     public UsuarioController(AuthenticationManager authenticationManager,
-                             JwtService jwtService) {
+                             JwtService jwtService,
+                             Environment environment) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.environment = environment;
+    }
+
+    private boolean useSecureCookie(HttpServletRequest httpRequest) {
+        return httpRequest.isSecure()
+                || Arrays.asList(environment.getActiveProfiles()).contains("prod");
     }
 
     @PostMapping("/login")
@@ -41,14 +52,15 @@ public class UsuarioController {
 
         // Secure só faz sentido em HTTPS. Em http://localhost (Bruno/dev) um cookie
         // Secure=true nunca é reenviado pelo client -> requests seguintes caem como anonymous -> 403.
-        boolean secure = httpRequest.isSecure();
+        // Em prod (profile "prod") o Secure é forçado mesmo atrás de proxy TLS.
+        boolean secure = useSecureCookie(httpRequest);
 
         ResponseCookie cookie = ResponseCookie.from("authToken", token)
                 .httpOnly(true)
                 .secure(secure)
                 .path("/")
                 .maxAge(jwtService.getExpirationTime() / 1000)
-                .sameSite("Lax")
+                .sameSite("Strict")
                 .build();
 
         response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -60,13 +72,13 @@ public class UsuarioController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest httpRequest, HttpServletResponse response) {
-        boolean secure = httpRequest.isSecure();
+        boolean secure = useSecureCookie(httpRequest);
         ResponseCookie springCookie = ResponseCookie.from("authToken", "")
                 .maxAge(0)
                 .path("/")
                 .httpOnly(true)
                 .secure(secure)
-                .sameSite("Lax")
+                .sameSite("Strict")
                 .build();
         response.setHeader(HttpHeaders.SET_COOKIE, springCookie.toString());
         return ResponseEntity.ok("Logout realizado com sucesso");

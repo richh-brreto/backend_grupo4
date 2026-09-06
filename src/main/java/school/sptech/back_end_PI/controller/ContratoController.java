@@ -44,7 +44,7 @@ public class ContratoController {
     }
 
     @GetMapping()
-    @PreAuthorize("authenticated()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<ContratoResponse>> listarContratos(){
         List<ContratoResponse> response = service.listarTodosContratos();
         return ResponseEntity.status(200).body(response);

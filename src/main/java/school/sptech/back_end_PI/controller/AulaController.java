@@ -57,13 +57,13 @@ public class AulaController {
     }
 
     @GetMapping("/{id}/logs")
-    @PreAuthorize("authenticated()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<LogAulaResponse>> listarLogs(@PathVariable Long id) {
         return ResponseEntity.ok(aulaService.listarLogsPorAula(id));
     }
 
     @GetMapping("/contrato/{contratoId}")
-    @PreAuthorize("authenticated()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<AulaResponse>> listarPorContrato(@PathVariable Long contratoId) {
         return ResponseEntity.ok(aulaService.listarAulasPorContrato(contratoId));
     }
