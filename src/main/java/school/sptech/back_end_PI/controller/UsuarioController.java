@@ -1,7 +1,8 @@
 package school.sptech.back_end_PI.controller;
 
-import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,7 +26,9 @@ public class UsuarioController {
 
     @PostMapping("/login")
     @io.swagger.v3.oas.annotations.security.SecurityRequirements // Isso remove o cadeado no Swagger
-    public ResponseEntity<?> login(@RequestBody ProfessorLoginRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> login(@RequestBody ProfessorLoginRequest request,
+                                   HttpServletRequest httpRequest,
+                                   HttpServletResponse response) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -36,34 +39,36 @@ public class UsuarioController {
 
         String token = jwtService.generateToken(authentication);
 
-        Cookie cookie = new Cookie("authToken", token);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(!"dev".equalsIgnoreCase(System.getProperty("spring.profiles.active")));
-        cookie.setPath("/");
-        cookie.setMaxAge(5 * 60);
+        // Secure só faz sentido em HTTPS. Em http://localhost (Bruno/dev) um cookie
+        // Secure=true nunca é reenviado pelo client -> requests seguintes caem como anonymous -> 403.
+        boolean secure = httpRequest.isSecure();
 
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie.from("authToken", token)
+                .httpOnly(true)
+                .secure(secure)
+                .path("/")
+                .maxAge(jwtService.getExpirationTime() / 1000)
+                .sameSite("Lax")
+                .build();
 
-        return ResponseEntity.ok("Login realizado com sucesso - Token gerado");
+        response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        // Token trafega SOMENTE no cookie HttpOnly, nunca no corpo (OWASP A01/A02).
+        // Clients de API (Bruno/Postman) autenticam via cookie jar após o /login.
+        return ResponseEntity.ok("Login realizado com sucesso");
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("authToken", null);
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(!"dev".equalsIgnoreCase(System.getProperty("spring.profiles.active")));
-        ResponseCookie springCookie = ResponseCookie.from("authToken", null) // response cookie defini os atributos, eai coloca como cookie padrão
+    public ResponseEntity<?> logout(HttpServletRequest httpRequest, HttpServletResponse response) {
+        boolean secure = httpRequest.isSecure();
+        ResponseCookie springCookie = ResponseCookie.from("authToken", "")
                 .maxAge(0)
                 .path("/")
                 .httpOnly(true)
-                .secure(!"dev".equalsIgnoreCase(System.getProperty("spring.profiles.active")))
+                .secure(secure)
                 .sameSite("Lax")
                 .build();
-        cookie.setValue(springCookie.toString()); // converte o response cookie pra string, e dps adiciona como cookie padrão
-        response.addCookie(cookie);
-        response.setHeader("Set-Cookie", springCookie.toString()); // ou adiciona um set cookie diretamente
+        response.setHeader(HttpHeaders.SET_COOKIE, springCookie.toString());
         return ResponseEntity.ok("Logout realizado com sucesso");
     }
 }

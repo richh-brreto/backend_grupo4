@@ -36,4 +36,9 @@ public interface ContratoRepository extends JpaRepository<Contrato, Long> {
     boolean existsByAlunoAndTurmaAndDataInicioAndDataFimAndIdNot(Aluno aluno, Turma turma, LocalDate dataInicio, LocalDate dataFim, Long contratoId);
 
     List<Contrato> findByAlunoId(Long id);
+
+    // AccessGuard ownership checks
+    boolean existsByIdAndProfessorId(Long id, Long professorId);
+
+    boolean existsByProfessorIdAndAlunoId(Long professorId, Long alunoId);
 }

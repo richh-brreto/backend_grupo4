@@ -13,4 +13,7 @@ public interface TurmaRepository extends JpaRepository<Turma, Long> {
 
     // Busca turmas atribuídas a qualquer professor do conjunto
     List<Turma> findByProfessorIdIn(List<Long> professorIds);
+
+    // AccessGuard ownership check
+    boolean existsByIdAndProfessorId(Long id, Long professorId);
 }
