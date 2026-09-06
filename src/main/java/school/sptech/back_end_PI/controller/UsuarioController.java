@@ -2,15 +2,21 @@ package school.sptech.back_end_PI.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import school.sptech.back_end_PI.dto.professor.ProfessorLoginRequest;
+import school.sptech.back_end_PI.security.LoginAttemptService;
+import school.sptech.back_end_PI.services.AuditService;
 import school.sptech.back_end_PI.services.JwtService;
 
 import java.util.Arrays;
@@ -21,13 +27,19 @@ public class UsuarioController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final Environment environment;
+    private final LoginAttemptService loginAttempts;
+    private final AuditService audit;
 
     public UsuarioController(AuthenticationManager authenticationManager,
                              JwtService jwtService,
-                             Environment environment) {
+                             Environment environment,
+                             LoginAttemptService loginAttempts,
+                             AuditService audit) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.environment = environment;
+        this.loginAttempts = loginAttempts;
+        this.audit = audit;
     }
 
     private boolean useSecureCookie(HttpServletRequest httpRequest) {
@@ -37,16 +49,32 @@ public class UsuarioController {
 
     @PostMapping("/login")
     @io.swagger.v3.oas.annotations.security.SecurityRequirements // Isso remove o cadeado no Swagger
-    public ResponseEntity<?> login(@RequestBody ProfessorLoginRequest request,
+    public ResponseEntity<?> login(@Valid @RequestBody ProfessorLoginRequest request,
                                    HttpServletRequest httpRequest,
                                    HttpServletResponse response) {
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getSenha()
-                )
-        );
+        String attemptKey = request.getEmail() + "|" + httpRequest.getRemoteAddr();
+        if (loginAttempts.isBlocked(attemptKey)) {
+            audit.log("login", request.getEmail(), "blocked", "rate-limited ip=" + httpRequest.getRemoteAddr());
+            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS,
+                    "Muitas tentativas. Tente novamente mais tarde.");
+        }
+
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getSenha()
+                    )
+            );
+        } catch (AuthenticationException ex) {
+            loginAttempts.registerFailure(attemptKey);
+            audit.log("login", request.getEmail(), "failure", "bad-credentials ip=" + httpRequest.getRemoteAddr());
+            throw ex;
+        }
+        loginAttempts.reset(attemptKey);
+        audit.log("login", request.getEmail(), "success", "ip=" + httpRequest.getRemoteAddr());
 
         String token = jwtService.generateToken(authentication);
 

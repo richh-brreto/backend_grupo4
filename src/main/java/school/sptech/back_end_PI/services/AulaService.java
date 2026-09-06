@@ -30,6 +30,9 @@ public class AulaService {
     @Autowired
     private ContratoRepository contratoRepository;
 
+    @Autowired
+    private AuditService audit;
+
     // ============================================================================
     // GERAÇÃO AUTOMÁTICA DE AULAS
     // ============================================================================
@@ -117,6 +120,7 @@ public class AulaService {
 
         Aula salva = aulaRepository.save(aula);
         registrarLog(salva, "REMARCADA", descricao);
+        audit.log("aula.remarcar", audit.currentActor(), "aula:" + id, "success");
 
         return AulaMapper.toResponse(salva);
     }
@@ -136,6 +140,7 @@ public class AulaService {
         String motivo = (request != null && request.getMotivo() != null && !request.getMotivo().isBlank())
                 ? request.getMotivo() : "não informado";
         registrarLog(salva, "CANCELADA", "Aula cancelada. Motivo: " + motivo);
+        audit.log("aula.cancelar", audit.currentActor(), "aula:" + id, "success");
 
         return AulaMapper.toResponse(salva);
     }

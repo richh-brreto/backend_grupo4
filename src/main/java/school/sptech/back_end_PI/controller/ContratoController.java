@@ -1,5 +1,6 @@
 package school.sptech.back_end_PI.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -25,14 +26,14 @@ public class ContratoController {
 
     @PostMapping
     @PreAuthorize("hasRole('COORDENADOR')")
-    public ResponseEntity<ContratoResponse> criarContrato(@RequestBody ContratoRequest request){
+    public ResponseEntity<ContratoResponse> criarContrato(@Valid @RequestBody ContratoRequest request){
         ContratoResponse contratoCriado = service.criarContrato(request);
         return ResponseEntity.status(201).body(contratoCriado);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('COORDENADOR')")
-    public ResponseEntity<ContratoResponse> atualizarContrato(@PathVariable Long id, @RequestBody ContratoRequest request){
+    public ResponseEntity<ContratoResponse> atualizarContrato(@PathVariable Long id, @Valid @RequestBody ContratoRequest request){
         ContratoResponse contratoAtualizado = service.atualizarContrato(id,request);
         return ResponseEntity.status(200).body(contratoAtualizado);
     }

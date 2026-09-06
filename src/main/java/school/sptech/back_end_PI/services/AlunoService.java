@@ -25,13 +25,15 @@ public class AlunoService {
     private final HorarioRepository horarioRepository;
     private final TurmaRepository turmaRepository;
     private final ContratoRepository contratoRepository;
+    private final AuditService audit;
 
-    public AlunoService(AlunoRepository alunoRepository, ProfessorRepository professorRepository, HorarioRepository horarioRepository, TurmaRepository turmaRepository, ContratoRepository contratoRepository) {
+    public AlunoService(AlunoRepository alunoRepository, ProfessorRepository professorRepository, HorarioRepository horarioRepository, TurmaRepository turmaRepository, ContratoRepository contratoRepository, AuditService audit) {
         this.alunoRepository = alunoRepository;
         this.professorRepository = professorRepository;
         this.horarioRepository = horarioRepository;
         this.turmaRepository = turmaRepository;
         this.contratoRepository = contratoRepository;
+        this.audit = audit;
     }
 
     public List<Aluno> getAll() {
@@ -134,6 +136,7 @@ public class AlunoService {
 
         // 3. Agora o soft delete roda sem travas do banco
         alunoRepository.delete(aluno);
+        audit.log("aluno.delete", audit.currentActor(), "aluno:" + id, "success");
     }
 
     @Transactional
@@ -151,6 +154,7 @@ public class AlunoService {
 
         // 3. Atualiza o objeto na memória apenas para o JSON do Mapper não ir desatualizado
         aluno.setAtivo(true);
+        audit.log("aluno.reativar", audit.currentActor(), "aluno:" + id, "success");
         return aluno;
     }
 }

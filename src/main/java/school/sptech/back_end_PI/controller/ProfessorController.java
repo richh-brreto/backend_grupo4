@@ -94,7 +94,7 @@ public class ProfessorController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('COORDENADOR')")
-    public ResponseEntity<ProfessorResponse> atualizar(@PathVariable Long id, @RequestBody ProfessorRequest request){
+    public ResponseEntity<ProfessorResponse> atualizar(@PathVariable Long id, @Valid @RequestBody ProfessorRequest request){
 
         Professor professorAtualizado = service.atualizar(id, request);
         ProfessorResponse response = ProfessorMapper.toResponse(professorAtualizado);

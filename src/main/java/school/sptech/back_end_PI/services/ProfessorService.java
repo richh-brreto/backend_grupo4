@@ -29,12 +29,14 @@ public class ProfessorService {
     private final TipoProfessorRepository tipoProfessorRepository;
     private final HorarioRepository horarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditService audit;
 
-    public ProfessorService(ProfessorRepository professorRepository, TipoProfessorRepository tipoProfessorRepository, HorarioRepository horarioRepository, PasswordEncoder passwordEncoder) {
+    public ProfessorService(ProfessorRepository professorRepository, TipoProfessorRepository tipoProfessorRepository, HorarioRepository horarioRepository, PasswordEncoder passwordEncoder, AuditService audit) {
         this.professorRepository = professorRepository;
         this.tipoProfessorRepository = tipoProfessorRepository;
         this.horarioRepository = horarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.audit = audit;
     }
 
     public Professor create(ProfessorRequest dto) {
@@ -55,7 +57,9 @@ public class ProfessorService {
         Professor novoProfessor = ProfessorMapper.toEntity(dto, tipo, horarios);
         novoProfessor.setSenha(passwordEncoder.encode(dto.getSenha()));
 
-        return professorRepository.save(novoProfessor);
+        Professor salvo = professorRepository.save(novoProfessor);
+        audit.log("professor.create", audit.currentActor(), "professor:" + salvo.getId(), "success");
+        return salvo;
     }
 
     public List<ProfessorResponse> findAll() {
@@ -98,6 +102,7 @@ public class ProfessorService {
 
         // 3. Executa o delete passando o objeto (O Hibernate interceptará e rodará o UPDATE)
         professorRepository.delete(professor);
+        audit.log("professor.delete", audit.currentActor(), "professor:" + id, "success");
     }
 
     @Transactional
@@ -146,6 +151,7 @@ public class ProfessorService {
 
         // 3. Atualiza o objeto na memória apenas para o JSON do Mapper não ir desatualizado
         professor.setAtivo(true);
+        audit.log("professor.reativar", audit.currentActor(), "professor:" + id, "success");
         return professor;
     }
 

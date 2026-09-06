@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -58,6 +59,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException ex) {
         return body(HttpStatus.FORBIDDEN, "Acesso negado");
+    }
+
+    // Honors the intended status (429 rate-limit, 401 inactive user, service
+    // 404s...). Must exist because the generic Exception handler below would
+    // otherwise convert these to 500 (ExceptionHandlerExceptionResolver runs
+    // before Spring's ResponseStatusExceptionResolver).
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Map<String, Object>> handleResponseStatus(ResponseStatusException ex) {
+        String message = ex.getReason() != null ? ex.getReason() : "Erro na requisição";
+        return ResponseEntity.status(ex.getStatusCode()).body(Map.of("error", message));
     }
 
     @ExceptionHandler(Exception.class)

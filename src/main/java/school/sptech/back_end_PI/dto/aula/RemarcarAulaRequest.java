@@ -1,6 +1,7 @@
 package school.sptech.back_end_PI.dto.aula;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -15,6 +16,7 @@ public class RemarcarAulaRequest {
     @NotNull(message = "A nova hora de fim é obrigatória")
     private LocalTime novaHoraFim;
 
+    @Size(max = 500, message = "O motivo deve ter no máximo 500 caracteres")
     private String motivo;
 
     public RemarcarAulaRequest() {}
