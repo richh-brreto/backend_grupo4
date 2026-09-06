@@ -64,6 +64,11 @@ public class SecurityConfiguration {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                // We handle POST /logout ourselves in UsuarioController (clears the
+                // authToken cookie with matching flags). Disable Spring's default
+                // LogoutFilter, which would otherwise intercept /logout and redirect
+                // to /login?logout (surfaced as 405 when the client follows it with GET).
+                .logout(logout -> logout.disable())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
