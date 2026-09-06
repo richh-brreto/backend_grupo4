@@ -6,9 +6,9 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 import school.sptech.back_end_PI.entity.Contrato;
+import school.sptech.back_end_PI.exception.BusinessRuleException;
 import school.sptech.back_end_PI.exception.ConflictException;
 import school.sptech.back_end_PI.exception.EntityNotFound;
 import school.sptech.back_end_PI.dto.aluno.AlunoRequest;
@@ -77,7 +77,7 @@ public class AlunoService {
         List<Horario> horarios = horarioRepository.findAllById(aluno.getHorariosIds());
 
         if (horarios.isEmpty()) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Horários não informados ou inválidos");
+            throw new BusinessRuleException("Horários não informados ou inválidos");
         }
 
         Aluno alunoCriado = AlunoMapper.toEntity(aluno, horarios);
