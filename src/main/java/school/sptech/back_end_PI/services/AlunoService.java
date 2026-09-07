@@ -6,9 +6,9 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 import school.sptech.back_end_PI.entity.Contrato;
+import school.sptech.back_end_PI.exception.BusinessRuleException;
 import school.sptech.back_end_PI.exception.ConflictException;
 import school.sptech.back_end_PI.exception.EntityNotFound;
 import school.sptech.back_end_PI.dto.aluno.AlunoRequest;
@@ -25,17 +25,27 @@ public class AlunoService {
     private final HorarioRepository horarioRepository;
     private final TurmaRepository turmaRepository;
     private final ContratoRepository contratoRepository;
+    private final AuditService audit;
 
-    public AlunoService(AlunoRepository alunoRepository, ProfessorRepository professorRepository, HorarioRepository horarioRepository, TurmaRepository turmaRepository, ContratoRepository contratoRepository) {
+    public AlunoService(AlunoRepository alunoRepository, ProfessorRepository professorRepository, HorarioRepository horarioRepository, TurmaRepository turmaRepository, ContratoRepository contratoRepository, AuditService audit) {
         this.alunoRepository = alunoRepository;
         this.professorRepository = professorRepository;
         this.horarioRepository = horarioRepository;
         this.turmaRepository = turmaRepository;
         this.contratoRepository = contratoRepository;
+        this.audit = audit;
     }
 
     public List<Aluno> getAll() {
         return alunoRepository.findAll();
+    }
+
+    public List<Aluno> getByProfessorId(Long professorId) {
+        return contratoRepository.findByProfessorId(professorId).stream()
+                .map(Contrato::getAluno)
+                .filter(aluno -> aluno != null && aluno.getAtivo())
+                .distinct()
+                .toList();
     }
 
     public Aluno buscarPorIdComHorariosDisponiveis(Long id) {
@@ -77,7 +87,7 @@ public class AlunoService {
         List<Horario> horarios = horarioRepository.findAllById(aluno.getHorariosIds());
 
         if (horarios.isEmpty()) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Horários não informados ou inválidos");
+            throw new BusinessRuleException("Horários não informados ou inválidos");
         }
 
         Aluno alunoCriado = AlunoMapper.toEntity(aluno, horarios);
@@ -126,6 +136,7 @@ public class AlunoService {
 
         // 3. Agora o soft delete roda sem travas do banco
         alunoRepository.delete(aluno);
+        audit.log("aluno.delete", audit.currentActor(), "aluno:" + id, "success");
     }
 
     @Transactional
@@ -143,6 +154,7 @@ public class AlunoService {
 
         // 3. Atualiza o objeto na memória apenas para o JSON do Mapper não ir desatualizado
         aluno.setAtivo(true);
+        audit.log("aluno.reativar", audit.currentActor(), "aluno:" + id, "success");
         return aluno;
     }
 }

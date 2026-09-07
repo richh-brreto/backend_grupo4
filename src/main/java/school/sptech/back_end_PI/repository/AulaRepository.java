@@ -11,4 +11,7 @@ import java.util.List;
 public interface AulaRepository extends JpaRepository<Aula, Long> {
     List<Aula> findByDataBetween(LocalDate startDate, LocalDate endDate);
     List<Aula> findByContratoIdOrderByDataAsc(Long contratoId);
+
+    // AccessGuard ownership check
+    boolean existsByIdAndContratoProfessorId(Long id, Long professorId);
 }

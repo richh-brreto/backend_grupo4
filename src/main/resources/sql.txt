@@ -14,7 +14,7 @@ CREATE TABLE professor (
     nome VARCHAR(45) NOT NULL,
     email VARCHAR(45) NOT NULL,
     telefone INT,
-    senha VARCHAR(45) NOT NULL,
+    senha VARCHAR(255) NOT NULL,
     tipo_professor_id_tipo_professor INT NOT NULL,
     ativo TINYINT DEFAULT 1, -- 1 para Ativo, 0 para Inativo (Soft Delete)
     CONSTRAINT fk_professor_tipo FOREIGN KEY (tipo_professor_id_tipo_professor)
@@ -216,7 +216,7 @@ INSERT INTO tipo_professor (tipo_professor) VALUES ('ADM'), ('Professor'); -- Ge
 
 -- Inserindo o Professor
 INSERT INTO professor (nome, email, telefone, senha, tipo_professor_id_tipo_professor, ativo)
-VALUES ('Administrador Sistema', 'admin@sptech.school', 1199999888, 'admin123', 1, 1); -- Gerará o id_professor = 1
+VALUES ('Administrador Sistema', 'admin@sptech.school', 1199999888, '$2a$12$F03Vd6gjrLJRC8jzliUfA.oA4i248BIfEEejMxwQpZQZJiSC1/KAC', 1, 1); -- Gerará o id_professor = 1
 
 -- Inserindo a Turma (Vinculada ao Professor 1)
 INSERT INTO turma (nome_turma, nivel, limite_alunos, tipo, professor_id_professor)

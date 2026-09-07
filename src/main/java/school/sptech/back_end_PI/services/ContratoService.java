@@ -345,6 +345,13 @@ public class ContratoService {
     }
 
     @Transactional(readOnly = true)
+    public List<ContratoResponse> listarContratosPorProfessor(Long professorId) {
+        return contratoRepository.findByProfessorId(professorId).stream()
+                .map(ContratoMapper::toResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public ContratoResponse buscarContratoPorId(Long id) {
         Contrato contrato = contratoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFound("Contrato não encontrado com o ID: " + id));

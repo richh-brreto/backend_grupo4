@@ -53,7 +53,20 @@ public class Professor implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_PROFESSOR"));
+        if (tipo == null || tipo.getNomeTipo() == null || tipo.getNomeTipo().isBlank()) {
+            return List.of(new SimpleGrantedAuthority("ROLE_PROFESSOR"));
+        }
+
+        String roleNome = tipo.getNomeTipo().trim().toUpperCase();
+        if ("ADM".equals(roleNome)) {
+            roleNome = "COORDENADOR";
+        }
+
+        if (!roleNome.startsWith("ROLE_")) {
+            roleNome = "ROLE_" + roleNome;
+        }
+
+        return List.of(new SimpleGrantedAuthority(roleNome));
     }
 
     @Override

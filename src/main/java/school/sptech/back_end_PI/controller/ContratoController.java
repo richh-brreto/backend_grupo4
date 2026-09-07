@@ -1,7 +1,9 @@
 package school.sptech.back_end_PI.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import school.sptech.back_end_PI.dto.contrato.ContratoRequest;
 import school.sptech.back_end_PI.dto.contrato.ContratoResponse;
@@ -24,14 +26,14 @@ public class ContratoController {
 
     @PostMapping
     @PreAuthorize("hasRole('COORDENADOR')")
-    public ResponseEntity<ContratoResponse> criarContrato(@RequestBody ContratoRequest request){
+    public ResponseEntity<ContratoResponse> criarContrato(@Valid @RequestBody ContratoRequest request){
         ContratoResponse contratoCriado = service.criarContrato(request);
         return ResponseEntity.status(201).body(contratoCriado);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('COORDENADOR')")
-    public ResponseEntity<ContratoResponse> atualizarContrato(@PathVariable Long id, @RequestBody ContratoRequest request){
+    public ResponseEntity<ContratoResponse> atualizarContrato(@PathVariable Long id, @Valid @RequestBody ContratoRequest request){
         ContratoResponse contratoAtualizado = service.atualizarContrato(id,request);
         return ResponseEntity.status(200).body(contratoAtualizado);
     }
@@ -44,9 +46,15 @@ public class ContratoController {
     }
 
     @GetMapping()
-    @PreAuthorize("authenticated()")
-    public ResponseEntity<List<ContratoResponse>> listarContratos(){
-        List<ContratoResponse> response = service.listarTodosContratos();
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<ContratoResponse>> listarContratos(Authentication authentication){
+        List<ContratoResponse> response;
+        if (accessGuard.isCoordenador(authentication)) {
+            response = service.listarTodosContratos();
+        } else {
+            Long professorId = accessGuard.currentProfessorId(authentication);
+            response = professorId == null ? List.of() : service.listarContratosPorProfessor(professorId);
+        }
         return ResponseEntity.status(200).body(response);
     }
 
