@@ -1,0 +1,15 @@
+[0;1;32m●[0m tinyproxy.service - Tinyproxy lightweight HTTP Proxy
+     Loaded: loaded (]8;;file://kanjaxay/usr/lib/systemd/system/tinyproxy.service\/usr/lib/systemd/system/tinyproxy.service]8;;\; [0;1;32menabled[0m; preset: [0;1;32menabled[0m)
+     Active: [0;1;32mactive (running)[0m since Tue 2026-09-08 08:40:26 -03; 7h ago
+ Invocation: c815f9be10a1498890139e8bf1f87fa2
+       Docs: ]8;;man:tinyproxy(8)\man:tinyproxy(8)]8;;\
+             ]8;;man:tinyproxy.conf(5)\man:tinyproxy.conf(5)]8;;\
+   Main PID: 1438 (tinyproxy)
+      Tasks: 1[0;38;5;245m (limit: 13818)[0m
+     Memory: 1.5M (peak: 2M)
+        CPU: 28ms
+     CGroup: /system.slice/tinyproxy.service
+             └─[0;38;5;245m1438 /usr/bin/tinyproxy -d[0m
+
+set 08 08:40:26 kanjaxay systemd[1]: Started tinyproxy.service - Tinyproxy lightweight HTTP Proxy.
+set 08 08:40:26 kanjaxay (inyproxy)[1438]: [0;1;38:5:185m[0;1;39m[0;1;38:5:185mtinyproxy.service: Referenced but unset environment variable evaluates to an empty string: FLAGS[0m

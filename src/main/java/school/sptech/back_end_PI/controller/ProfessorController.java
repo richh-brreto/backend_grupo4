@@ -92,6 +92,14 @@ public class ProfessorController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/disponiveis")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<ProfessorResponse>> buscarProfessoresDisponiveis(@Valid @RequestBody HorarioAlunoProfessorRequest request) {
+        List<ProfessorResponse> response = service.findProfessoresDisponiveis();
+        return ResponseEntity.ok(response);
+    }
+
+
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('COORDENADOR')")
     public ResponseEntity<ProfessorResponse> atualizar(@PathVariable Long id, @Valid @RequestBody ProfessorRequest request){
