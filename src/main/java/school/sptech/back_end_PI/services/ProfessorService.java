@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import school.sptech.back_end_PI.dto.turma.TurmaResponse;
 import school.sptech.back_end_PI.exception.BusinessRuleException;
 import school.sptech.back_end_PI.exception.ConflictException;
 import school.sptech.back_end_PI.exception.EntityNotFound;
@@ -15,6 +16,7 @@ import school.sptech.back_end_PI.entity.Horario;
 import school.sptech.back_end_PI.entity.Professor;
 import school.sptech.back_end_PI.entity.TipoProfessor;
 import school.sptech.back_end_PI.mapper.ProfessorMapper;
+import school.sptech.back_end_PI.mapper.TurmaMapper;
 import school.sptech.back_end_PI.repository.HorarioRepository;
 import school.sptech.back_end_PI.repository.ProfessorRepository;
 import school.sptech.back_end_PI.repository.TipoProfessorRepository;
@@ -65,6 +67,16 @@ public class ProfessorService {
     public List<ProfessorResponse> findAll() {
         return ProfessorMapper.toResponseList(professorRepository.findAll());
     }
+
+    public List<ProfessorResponse> findProfessoresDisponiveis() {
+
+        List<Professor> professores = professorRepository.findProfessoresDisponiveis();
+        List<ProfessorResponse> professorResponses = professores.stream()
+                .map(ProfessorMapper::toResponse).toList();
+
+        return professorResponses;
+    }
+
 
     public Professor buscarPorIdComHorariosDisponiveis(Long id) {
         // 1. Busca o professor básico do banco

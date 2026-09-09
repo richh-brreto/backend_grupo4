@@ -181,6 +181,11 @@ public class TurmaService {
         return turmaRepository.findAll();
     }
 
+    public List<Turma> listarTurmasDisponiveis() {
+    List<Turma> turmasDisponiveis = turmaRepository.findTurmasDisponiveis();
+    return turmasDisponiveis;
+    }
+
     public List<Turma> listarPorProfessor(Long professorId) {
         return turmaRepository.findByProfessorId(professorId);
     }

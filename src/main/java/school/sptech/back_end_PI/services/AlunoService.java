@@ -86,9 +86,6 @@ public class AlunoService {
 
         List<Horario> horarios = horarioRepository.findAllById(aluno.getHorariosIds());
 
-        if (horarios.isEmpty()) {
-            throw new BusinessRuleException("Horários não informados ou inválidos");
-        }
 
         Aluno alunoCriado = AlunoMapper.toEntity(aluno, horarios);
 

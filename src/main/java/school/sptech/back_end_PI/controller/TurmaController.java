@@ -49,6 +49,21 @@ public class TurmaController {
         return ResponseEntity.ok(resposta);
     }
 
+
+    @GetMapping("/disponiveis")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Buscar as turmas disponíveis para cadastro")
+    public ResponseEntity<List<TurmaResponse>> buscarTurmasDisponiveis(Authentication authentication) {
+        List<Turma> turmasDisponiveis = service.listarTurmasDisponiveis();
+
+        List<TurmaResponse> resposta = turmasDisponiveis.stream()
+                .map(TurmaMapper::toResponse)
+                .toList();
+
+        return ResponseEntity.ok(resposta);
+    }
+
+
     @GetMapping("/{id}")
     @PreAuthorize("@accessGuard.canManageTurma(#id, authentication)")
     @Operation(summary = "Buscar os detalhes de uma turma específica pelo ID")
