@@ -24,7 +24,7 @@ public class HorarioController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('COODENADOR')")
+    @PreAuthorize("hasRole('COORDENADOR')")
     @Operation(summary = "Listar todos os horários", description = "Retorna todos os blocos de horário cadastrados, ordenados por dia da semana e hora de início")
     public ResponseEntity<List<HorarioResponse>> listar() {
         return ResponseEntity.ok(service.listarTodos());
