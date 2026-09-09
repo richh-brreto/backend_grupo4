@@ -13,7 +13,7 @@ CREATE TABLE professor (
     id_professor INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(45) NOT NULL,
     email VARCHAR(45) NOT NULL,
-    telefone INT,
+    telefone VARCHAR(20) NOT NULL,
     senha VARCHAR(255) NOT NULL,
     tipo_professor_id_tipo_professor INT NOT NULL,
     ativo TINYINT DEFAULT 1, -- 1 para Ativo, 0 para Inativo (Soft Delete)
@@ -212,7 +212,7 @@ CREATE TABLE logs (
 -- ============================================================================
 
 -- Inserindo o tipo do professor
-INSERT INTO tipo_professor (tipo_professor) VALUES ('ADM'), ('Professor'); -- Gerará o id_tipo_professor = 1
+INSERT INTO tipo_professor (tipo_professor) VALUES ('COORDENADOR'), ('Professor'); -- Gerará o id_tipo_professor = 1
 
 -- Inserindo o Professor
 INSERT INTO professor (nome, email, telefone, senha, tipo_professor_id_tipo_professor, ativo)
@@ -282,6 +282,7 @@ select * from disponibilidade_professor;
 select * from disponibilidade_aluno;
 select * from turma;
 select * from aluno;
+select * from tipo_professor;
 
 select * from ids_horario_contrato;
 use boost;
