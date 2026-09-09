@@ -2,7 +2,7 @@ package school.sptech.back_end_PI.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,8 +30,10 @@ public class Professor implements UserDetails {
     @NotBlank
     private String email;
 
-    @NotNull
-    private Integer telefone;
+    @NotBlank
+    @Column(length = 20)
+    @Size(min = 10, max = 14)
+    private String telefone;
 
     @NotBlank
     private String senha;
@@ -90,7 +92,7 @@ public class Professor implements UserDetails {
     public Professor() {
     }
 
-    public Professor(Long id, String nome, String email, Integer telefone, String senha, Boolean ativo, TipoProfessor tipo, List<Horario> horarios) {
+    public Professor(Long id, String nome, String email, String telefone, String senha, Boolean ativo, TipoProfessor tipo, List<Horario> horarios) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -107,8 +109,8 @@ public class Professor implements UserDetails {
     public void setNome(String nome) { this.nome = nome; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-    public Integer getTelefone() { return telefone; }
-    public void setTelefone(Integer telefone) { this.telefone = telefone; }
+    public String getTelefone() { return telefone; }
+    public void setTelefone(String telefone) { this.telefone = telefone; }
     public String getSenha() { return senha; }
     public void setSenha(String senha) { this.senha = senha; }
     public Boolean getAtivo() { return ativo; }
