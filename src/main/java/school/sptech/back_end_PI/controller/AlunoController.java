@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import school.sptech.back_end_PI.dto.aluno.AlunoRequest;
 import school.sptech.back_end_PI.dto.aluno.AlunoResponse;
@@ -37,10 +38,16 @@ public class AlunoController {
     }
 
     @GetMapping
-    @PreAuthorize("authenticated()")
-    public ResponseEntity<List<AlunoResponse>> getAll() {
-        List<AlunoResponse> response = service.getAll()
-                .stream()
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<AlunoResponse>> getAll(Authentication authentication) {
+        List<Aluno> alunos;
+        if (accessGuard.isCoordenador(authentication)) {
+            alunos = service.getAll();
+        } else {
+            Long professorId = accessGuard.currentProfessorId(authentication);
+            alunos = professorId == null ? List.of() : service.getByProfessorId(professorId);
+        }
+        List<AlunoResponse> response = alunos.stream()
                 .map(AlunoMapper::toResponse)
                 .toList();
 
@@ -55,15 +62,15 @@ public class AlunoController {
     }
 
     @GetMapping("/disponiveis/{id}")
-    @PreAuthorize("authenticated()")
-    public ResponseEntity<Aluno> getAlunoComHorariosDisponiveis(@PathVariable Long id) {
+    @PreAuthorize("@accessGuard.canManageAluno(#id, authentication)")
+    public ResponseEntity<AlunoResponse> getAlunoComHorariosDisponiveis(@PathVariable Long id) {
         Aluno aluno = service.buscarPorIdComHorariosDisponiveis(id);
-        return ResponseEntity.ok(aluno);
+        return ResponseEntity.ok(AlunoMapper.toResponse(aluno));
     }
 
 
     @GetMapping("/turma/{id}")
-    @PreAuthorize("authenticated()")
+    @PreAuthorize("@accessGuard.canManageTurma(#id, authentication)")
     public ResponseEntity<List<AlunoResponse>> getByTurmaId(@PathVariable Long id){
         List<Aluno> alunos = service.getByTurmaId(id);
         return ResponseEntity.ok(AlunoMapper.toResponseList(alunos));

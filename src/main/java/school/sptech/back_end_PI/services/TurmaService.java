@@ -181,6 +181,15 @@ public class TurmaService {
         return turmaRepository.findAll();
     }
 
+    public List<Turma> listarTurmasDisponiveis() {
+    List<Turma> turmasDisponiveis = turmaRepository.findTurmasDisponiveis();
+    return turmasDisponiveis;
+    }
+
+    public List<Turma> listarPorProfessor(Long professorId) {
+        return turmaRepository.findByProfessorId(professorId);
+    }
+
     public Turma buscarPorId(Long id) {
         return turmaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Turma não encontrada com o ID: " + id));

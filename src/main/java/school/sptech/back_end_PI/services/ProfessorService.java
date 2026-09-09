@@ -4,8 +4,9 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
+import school.sptech.back_end_PI.dto.turma.TurmaResponse;
+import school.sptech.back_end_PI.exception.BusinessRuleException;
 import school.sptech.back_end_PI.exception.ConflictException;
 import school.sptech.back_end_PI.exception.EntityNotFound;
 import school.sptech.back_end_PI.dto.professor.ProfessorRequest;
@@ -15,6 +16,7 @@ import school.sptech.back_end_PI.entity.Horario;
 import school.sptech.back_end_PI.entity.Professor;
 import school.sptech.back_end_PI.entity.TipoProfessor;
 import school.sptech.back_end_PI.mapper.ProfessorMapper;
+import school.sptech.back_end_PI.mapper.TurmaMapper;
 import school.sptech.back_end_PI.repository.HorarioRepository;
 import school.sptech.back_end_PI.repository.ProfessorRepository;
 import school.sptech.back_end_PI.repository.TipoProfessorRepository;
@@ -29,12 +31,14 @@ public class ProfessorService {
     private final TipoProfessorRepository tipoProfessorRepository;
     private final HorarioRepository horarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditService audit;
 
-    public ProfessorService(ProfessorRepository professorRepository, TipoProfessorRepository tipoProfessorRepository, HorarioRepository horarioRepository, PasswordEncoder passwordEncoder) {
+    public ProfessorService(ProfessorRepository professorRepository, TipoProfessorRepository tipoProfessorRepository, HorarioRepository horarioRepository, PasswordEncoder passwordEncoder, AuditService audit) {
         this.professorRepository = professorRepository;
         this.tipoProfessorRepository = tipoProfessorRepository;
         this.horarioRepository = horarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.audit = audit;
     }
 
     public Professor create(ProfessorRequest dto) {
@@ -49,18 +53,30 @@ public class ProfessorService {
         List<Horario> horarios = horarioRepository.findAllById(dto.getHorariosIds());
 
         if (horarios.isEmpty()) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Horários não informados ou inválidos");
+            throw new BusinessRuleException("Horários não informados ou inválidos");
         }
 
         Professor novoProfessor = ProfessorMapper.toEntity(dto, tipo, horarios);
         novoProfessor.setSenha(passwordEncoder.encode(dto.getSenha()));
 
-        return professorRepository.save(novoProfessor);
+        Professor salvo = professorRepository.save(novoProfessor);
+        audit.log("professor.create", audit.currentActor(), "professor:" + salvo.getId(), "success");
+        return salvo;
     }
 
     public List<ProfessorResponse> findAll() {
         return ProfessorMapper.toResponseList(professorRepository.findAll());
     }
+
+    public List<ProfessorResponse> findProfessoresDisponiveis() {
+
+        List<Professor> professores = professorRepository.findProfessoresDisponiveis();
+        List<ProfessorResponse> professorResponses = professores.stream()
+                .map(ProfessorMapper::toResponse).toList();
+
+        return professorResponses;
+    }
+
 
     public Professor buscarPorIdComHorariosDisponiveis(Long id) {
         // 1. Busca o professor básico do banco
@@ -98,6 +114,7 @@ public class ProfessorService {
 
         // 3. Executa o delete passando o objeto (O Hibernate interceptará e rodará o UPDATE)
         professorRepository.delete(professor);
+        audit.log("professor.delete", audit.currentActor(), "professor:" + id, "success");
     }
 
     @Transactional
@@ -146,6 +163,7 @@ public class ProfessorService {
 
         // 3. Atualiza o objeto na memória apenas para o JSON do Mapper não ir desatualizado
         professor.setAtivo(true);
+        audit.log("professor.reativar", audit.currentActor(), "professor:" + id, "success");
         return professor;
     }
 
