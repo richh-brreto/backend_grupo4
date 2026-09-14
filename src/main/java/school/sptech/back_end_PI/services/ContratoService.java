@@ -247,9 +247,7 @@ public class ContratoService {
         }
 
         if (turma.getHorarios() != null) {
-            if (!aluno.getHorarios().containsAll(turma.getHorarios())) {
-                throw new BusinessRuleException("O aluno não possui esse horário cadastrado em sua grade de disponibilidade");
-            }
+
 
             List<Long> idsHorariosTurma = turma.getHorarios().stream().map(Horario::getId).toList();
             // se a contagem for maior que 0, lança o erro
@@ -266,9 +264,7 @@ public class ContratoService {
             throw new BusinessRuleException("Já existe um contrato individual entre este aluno e professor para este período");
         }
 
-        if (!aluno.getHorarios().containsAll(horariosSolicitados)) {
-            throw new BusinessRuleException("O aluno não possui esse horário cadastrado em sua grade de disponibilidade");
-        }
+
 
         if (!professor.getHorarios().containsAll(horariosSolicitados)) {
             throw new BusinessRuleException("O professor não possui esse horário cadastrado em sua grade de disponibilidade");
@@ -304,9 +300,7 @@ public class ContratoService {
         }
 
         if (turma.getHorarios() != null) {
-            if (!aluno.getHorarios().containsAll(turma.getHorarios())) {
-                throw new BusinessRuleException("O aluno não possui esse horário cadastrado em sua grade de disponibilidade");
-            }
+
 
             List<Long> idsHorariosTurma = turma.getHorarios().stream().map(Horario::getId).toList();
             // Correção aqui
@@ -317,9 +311,7 @@ public class ContratoService {
     }
 
     private void validarRegrasIndividualParaAtualizacao(Long contratoId, Aluno aluno, Professor professor, List<Horario> horariosSolicitados, ContratoRequest request) {
-        if (!aluno.getHorarios().containsAll(horariosSolicitados)) {
-            throw new BusinessRuleException("O aluno não possui esse horário cadastrado em sua grade de disponibilidade");
-        }
+
 
         if (!professor.getHorarios().containsAll(horariosSolicitados)) {
             throw new BusinessRuleException("O professor não possui esse horário cadastrado em sua grade de disponibilidade");
