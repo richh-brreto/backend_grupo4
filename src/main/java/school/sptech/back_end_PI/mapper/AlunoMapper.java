@@ -47,6 +47,8 @@ public class AlunoMapper {
         response.setEmail(aluno.getEmail());
         response.setTelefone(aluno.getTelefone());
         response.setNivel(aluno.getNivel());
+        response.setSenhaDefinida(aluno.getSenha() != null && !aluno.getSenha().isBlank());
+        response.setCodigoAcesso(aluno.getCodigoAcesso());
         response.setAtivo(aluno.getAtivo());
 
         if (aluno.getHorarios() != null) {

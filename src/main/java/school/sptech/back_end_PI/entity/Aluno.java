@@ -32,6 +32,12 @@ public class Aluno {
     @NotBlank
     private String nivel;
 
+    @Column(name = "senha")
+    private String senha;
+
+    @Column(name = "codigo_acesso", unique = true)
+    private String codigoAcesso;
+
     @Column(name = "ativo", nullable = false)
     private Boolean ativo = true;
 
@@ -52,6 +58,18 @@ public class Aluno {
         this.email = email;
         this.telefone = telefone;
         this.nivel = nivel;
+        this.ativo = ativo;
+        this.horarios = horarios;
+    }
+
+    public Aluno(Long id, String nome, String email, String telefone, String nivel, String senha, String codigoAcesso, Boolean ativo, List<Horario> horarios) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.telefone = telefone;
+        this.nivel = nivel;
+        this.senha = senha;
+        this.codigoAcesso = codigoAcesso;
         this.ativo = ativo;
         this.horarios = horarios;
     }
@@ -94,6 +112,22 @@ public class Aluno {
 
     public void setNivel(String nivel) {
         this.nivel = nivel;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public String getCodigoAcesso() {
+        return codigoAcesso;
+    }
+
+    public void setCodigoAcesso(String codigoAcesso) {
+        this.codigoAcesso = codigoAcesso;
     }
 
     public Boolean getAtivo() {

@@ -14,6 +14,12 @@ public interface AlunoRepository extends JpaRepository<Aluno, Long> {
 
     boolean existsAlunoByEmail(String email);
 
+    boolean existsByCodigoAcesso(String codigoAcesso);
+
+    Optional<Aluno> findByEmail(String email);
+
+    Optional<Aluno> findByEmailIgnoreCase(String email);
+
     @Modifying
     @Query("UPDATE Aluno a SET a.ativo = true WHERE a.id = :id")
     int reativarPorId(@Param("id") Long id);

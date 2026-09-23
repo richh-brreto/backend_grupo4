@@ -17,6 +17,10 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
 
     boolean existsByEmail(String email);
 
+    boolean existsByCodigoAcesso(String codigoAcesso);
+
+    Optional<Professor> findByEmailIgnoreCase(String email);
+
     @EntityGraph(attributePaths = {"tipo"})
     Optional<Professor> findByEmail(String email);
 

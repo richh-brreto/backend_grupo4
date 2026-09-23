@@ -22,6 +22,7 @@ import school.sptech.back_end_PI.repository.HorarioRepository;
 import school.sptech.back_end_PI.repository.ProfessorRepository;
 import school.sptech.back_end_PI.repository.TurmaRepository;
 import school.sptech.back_end_PI.services.AlunoService;
+import school.sptech.back_end_PI.services.AuditService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,6 +46,9 @@ public class AlunoServiceTest {
 
     @Mock
     private ContratoRepository contratoRepository;
+
+    @Mock
+    private AuditService audit;
 
     @InjectMocks
     private AlunoService alunoService;
@@ -165,16 +169,17 @@ public class AlunoServiceTest {
         }
 
         @Test
-        @DisplayName("Deve lançar exceção quando horários não forem encontrados")
-        void deveLancarExcecaoQuandoHorariosNaoEncontrados() {
+        @DisplayName("Deve criar aluno mesmo quando nenhum horário é encontrado")
+        void deveCriarAlunoMesmoQuandoHorariosNaoEncontrados() {
             AlunoRequest request = new AlunoRequest();
             request.setEmail("joao@email.com");
             request.setHorariosIds(List.of(1L));
 
             Mockito.when(alunoRepository.existsAlunoByEmail("joao@email.com")).thenReturn(false);
             Mockito.when(horarioRepository.findAllById(List.of(1L))).thenReturn(Collections.emptyList());
+            Mockito.when(alunoRepository.existsByCodigoAcesso(Mockito.anyString())).thenReturn(false);
 
-            Assertions.assertThrows(Exception.class, () -> alunoService.create(request));
+            Assertions.assertDoesNotThrow(() -> alunoService.create(request));
         }
 
         @Test
@@ -196,6 +201,7 @@ public class AlunoServiceTest {
 
             Mockito.when(alunoRepository.existsAlunoByEmail("joao@email.com")).thenReturn(false);
             Mockito.when(horarioRepository.findAllById(List.of(1L))).thenReturn(List.of(horario));
+            Mockito.when(alunoRepository.existsByCodigoAcesso(Mockito.anyString())).thenReturn(false);
             Mockito.when(alunoRepository.save(Mockito.any(Aluno.class))).thenReturn(alunoSalvo);
 
             Aluno resultado = alunoService.create(request);

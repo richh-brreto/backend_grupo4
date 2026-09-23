@@ -20,8 +20,7 @@ import school.sptech.back_end_PI.mapper.TurmaMapper;
 import school.sptech.back_end_PI.repository.HorarioRepository;
 import school.sptech.back_end_PI.repository.ProfessorRepository;
 import school.sptech.back_end_PI.repository.TipoProfessorRepository;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
+import school.sptech.back_end_PI.security.CodigoAcessoGenerator;
 
 import java.util.List;
 
@@ -30,14 +29,12 @@ public class ProfessorService {
     private final ProfessorRepository professorRepository;
     private final TipoProfessorRepository tipoProfessorRepository;
     private final HorarioRepository horarioRepository;
-    private final PasswordEncoder passwordEncoder;
     private final AuditService audit;
 
-    public ProfessorService(ProfessorRepository professorRepository, TipoProfessorRepository tipoProfessorRepository, HorarioRepository horarioRepository, PasswordEncoder passwordEncoder, AuditService audit) {
+    public ProfessorService(ProfessorRepository professorRepository, TipoProfessorRepository tipoProfessorRepository, HorarioRepository horarioRepository, AuditService audit) {
         this.professorRepository = professorRepository;
         this.tipoProfessorRepository = tipoProfessorRepository;
         this.horarioRepository = horarioRepository;
-        this.passwordEncoder = passwordEncoder;
         this.audit = audit;
     }
 
@@ -57,11 +54,19 @@ public class ProfessorService {
         }
 
         Professor novoProfessor = ProfessorMapper.toEntity(dto, tipo, horarios);
-        novoProfessor.setSenha(passwordEncoder.encode(dto.getSenha()));
+        novoProfessor.setCodigoAcesso(gerarCodigoAcessoUnico());
 
         Professor salvo = professorRepository.save(novoProfessor);
         audit.log("professor.create", audit.currentActor(), "professor:" + salvo.getId(), "success");
         return salvo;
+    }
+
+    private String gerarCodigoAcessoUnico() {
+        String codigo;
+        do {
+            codigo = CodigoAcessoGenerator.gerar();
+        } while (professorRepository.existsByCodigoAcesso(codigo));
+        return codigo;
     }
 
     public List<ProfessorResponse> findAll() {

@@ -13,7 +13,6 @@ http:
         "nome": "Pedro",
         "email": "pedro2@gmail.com",
         "telefone": 119999999,
-        "senha": "senha123",
         "idTipoProfessor": 1,
         "horariosIds": [1,2]
       }

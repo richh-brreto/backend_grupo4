@@ -1,0 +1,23 @@
+info:
+  name: First Access
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://localhost:8080/first-access
+  body:
+    type: json
+    data: |-
+      {
+        "email": "pedro2@gmail.com",
+        "codigoAcesso": "CODIGO-GERADO-NO-CADASTRO",
+        "novaSenha": "novaSenha123",
+        "confirmacaoSenha": "novaSenha123"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
