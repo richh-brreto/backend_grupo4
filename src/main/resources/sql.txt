@@ -8,13 +8,15 @@ CREATE TABLE tipo_professor (
     tipo_professor VARCHAR(45) NOT NULL
 );
 
--- 2. Tabela Professor (Refatorada com Soft Delete)
+-- 2. Tabela Professor (Refatorada com Soft Delete + Primeiro Acesso)
+-- senha é NULL até o usuário definir a senha no primeiro acesso.
 CREATE TABLE professor (
     id_professor INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(45) NOT NULL,
     email VARCHAR(45) NOT NULL,
     telefone VARCHAR(20) NOT NULL,
-    senha VARCHAR(255) NOT NULL,
+    senha VARCHAR(255) NULL,           -- NULL = ainda não configurada (primeiro acesso pendente)
+    codigo_acesso VARCHAR(12) NULL UNIQUE, -- código gerado no cadastro, invalidado ao configurar a senha
     tipo_professor_id_tipo_professor INT NOT NULL,
     ativo TINYINT DEFAULT 1, -- 1 para Ativo, 0 para Inativo (Soft Delete)
     CONSTRAINT fk_professor_tipo FOREIGN KEY (tipo_professor_id_tipo_professor)
@@ -33,13 +35,16 @@ CREATE TABLE turma (
         REFERENCES professor(id_professor)
 );
 
--- 4. Tabela Aluno (Refatorada com Soft Delete)
+-- 4. Tabela Aluno (Refatorada com Soft Delete + Primeiro Acesso)
+-- senha é NULL até o usuário definir a senha no primeiro acesso.
 CREATE TABLE aluno (
     id_aluno INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     telefone VARCHAR(20),
     nivel VARCHAR(45),
+    senha VARCHAR(255) NULL,           -- NULL = ainda não configurada (primeiro acesso pendente)
+    codigo_acesso VARCHAR(12) NULL UNIQUE, -- código gerado no cadastro, invalidado ao configurar a senha
     ativo TINYINT DEFAULT 1 -- 1 para Ativo, 0 para Inativo (Soft Delete)
 );
 
@@ -285,5 +290,20 @@ select * from aluno;
 select * from tipo_professor;
 
 select * from ids_horario_contrato;
+
+-- ============================================================================
+-- MIGRAÇÃO PARA BANCOS JÁ EXISTENTES (Historico do Sistema de Cadastro + Primeiro Acesso)
+-- Rode apenas se as tabelas já existirem sem as colunas abaixo.
+-- ============================================================================
+-- Professor: torna a senha opcional (NULL até o primeiro acesso) e adiciona o código de acesso
+ALTER TABLE professor
+    MODIFY senha VARCHAR(255) NULL,
+    ADD COLUMN codigo_acesso VARCHAR(12) NULL UNIQUE;
+
+-- Aluno: adiciona a senha (NULL até o primeiro acesso) e o código de acesso
+ALTER TABLE aluno
+    ADD COLUMN senha VARCHAR(255) NULL,
+    ADD COLUMN codigo_acesso VARCHAR(12) NULL UNIQUE;
+
 use boost;
 drop database boost;

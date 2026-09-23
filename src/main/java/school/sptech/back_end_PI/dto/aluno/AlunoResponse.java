@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalTime;
 import java.util.List;
 
-@JsonPropertyOrder({ "id", "nome", "email", "telefone", "tipo", "nivel", "ativo", "horarios" })
+@JsonPropertyOrder({ "id", "nome", "email", "telefone", "tipo", "nivel", "senhaDefinida", "codigoAcesso", "ativo", "horarios" })
 public class AlunoResponse {
 
     private Long id;
@@ -12,6 +12,8 @@ public class AlunoResponse {
     private String email;
     private String telefone;
     private String nivel;
+    private Boolean senhaDefinida;
+    private String codigoAcesso;
     private Boolean ativo; // Retorna o status no JSON de saída
     private List<HorarioAlunoDto> horarios;
 
@@ -45,6 +47,10 @@ public class AlunoResponse {
     public void setTelefone(String telefone) { this.telefone = telefone; }
     public String getNivel() { return nivel; }
     public void setNivel(String nivel) { this.nivel = nivel; }
+    public Boolean getSenhaDefinida() { return senhaDefinida; }
+    public void setSenhaDefinida(Boolean senhaDefinida) { this.senhaDefinida = senhaDefinida; }
+    public String getCodigoAcesso() { return codigoAcesso; }
+    public void setCodigoAcesso(String codigoAcesso) { this.codigoAcesso = codigoAcesso; }
     public Boolean getAtivo() { return ativo; }
     public void setAtivo(Boolean ativo) { this.ativo = ativo; }
     public List<HorarioAlunoDto> getHorarios() { return horarios; }

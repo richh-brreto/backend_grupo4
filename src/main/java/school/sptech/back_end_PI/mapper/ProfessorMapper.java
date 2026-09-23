@@ -18,7 +18,6 @@ public class ProfessorMapper {
         professor.setNome(dto.getNome());
         professor.setEmail(dto.getEmail());
         professor.setTelefone(dto.getTelefone());
-        professor.setSenha(dto.getSenha());
         professor.setTipo(tipo);
         professor.setHorarios(horarios);
         professor.setAtivo(true); // Nasce ativo por padrão
@@ -34,6 +33,8 @@ public class ProfessorMapper {
         dto.setNome(professor.getNome());
         dto.setEmail(professor.getEmail());
         dto.setTelefone(professor.getTelefone());
+        dto.setSenhaDefinida(professor.getSenha() != null && !professor.getSenha().isBlank());
+        dto.setCodigoAcesso(professor.getCodigoAcesso());
         dto.setAtivo(professor.getAtivo());
 
         if (professor.getTipo() != null) {

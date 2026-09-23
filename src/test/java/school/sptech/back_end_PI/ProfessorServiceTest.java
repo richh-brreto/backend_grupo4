@@ -10,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 import school.sptech.back_end_PI.dto.aluno.HorarioAlunoProfessorRequest;
 import school.sptech.back_end_PI.dto.professor.ProfessorRequest;
@@ -23,6 +22,7 @@ import school.sptech.back_end_PI.exception.EntityNotFound;
 import school.sptech.back_end_PI.repository.HorarioRepository;
 import school.sptech.back_end_PI.repository.ProfessorRepository;
 import school.sptech.back_end_PI.repository.TipoProfessorRepository;
+import school.sptech.back_end_PI.services.AuditService;
 import school.sptech.back_end_PI.services.ProfessorService;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class ProfessorServiceTest {
     private HorarioRepository horarioRepository;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
+    private AuditService audit;
 
     @InjectMocks
     private ProfessorService professorService;
@@ -99,8 +99,7 @@ public class ProfessorServiceTest {
             ProfessorRequest request = new ProfessorRequest();
             request.setNome("Carlos");
             request.setEmail("carlos@email.com");
-            request.setTelefone(119999999);
-            request.setSenha("senha123");
+            request.setTelefone("119999999");
             request.setIdTipoProfessor(1);
             request.setHorariosIds(List.of(1L));
 
@@ -116,6 +115,7 @@ public class ProfessorServiceTest {
             Mockito.when(professorRepository.existsByEmail("carlos@email.com")).thenReturn(false);
             Mockito.when(tipoProfessorRepository.findById(1)).thenReturn(Optional.of(tipo));
             Mockito.when(horarioRepository.findAllById(List.of(1L))).thenReturn(List.of(horario));
+            Mockito.when(professorRepository.existsByCodigoAcesso(Mockito.anyString())).thenReturn(false);
             Mockito.when(professorRepository.save(Mockito.any(Professor.class))).thenReturn(professorSalvo);
 
             Professor resultado = professorService.create(request);
@@ -272,8 +272,7 @@ public class ProfessorServiceTest {
             ProfessorRequest request = new ProfessorRequest();
             request.setNome("Carlos Atualizado");
             request.setEmail("prof@email.com");
-            request.setTelefone(119999999);
-            request.setSenha("senha123");
+            request.setTelefone("119999999");
             request.setIdTipoProfessor(1);
 
             Mockito.when(professorRepository.findById(1L)).thenReturn(Optional.of(professor));
@@ -302,8 +301,7 @@ public class ProfessorServiceTest {
             ProfessorRequest request = new ProfessorRequest();
             request.setNome("Carlos");
             request.setEmail("prof@email.com");
-            request.setTelefone(119999999);
-            request.setSenha("senha123");
+            request.setTelefone("119999999");
             request.setIdTipoProfessor(1);
             request.setHorariosIds(List.of(2L));
 

@@ -21,10 +21,6 @@ public class ProfessorRequest {
     @Size(min = 10, max = 14)
     private String telefone;
 
-    @NotBlank
-    @Size(min = 6)
-    private String senha;
-
     @NotNull
     private Integer idTipoProfessor;
 
@@ -39,9 +35,6 @@ public class ProfessorRequest {
 
     public String getTelefone() { return telefone; }
     public void setTelefone(String telefone) { this.telefone = telefone; }
-
-    public String getSenha() { return senha; }
-    public void setSenha(String senha) { this.senha = senha; }
 
     public Integer getIdTipoProfessor() { return idTipoProfessor; }
     public void setIdTipoProfessor(Integer idTipoProfessor) { this.idTipoProfessor = idTipoProfessor; }

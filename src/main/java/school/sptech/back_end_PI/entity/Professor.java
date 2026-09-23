@@ -35,8 +35,11 @@ public class Professor implements UserDetails {
     @Size(min = 10, max = 14)
     private String telefone;
 
-    @NotBlank
+    // NULL até o usuário definir a senha no primeiro acesso
     private String senha;
+
+    @Column(name = "codigo_acesso", unique = true)
+    private String codigoAcesso;
 
     @Column(name = "ativo", nullable = false)
     private Boolean ativo = true;
@@ -103,6 +106,18 @@ public class Professor implements UserDetails {
         this.horarios = horarios;
     }
 
+    public Professor(Long id, String nome, String email, String telefone, String senha, String codigoAcesso, Boolean ativo, TipoProfessor tipo, List<Horario> horarios) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.telefone = telefone;
+        this.senha = senha;
+        this.codigoAcesso = codigoAcesso;
+        this.ativo = ativo;
+        this.tipo = tipo;
+        this.horarios = horarios;
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getNome() { return nome; }
@@ -113,6 +128,8 @@ public class Professor implements UserDetails {
     public void setTelefone(String telefone) { this.telefone = telefone; }
     public String getSenha() { return senha; }
     public void setSenha(String senha) { this.senha = senha; }
+    public String getCodigoAcesso() { return codigoAcesso; }
+    public void setCodigoAcesso(String codigoAcesso) { this.codigoAcesso = codigoAcesso; }
     public Boolean getAtivo() { return ativo; }
     public void setAtivo(Boolean ativo) { this.ativo = ativo; }
     public TipoProfessor getTipo() { return tipo; }

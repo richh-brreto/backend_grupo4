@@ -16,6 +16,7 @@ import school.sptech.back_end_PI.entity.Aluno;
 import school.sptech.back_end_PI.entity.Horario;
 import school.sptech.back_end_PI.mapper.AlunoMapper;
 import school.sptech.back_end_PI.repository.*;
+import school.sptech.back_end_PI.security.CodigoAcessoGenerator;
 
 @Service
 public class AlunoService {
@@ -88,8 +89,17 @@ public class AlunoService {
 
 
         Aluno alunoCriado = AlunoMapper.toEntity(aluno, horarios);
+        alunoCriado.setCodigoAcesso(gerarCodigoAcessoUnico());
 
         return alunoRepository.save(alunoCriado);
+    }
+
+    private String gerarCodigoAcessoUnico() {
+        String codigo;
+        do {
+            codigo = CodigoAcessoGenerator.gerar();
+        } while (alunoRepository.existsByCodigoAcesso(codigo));
+        return codigo;
     }
 
 
