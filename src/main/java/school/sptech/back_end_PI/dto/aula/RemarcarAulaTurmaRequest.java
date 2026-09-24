@@ -1,0 +1,36 @@
+package school.sptech.back_end_PI.dto.aula;
+
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+public class RemarcarAulaTurmaRequest extends AulaTurmaRequest {
+
+    @NotNull(message = "A nova data da aula é obrigatória")
+    private LocalDate novaData;
+
+    @NotNull(message = "A nova hora de início é obrigatória")
+    private LocalTime novaHoraInicio;
+
+    @NotNull(message = "A nova hora de fim é obrigatória")
+    private LocalTime novaHoraFim;
+
+    @Size(max = 500, message = "O motivo deve ter no máximo 500 caracteres")
+    private String motivo;
+
+    public RemarcarAulaTurmaRequest() {}
+
+    public LocalDate getNovaData() { return novaData; }
+    public void setNovaData(LocalDate novaData) { this.novaData = novaData; }
+
+    public LocalTime getNovaHoraInicio() { return novaHoraInicio; }
+    public void setNovaHoraInicio(LocalTime novaHoraInicio) { this.novaHoraInicio = novaHoraInicio; }
+
+    public LocalTime getNovaHoraFim() { return novaHoraFim; }
+    public void setNovaHoraFim(LocalTime novaHoraFim) { this.novaHoraFim = novaHoraFim; }
+
+    public String getMotivo() { return motivo; }
+    public void setMotivo(String motivo) { this.motivo = motivo; }
+}

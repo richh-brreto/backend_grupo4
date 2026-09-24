@@ -8,8 +8,10 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
@@ -49,6 +51,11 @@ public class GlobalExceptionHandler {
                                 : "valor inválido",
                         (first, second) -> first));
         return ResponseEntity.badRequest().body(Map.of("error", "Dados inválidos", "fields", fields));
+    }
+
+    @ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class})
+    public ResponseEntity<Map<String, Object>> handleInvalidParameter(Exception ex) {
+        return body(HttpStatus.BAD_REQUEST, "Parâmetro ausente ou inválido");
     }
 
     @ExceptionHandler(AuthenticationException.class)
