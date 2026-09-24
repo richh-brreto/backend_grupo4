@@ -59,6 +59,7 @@ public class ComunicadoServiceTest {
             Assertions.assertEquals("Texto", salvo.getTexto());
             Assertions.assertEquals(autor, salvo.getAutor());
             Assertions.assertNotNull(salvo.getDataCriacao());
+            Assertions.assertEquals(0, salvo.getDataCriacao().getNano());
         }
     }
 

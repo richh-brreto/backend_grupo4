@@ -10,6 +10,7 @@ import school.sptech.back_end_PI.mapper.ComunicadoMapper;
 import school.sptech.back_end_PI.repository.ComunicadoRepository;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -25,13 +26,14 @@ public class ComunicadoService {
 
     @Transactional(readOnly = true)
     public List<Comunicado> listarTodos() {
-        return comunicadoRepository.findAllByOrderByDataCriacaoDesc();
+        return comunicadoRepository.findAllByOrderByDataCriacaoDescIdDesc();
     }
 
     @Transactional
     public Comunicado salvar(ComunicadoRequest request, Professor autor) {
         Comunicado comunicado = ComunicadoMapper.toEntity(request);
-        comunicado.setDataCriacao(LocalDateTime.now());
+        // Mesma precisão da coluna DATETIME, para a resposta bater com o que foi gravado
+        comunicado.setDataCriacao(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         comunicado.setAutor(autor);
 
         Comunicado salvo = comunicadoRepository.save(comunicado);

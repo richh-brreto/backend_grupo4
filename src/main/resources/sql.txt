@@ -309,6 +309,7 @@ select * from ids_horario_contrato;
 -- Professor: torna a senha opcional (NULL até o primeiro acesso) e adiciona o código de acesso
 ALTER TABLE professor
     MODIFY senha VARCHAR(255) NULL,
+    MODIFY telefone VARCHAR(20) NOT NULL,
     ADD COLUMN codigo_acesso VARCHAR(12) NULL UNIQUE;
 
 -- Aluno: adiciona a senha (NULL até o primeiro acesso) e o código de acesso
