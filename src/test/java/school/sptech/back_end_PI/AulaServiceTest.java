@@ -5,23 +5,31 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import school.sptech.back_end_PI.dto.aula.AulaExtraRequest;
 import school.sptech.back_end_PI.dto.aula.CancelarAulaRequest;
+import school.sptech.back_end_PI.dto.aula.CancelarAulaTurmaRequest;
+import school.sptech.back_end_PI.dto.aula.PresencaAulaTurmaRequest;
+import school.sptech.back_end_PI.dto.aula.RemarcarAulaTurmaRequest;
+import school.sptech.back_end_PI.dto.aula.AulaResponse;
 import school.sptech.back_end_PI.dto.aula.PresencaRequest;
 import school.sptech.back_end_PI.dto.aula.RemarcarAulaRequest;
+import school.sptech.back_end_PI.entity.Aluno;
 import school.sptech.back_end_PI.entity.Aula;
 import school.sptech.back_end_PI.entity.Contrato;
 import school.sptech.back_end_PI.entity.Horario;
 import school.sptech.back_end_PI.entity.StatusAula;
+import school.sptech.back_end_PI.entity.Turma;
 import school.sptech.back_end_PI.exception.BusinessRuleException;
 import school.sptech.back_end_PI.exception.EntityNotFound;
 import school.sptech.back_end_PI.repository.AulaRepository;
 import school.sptech.back_end_PI.repository.ContratoRepository;
 import school.sptech.back_end_PI.repository.LogAulaRepository;
+import school.sptech.back_end_PI.services.AuditService;
 import school.sptech.back_end_PI.services.AulaService;
 
 import java.time.LocalDate;
@@ -40,6 +48,9 @@ public class AulaServiceTest {
 
     @Mock
     private ContratoRepository contratoRepository;
+
+    @Mock
+    private AuditService audit;
 
     @InjectMocks
     private AulaService aulaService;
@@ -554,6 +565,150 @@ public class AulaServiceTest {
 
             Assertions.assertThrows(EntityNotFound.class,
                     () -> aulaService.listarLogsPorAula(99L));
+        }
+    }
+
+    @Nested
+    public class AcoesAulaTurmaTestes {
+
+        private final Long turmaId = 7L;
+        private final LocalDate data = LocalDate.of(2026, 9, 24);
+        private final LocalTime inicio = LocalTime.of(8, 0);
+        private final LocalTime fim = LocalTime.of(9, 0);
+
+        private Aula criarAulaDoAluno(Long aulaId, Long alunoId, StatusAula status) {
+            Aluno aluno = new Aluno();
+            aluno.setId(alunoId);
+            Turma turma = new Turma();
+            turma.setId(turmaId);
+            Contrato contrato = new Contrato();
+            contrato.setId(100L + alunoId);
+            contrato.setAluno(aluno);
+            contrato.setTurma(turma);
+
+            Aula aula = new Aula();
+            aula.setId(aulaId);
+            aula.setData(data);
+            aula.setHoraInicio(inicio);
+            aula.setHoraFim(fim);
+            aula.setStatus(status);
+            aula.setPresenca(false);
+            aula.setContrato(contrato);
+            return aula;
+        }
+
+        private <T extends school.sptech.back_end_PI.dto.aula.AulaTurmaRequest> T comEncontro(T request) {
+            request.setData(data);
+            request.setHoraInicio(inicio);
+            request.setHoraFim(fim);
+            return request;
+        }
+
+        private void mockarAulas(List<Aula> aulas) {
+            Mockito.when(aulaRepository.findByContratoTurmaIdAndDataAndHoraInicioAndHoraFim(turmaId, data, inicio, fim))
+                    .thenReturn(aulas);
+        }
+
+        private void mockarSave() {
+            Mockito.when(aulaRepository.save(ArgumentMatchers.any(Aula.class)))
+                    .thenAnswer(invocation -> invocation.getArgument(0));
+        }
+
+        @Test
+        @DisplayName("Deve cancelar as aulas de todos os alunos da turma, ignorando as já canceladas")
+        void deveCancelarAulaTurma() {
+            Aula a1 = criarAulaDoAluno(1L, 1L, StatusAula.AGENDADA);
+            Aula a2 = criarAulaDoAluno(2L, 2L, StatusAula.AGENDADA);
+            Aula a3 = criarAulaDoAluno(3L, 3L, StatusAula.CANCELADA);
+            mockarAulas(List.of(a1, a2, a3));
+            mockarSave();
+
+            List<AulaResponse> resposta = aulaService.cancelarAulaTurma(turmaId, comEncontro(new CancelarAulaTurmaRequest()));
+
+            Assertions.assertEquals(2, resposta.size());
+            Assertions.assertEquals(StatusAula.CANCELADA, a1.getStatus());
+            Assertions.assertEquals(StatusAula.CANCELADA, a2.getStatus());
+            Mockito.verify(aulaRepository, Mockito.never()).save(a3);
+        }
+
+        @Test
+        @DisplayName("Deve lançar EntityNotFound quando não há aulas da turma no horário")
+        void deveLancarExcecaoQuandoSemAulas() {
+            mockarAulas(List.of());
+
+            Assertions.assertThrows(EntityNotFound.class,
+                    () -> aulaService.cancelarAulaTurma(turmaId, comEncontro(new CancelarAulaTurmaRequest())));
+        }
+
+        @Test
+        @DisplayName("Deve lançar BusinessRuleException quando todas as aulas já estão canceladas")
+        void deveLancarExcecaoQuandoTodasCanceladas() {
+            mockarAulas(List.of(criarAulaDoAluno(1L, 1L, StatusAula.CANCELADA)));
+
+            Assertions.assertThrows(BusinessRuleException.class,
+                    () -> aulaService.cancelarAulaTurma(turmaId, comEncontro(new CancelarAulaTurmaRequest())));
+        }
+
+        @Test
+        @DisplayName("Deve remarcar as aulas de todos os alunos da turma")
+        void deveRemarcarAulaTurma() {
+            Aula a1 = criarAulaDoAluno(1L, 1L, StatusAula.AGENDADA);
+            Aula a2 = criarAulaDoAluno(2L, 2L, StatusAula.AGENDADA);
+            mockarAulas(List.of(a1, a2));
+            mockarSave();
+
+            RemarcarAulaTurmaRequest request = comEncontro(new RemarcarAulaTurmaRequest());
+            request.setNovaData(data.plusDays(1));
+            request.setNovaHoraInicio(LocalTime.of(10, 0));
+            request.setNovaHoraFim(LocalTime.of(11, 0));
+
+            aulaService.remarcarAulaTurma(turmaId, request);
+
+            for (Aula aula : List.of(a1, a2)) {
+                Assertions.assertEquals(StatusAula.REMARCADA, aula.getStatus());
+                Assertions.assertEquals(data.plusDays(1), aula.getData());
+                Assertions.assertEquals(LocalTime.of(10, 0), aula.getHoraInicio());
+            }
+        }
+
+        @Test
+        @DisplayName("Deve lançar BusinessRuleException ao remarcar turma com hora de início após o fim")
+        void deveLancarExcecaoQuandoHorarioInvalido() {
+            RemarcarAulaTurmaRequest request = comEncontro(new RemarcarAulaTurmaRequest());
+            request.setNovaData(data);
+            request.setNovaHoraInicio(LocalTime.of(11, 0));
+            request.setNovaHoraFim(LocalTime.of(10, 0));
+
+            Assertions.assertThrows(BusinessRuleException.class, () -> aulaService.remarcarAulaTurma(turmaId, request));
+        }
+
+        @Test
+        @DisplayName("Deve marcar ausentes os alunos informados e presentes os demais")
+        void deveRegistrarPresencaTurma() {
+            Aula a1 = criarAulaDoAluno(1L, 1L, StatusAula.AGENDADA);
+            Aula a2 = criarAulaDoAluno(2L, 2L, StatusAula.AGENDADA);
+            mockarAulas(List.of(a1, a2));
+            mockarSave();
+
+            PresencaAulaTurmaRequest request = comEncontro(new PresencaAulaTurmaRequest());
+            request.setAlunosAusentesIds(List.of(2L));
+
+            aulaService.registrarPresencaTurma(turmaId, request);
+
+            Assertions.assertTrue(a1.getPresenca());
+            Assertions.assertFalse(a2.getPresenca());
+        }
+
+        @Test
+        @DisplayName("Deve lançar BusinessRuleException quando aluno ausente não pertence à aula da turma")
+        void deveLancarExcecaoQuandoAlunoNaoPertence() {
+            mockarAulas(List.of(criarAulaDoAluno(1L, 1L, StatusAula.AGENDADA)));
+
+            PresencaAulaTurmaRequest request = comEncontro(new PresencaAulaTurmaRequest());
+            request.setAlunosAusentesIds(List.of(99L));
+
+            Assertions.assertThrows(BusinessRuleException.class, () -> aulaService.registrarPresencaTurma(turmaId, request));
+            Mockito.verify(aulaRepository, Mockito.never()).save(ArgumentMatchers.any());
         }
     }
 }

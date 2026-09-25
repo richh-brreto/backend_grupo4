@@ -6,7 +6,7 @@ import school.sptech.back_end_PI.entity.StatusAula;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@JsonPropertyOrder({"id", "data", "horaInicio", "horaFim", "status", "presenca", "contratoId"})
+@JsonPropertyOrder({"id", "data", "horaInicio", "horaFim", "status", "presenca", "contratoId", "professor", "turmaId", "turma", "alunoId", "aluno"})
 public class AulaResponse {
 
     private Long id;
@@ -16,6 +16,13 @@ public class AulaResponse {
     private StatusAula status;
     private Boolean presenca;
     private Long contratoId;
+
+    // Nomes exibidos na agenda
+    private String professor;
+    private Long turmaId;
+    private String turma;
+    private Long alunoId;
+    private String aluno;
 
     public AulaResponse() {}
 
@@ -39,4 +46,19 @@ public class AulaResponse {
 
     public Long getContratoId() { return contratoId; }
     public void setContratoId(Long contratoId) { this.contratoId = contratoId; }
+
+    public String getProfessor() { return professor; }
+    public void setProfessor(String professor) { this.professor = professor; }
+
+    public Long getTurmaId() { return turmaId; }
+    public void setTurmaId(Long turmaId) { this.turmaId = turmaId; }
+
+    public String getTurma() { return turma; }
+    public void setTurma(String turma) { this.turma = turma; }
+
+    public Long getAlunoId() { return alunoId; }
+    public void setAlunoId(Long alunoId) { this.alunoId = alunoId; }
+
+    public String getAluno() { return aluno; }
+    public void setAluno(String aluno) { this.aluno = aluno; }
 }

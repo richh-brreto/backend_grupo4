@@ -1,14 +1,19 @@
 package school.sptech.back_end_PI.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import school.sptech.back_end_PI.dto.aula.*;
+import school.sptech.back_end_PI.security.AccessGuard;
 import school.sptech.back_end_PI.services.AulaService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -18,6 +23,28 @@ public class AulaController {
 
     @Autowired
     private AulaService aulaService;
+
+    @Autowired
+    private AccessGuard accessGuard;
+
+    @GetMapping
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Listar aulas de um período", description = "Coordenador vê todas as aulas; professor vê somente as próprias.")
+    public ResponseEntity<List<AulaResponse>> listarPorPeriodo(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim,
+            Authentication authentication) {
+
+        if (accessGuard.isCoordenador(authentication)) {
+            return ResponseEntity.ok(aulaService.listarAulasPorPeriodo(inicio, fim));
+        }
+
+        Long professorId = accessGuard.currentProfessorId(authentication);
+        if (professorId == null) {
+            return ResponseEntity.ok(List.of());
+        }
+        return ResponseEntity.ok(aulaService.listarAulasDoProfessorPorPeriodo(professorId, inicio, fim));
+    }
 
     @PostMapping("/extra")
     @PreAuthorize("hasRole('COORDENADOR')")
@@ -39,6 +66,33 @@ public class AulaController {
             @PathVariable Long id,
             @RequestBody(required = false) CancelarAulaRequest request) {
         return ResponseEntity.ok(aulaService.cancelarAula(id, request));
+    }
+
+    @PatchMapping("/turma/{turmaId}/cancelar")
+    @PreAuthorize("hasRole('COORDENADOR')")
+    @Operation(summary = "Cancelar a aula de uma turma", description = "Cancela as aulas de todos os alunos da turma no dia e horário informados.")
+    public ResponseEntity<List<AulaResponse>> cancelarAulaTurma(
+            @PathVariable Long turmaId,
+            @RequestBody @Valid CancelarAulaTurmaRequest request) {
+        return ResponseEntity.ok(aulaService.cancelarAulaTurma(turmaId, request));
+    }
+
+    @PatchMapping("/turma/{turmaId}/remarcar")
+    @PreAuthorize("hasRole('COORDENADOR')")
+    @Operation(summary = "Remarcar a aula de uma turma", description = "Remarca as aulas de todos os alunos da turma no dia e horário informados.")
+    public ResponseEntity<List<AulaResponse>> remarcarAulaTurma(
+            @PathVariable Long turmaId,
+            @RequestBody @Valid RemarcarAulaTurmaRequest request) {
+        return ResponseEntity.ok(aulaService.remarcarAulaTurma(turmaId, request));
+    }
+
+    @PatchMapping("/turma/{turmaId}/presenca")
+    @PreAuthorize("hasRole('COORDENADOR')")
+    @Operation(summary = "Registrar presença da aula de uma turma", description = "Alunos informados ficam ausentes; os demais recebem presença.")
+    public ResponseEntity<List<AulaResponse>> registrarPresencaTurma(
+            @PathVariable Long turmaId,
+            @RequestBody @Valid PresencaAulaTurmaRequest request) {
+        return ResponseEntity.ok(aulaService.registrarPresencaTurma(turmaId, request));
     }
 
     @DeleteMapping("/{id}")

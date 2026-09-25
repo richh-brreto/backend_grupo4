@@ -128,6 +128,17 @@ CREATE TABLE logs (
     CONSTRAINT fk_logs_aula FOREIGN KEY (aula_id_aula) REFERENCES aula(id_aula) ON DELETE CASCADE
 );
 
+-- 11. Tabela Comunicado
+CREATE TABLE comunicado (
+    id_comunicado INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    texto TEXT NOT NULL,
+    data_criacao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    professor_id_professor INT NULL, -- coordenador que cadastrou
+    CONSTRAINT fk_comunicado_professor FOREIGN KEY (professor_id_professor)
+        REFERENCES professor(id_professor)
+);
+
 	-- Segunda-feira
 	INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
 	('Segunda-feira', '06:00:00', '07:00:00'), ('Segunda-feira', '07:00:00', '08:00:00'),
@@ -298,6 +309,7 @@ select * from ids_horario_contrato;
 -- Professor: torna a senha opcional (NULL até o primeiro acesso) e adiciona o código de acesso
 ALTER TABLE professor
     MODIFY senha VARCHAR(255) NULL,
+    MODIFY telefone VARCHAR(20) NOT NULL,
     ADD COLUMN codigo_acesso VARCHAR(12) NULL UNIQUE;
 
 -- Aluno: adiciona a senha (NULL até o primeiro acesso) e o código de acesso
