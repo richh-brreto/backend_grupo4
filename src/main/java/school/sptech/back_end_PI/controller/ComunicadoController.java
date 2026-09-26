@@ -35,7 +35,7 @@ public class ComunicadoController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_GERAL')")
     @Operation(summary = "Cadastrar um novo comunicado")
     public ResponseEntity<ComunicadoResponse> cadastrar(
             @Valid @RequestBody ComunicadoRequest request,
@@ -48,7 +48,7 @@ public class ComunicadoController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_GERAL')")
     @Operation(summary = "Editar título e texto de um comunicado")
     public ResponseEntity<ComunicadoResponse> editar(
             @PathVariable Long id,
@@ -59,7 +59,7 @@ public class ComunicadoController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_GERAL')")
     @Operation(summary = "Excluir um comunicado")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         service.deletar(id);

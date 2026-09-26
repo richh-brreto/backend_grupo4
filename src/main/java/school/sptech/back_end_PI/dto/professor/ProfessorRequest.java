@@ -2,7 +2,6 @@ package school.sptech.back_end_PI.dto.professor;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
@@ -21,10 +20,10 @@ public class ProfessorRequest {
     @Size(min = 10, max = 14)
     private String telefone;
 
-    @NotNull
-    private Integer idTipoProfessor;
-
     private List<Long> horariosIds;
+
+    // Telas liberadas para o professor (ex.: "TELA_ALUNOS"). Null/vazio = sem telas.
+    private List<String> permissoes;
 
     // Getters e Setters
     public String getNome() { return nome; }
@@ -36,14 +35,19 @@ public class ProfessorRequest {
     public String getTelefone() { return telefone; }
     public void setTelefone(String telefone) { this.telefone = telefone; }
 
-    public Integer getIdTipoProfessor() { return idTipoProfessor; }
-    public void setIdTipoProfessor(Integer idTipoProfessor) { this.idTipoProfessor = idTipoProfessor; }
-
     public List<Long> getHorariosIds() {
         return horariosIds;
     }
 
     public void setHorariosIds(List<Long> horariosIds) {
         this.horariosIds = horariosIds;
+    }
+
+    public List<String> getPermissoes() {
+        return permissoes;
+    }
+
+    public void setPermissoes(List<String> permissoes) {
+        this.permissoes = permissoes;
     }
 }

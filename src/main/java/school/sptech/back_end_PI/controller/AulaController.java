@@ -35,7 +35,7 @@ public class AulaController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim,
             Authentication authentication) {
 
-        if (accessGuard.isCoordenador(authentication)) {
+        if (accessGuard.podeVerAulas(authentication)) {
             return ResponseEntity.ok(aulaService.listarAulasPorPeriodo(inicio, fim));
         }
 
@@ -47,13 +47,13 @@ public class AulaController {
     }
 
     @PostMapping("/extra")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_AGENDA')")
     public ResponseEntity<AulaResponse> adicionarAulaExtra(@RequestBody @Valid AulaExtraRequest request) {
         return ResponseEntity.status(201).body(aulaService.adicionarAulaExtra(request));
     }
 
     @PatchMapping("/{id}/remarcar")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_AGENDA')")
     public ResponseEntity<AulaResponse> remarcarAula(
             @PathVariable Long id,
             @RequestBody @Valid RemarcarAulaRequest request) {
@@ -61,7 +61,7 @@ public class AulaController {
     }
 
     @PatchMapping("/{id}/cancelar")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_AGENDA')")
     public ResponseEntity<AulaResponse> cancelarAula(
             @PathVariable Long id,
             @RequestBody(required = false) CancelarAulaRequest request) {
@@ -69,7 +69,7 @@ public class AulaController {
     }
 
     @PatchMapping("/turma/{turmaId}/cancelar")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_AGENDA')")
     @Operation(summary = "Cancelar a aula de uma turma", description = "Cancela as aulas de todos os alunos da turma no dia e horário informados.")
     public ResponseEntity<List<AulaResponse>> cancelarAulaTurma(
             @PathVariable Long turmaId,
@@ -78,7 +78,7 @@ public class AulaController {
     }
 
     @PatchMapping("/turma/{turmaId}/remarcar")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_AGENDA')")
     @Operation(summary = "Remarcar a aula de uma turma", description = "Remarca as aulas de todos os alunos da turma no dia e horário informados.")
     public ResponseEntity<List<AulaResponse>> remarcarAulaTurma(
             @PathVariable Long turmaId,
@@ -87,7 +87,7 @@ public class AulaController {
     }
 
     @PatchMapping("/turma/{turmaId}/presenca")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_AGENDA')")
     @Operation(summary = "Registrar presença da aula de uma turma", description = "Alunos informados ficam ausentes; os demais recebem presença.")
     public ResponseEntity<List<AulaResponse>> registrarPresencaTurma(
             @PathVariable Long turmaId,
@@ -96,14 +96,14 @@ public class AulaController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_AGENDA')")
     public ResponseEntity<Void> deletarAula(@PathVariable Long id) {
         aulaService.deletarAula(id);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/presenca")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_AGENDA')")
     public ResponseEntity<AulaResponse> atribuirPresenca(
             @PathVariable Long id,
             @RequestBody @Valid PresencaRequest request) {

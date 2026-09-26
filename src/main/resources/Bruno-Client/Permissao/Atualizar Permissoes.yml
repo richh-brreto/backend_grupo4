@@ -1,0 +1,20 @@
+info:
+  name: Atualizar Permissões do Professor
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: http://localhost:8080/professores/2/permissoes
+  body:
+    type: json
+    data: |-
+      {
+        "permissoes": ["TELA_GERAL", "TELA_AGENDA", "TELA_ALUNOS"]
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

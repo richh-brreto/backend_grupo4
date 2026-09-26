@@ -17,14 +17,17 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import school.sptech.back_end_PI.dto.auth.LoginResponse;
 import school.sptech.back_end_PI.dto.auth.UsuarioLogadoResponse;
 import school.sptech.back_end_PI.dto.professor.ProfessorLoginRequest;
+import school.sptech.back_end_PI.entity.Permissao;
 import school.sptech.back_end_PI.entity.Professor;
 import school.sptech.back_end_PI.security.LoginAttemptService;
 import school.sptech.back_end_PI.services.AuditService;
 import school.sptech.back_end_PI.services.JwtService;
 
 import java.util.Arrays;
+import java.util.List;
 
 @RestController
 public class UsuarioController {
@@ -100,25 +103,35 @@ public class UsuarioController {
 
         // Token trafega SOMENTE no cookie HttpOnly, nunca no corpo (OWASP A01/A02).
         // Clients de API (Bruno/Postman) autenticam via cookie jar após o /login.
-        return ResponseEntity.ok("Login realizado com sucesso");
+        // As telas liberadas (professor_permissao) vão no corpo para o front filtrar o menu.
+        List<String> permissoes = permissoesDoUsuario(authentication);
+
+        return ResponseEntity.ok(new LoginResponse("Login realizado com sucesso", permissoes));
+    }
+
+    // Lê as authorities PERM_* que o Spring Security carregou do banco no login
+    private List<String> permissoesDoUsuario(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .filter(authority -> authority.startsWith(Permissao.PREFIXO_AUTHORITY))
+                .map(authority -> authority.substring(Permissao.PREFIXO_AUTHORITY.length()))
+                .sorted()
+                .toList();
     }
 
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Dados do usuário autenticado", description = "Usado pelo frontend para ajustar a interface ao perfil; a autorização continua em cada endpoint.")
+    @Operation(summary = "Dados do usuário autenticado", description = "Usado pelo frontend para ajustar a interface às telas liberadas; a autorização continua em cada endpoint.")
     public ResponseEntity<UsuarioLogadoResponse> usuarioLogado(Authentication authentication) {
         if (!(authentication.getPrincipal() instanceof Professor professor)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não autenticado");
         }
 
-        // Mesma derivação de papel usada pelo Spring Security (ROLE_COORDENADOR -> COORDENADOR)
-        String perfil = professor.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .map(authority -> authority.replaceFirst("^ROLE_", ""))
-                .findFirst()
-                .orElse("PROFESSOR");
-
-        return ResponseEntity.ok(new UsuarioLogadoResponse(professor.getNome(), professor.getEmail(), perfil));
+        return ResponseEntity.ok(new UsuarioLogadoResponse(
+                professor.getNome(),
+                professor.getEmail(),
+                permissoesDoUsuario(authentication)
+        ));
     }
 
     @PostMapping("/logout")

@@ -34,7 +34,7 @@ public class TurmaController {
     @Operation(summary = "Listar todas as turmas cadastradas")
     public ResponseEntity<List<TurmaResponse>> listarTodas(Authentication authentication) {
         List<Turma> turmas;
-        if (accessGuard.isCoordenador(authentication)) {
+        if (accessGuard.podeVerTurmas(authentication)) {
             turmas = service.listarTodas();
         } else {
             Long professorId = accessGuard.currentProfessorId(authentication);
@@ -73,7 +73,7 @@ public class TurmaController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_TURMAS')")
     @Operation(summary = "Cadastrar uma nova turma", description = "Cria uma turma vinculada a horários, nascendo inicialmente sem professor.")
     public ResponseEntity<TurmaResponse> cadastrar(@Valid @RequestBody TurmaRequest request) {
         Turma novaTurma = service.salvar(request);
@@ -81,7 +81,7 @@ public class TurmaController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_TURMAS')")
     @Operation(summary = "Editar dados cadastrais e horários da turma")
     public ResponseEntity<TurmaResponse> editar(
             @PathVariable Long id,
@@ -92,7 +92,7 @@ public class TurmaController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_TURMAS')")
     @Operation(summary = "Excluir permanentemente uma turma")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         service.deletar(id);
@@ -100,7 +100,7 @@ public class TurmaController {
     }
 
     @PatchMapping("/{id}/professor/{professorId}")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_TURMAS')")
     @Operation(summary = "Vincular ou trocar o professor de uma turma")
     public ResponseEntity<TurmaResponse> adicionarProfessor(
             @PathVariable Long id,
@@ -111,7 +111,7 @@ public class TurmaController {
     }
 
     @DeleteMapping("/{id}/professor")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_TURMAS')")
     @Operation(summary = "Remover o professor atual da turma (deixá-la sem professor)")
     public ResponseEntity<TurmaResponse> removerProfessor(@PathVariable Long id) {
 

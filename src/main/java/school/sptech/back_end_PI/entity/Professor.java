@@ -11,7 +11,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "professor")
@@ -44,10 +46,6 @@ public class Professor implements UserDetails {
     @Column(name = "ativo", nullable = false)
     private Boolean ativo = true;
 
-    @ManyToOne
-    @JoinColumn(name = "tipo_professor_id_tipo_professor")
-    private TipoProfessor tipo;
-
     @ManyToMany
     @JoinTable(
             name = "disponibilidade_professor",
@@ -56,22 +54,43 @@ public class Professor implements UserDetails {
     )
     private List<Horario> horarios = new ArrayList<>();
 
+    // Telas liberadas para este professor. É a única fonte de autorização:
+    // o catálogo vem da tabela permissao, então criar uma tela nova é só
+    // inserir uma linha nela - nada no código.
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "professor_permissao",
+            joinColumns = @JoinColumn(name = "professor_id_professor"),
+            inverseJoinColumns = @JoinColumn(name = "permissao_id_permissao")
+    )
+    private Set<Permissao> permissoes = new LinkedHashSet<>();
+
+    // Só as telas: o Spring Security resolve o acesso a partir delas, sem papel fixo
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (tipo == null || tipo.getNomeTipo() == null || tipo.getNomeTipo().isBlank()) {
-            return List.of(new SimpleGrantedAuthority("ROLE_PROFESSOR"));
+        List<GrantedAuthority> authorities = new ArrayList<>();
+
+        if (permissoes == null) {
+            return authorities;
         }
 
-        String roleNome = tipo.getNomeTipo().trim().toUpperCase();
-        if ("ADM".equals(roleNome)) {
-            roleNome = "COORDENADOR";
+        for (Permissao permissao : permissoes) {
+            String authority = permissao.authority();
+            if (authority != null && !authority.isBlank()) {
+                authorities.add(new SimpleGrantedAuthority(authority));
+            }
         }
 
-        if (!roleNome.startsWith("ROLE_")) {
-            roleNome = "ROLE_" + roleNome;
-        }
+        return authorities;
+    }
 
-        return List.of(new SimpleGrantedAuthority(roleNome));
+    public boolean temTela(String nomeTela) {
+        if (nomeTela == null || permissoes == null) {
+            return false;
+        }
+        return permissoes.stream()
+                .map(Permissao::getNome)
+                .anyMatch(nome -> nomeTela.equalsIgnoreCase(nome));
     }
 
     @Override
@@ -95,29 +114,6 @@ public class Professor implements UserDetails {
     public Professor() {
     }
 
-    public Professor(Long id, String nome, String email, String telefone, String senha, Boolean ativo, TipoProfessor tipo, List<Horario> horarios) {
-        this.id = id;
-        this.nome = nome;
-        this.email = email;
-        this.telefone = telefone;
-        this.senha = senha;
-        this.ativo = ativo;
-        this.tipo = tipo;
-        this.horarios = horarios;
-    }
-
-    public Professor(Long id, String nome, String email, String telefone, String senha, String codigoAcesso, Boolean ativo, TipoProfessor tipo, List<Horario> horarios) {
-        this.id = id;
-        this.nome = nome;
-        this.email = email;
-        this.telefone = telefone;
-        this.senha = senha;
-        this.codigoAcesso = codigoAcesso;
-        this.ativo = ativo;
-        this.tipo = tipo;
-        this.horarios = horarios;
-    }
-
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getNome() { return nome; }
@@ -132,8 +128,20 @@ public class Professor implements UserDetails {
     public void setCodigoAcesso(String codigoAcesso) { this.codigoAcesso = codigoAcesso; }
     public Boolean getAtivo() { return ativo; }
     public void setAtivo(Boolean ativo) { this.ativo = ativo; }
-    public TipoProfessor getTipo() { return tipo; }
-    public void setTipo(TipoProfessor tipo) { this.tipo = tipo; }
     public List<Horario> getHorarios() { return horarios; }
     public void setHorarios(List<Horario> horarios) { this.horarios = horarios; }
+    public Set<Permissao> getPermissoes() { return permissoes; }
+    public void setPermissoes(Set<Permissao> permissoes) { this.permissoes = permissoes; }
+
+    // Nomes das telas liberadas (ex.: TELA_AGENDA), em ordem alfabética
+    public List<String> nomesPermissoes() {
+        if (permissoes == null || permissoes.isEmpty()) {
+            return List.of();
+        }
+        return permissoes.stream()
+                .map(Permissao::getNome)
+                .filter(nome -> nome != null && !nome.isBlank())
+                .sorted()
+                .toList();
+    }
 }
