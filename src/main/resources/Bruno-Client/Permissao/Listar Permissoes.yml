@@ -1,0 +1,16 @@
+info:
+  name: Listar Permissões
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: http://localhost:8080/permissoes
+  body:
+    type: none
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

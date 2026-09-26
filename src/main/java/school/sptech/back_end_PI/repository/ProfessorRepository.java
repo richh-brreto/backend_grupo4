@@ -1,6 +1,5 @@
 package school.sptech.back_end_PI.repository;
 
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -21,7 +20,6 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
 
     Optional<Professor> findByEmailIgnoreCase(String email);
 
-    @EntityGraph(attributePaths = {"tipo"})
     Optional<Professor> findByEmail(String email);
 
     @Query("""

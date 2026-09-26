@@ -20,7 +20,7 @@ public class DashboardController {
     }
 
     @GetMapping("/professores")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_DASHBOARD')")
     public ResponseEntity<DashboardResponse> getDashboardProfessores(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate

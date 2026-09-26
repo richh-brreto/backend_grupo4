@@ -13,8 +13,8 @@ http:
         "nome": "Pedro",
         "email": "pedro2@gmail.com",
         "telefone": 119999999,
-        "idTipoProfessor": 1,
-        "horariosIds": [1,2]
+        "horariosIds": [1,2],
+        "permissoes": ["TELA_AGENDA", "TELA_GERAL"]
       }
 
 settings:

@@ -14,8 +14,8 @@ http:
         "email": "pedro@gmail.com",
         "telefone": 119999999,
         "senha": "senha123",
-        "idTipoProfessor": 1,
-        "horariosIds": [1,2,3]
+        "horariosIds": [1,2,3],
+        "permissoes": ["TELA_AGENDA"]
       }
 
 settings:

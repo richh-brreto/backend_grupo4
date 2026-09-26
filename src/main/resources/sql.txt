@@ -2,14 +2,9 @@
 CREATE DATABASE IF NOT EXISTS boost;
 USE boost;
 
--- 1. Tabela Tipo Professor
-CREATE TABLE tipo_professor (
-    id_tipo_professor INT AUTO_INCREMENT PRIMARY KEY,
-    tipo_professor VARCHAR(45) NOT NULL
-);
-
--- 2. Tabela Professor (Refatorada com Soft Delete + Primeiro Acesso)
+-- 1. Tabela Professor (Soft Delete + Primeiro Acesso)
 -- senha é NULL até o usuário definir a senha no primeiro acesso.
+-- Não existe mais tipo_professor: a autorização vem das telas em professor_permissao.
 CREATE TABLE professor (
     id_professor INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(45) NOT NULL,
@@ -17,10 +12,7 @@ CREATE TABLE professor (
     telefone VARCHAR(20) NOT NULL,
     senha VARCHAR(255) NULL,           -- NULL = ainda não configurada (primeiro acesso pendente)
     codigo_acesso VARCHAR(12) NULL UNIQUE, -- código gerado no cadastro, invalidado ao configurar a senha
-    tipo_professor_id_tipo_professor INT NOT NULL,
-    ativo TINYINT DEFAULT 1, -- 1 para Ativo, 0 para Inativo (Soft Delete)
-    CONSTRAINT fk_professor_tipo FOREIGN KEY (tipo_professor_id_tipo_professor)
-        REFERENCES tipo_professor(id_tipo_professor)
+    ativo TINYINT DEFAULT 1 -- 1 para Ativo, 0 para Inativo (Soft Delete)
 );
 
 -- 3. Tabela Turma
@@ -134,9 +126,27 @@ CREATE TABLE comunicado (
     titulo VARCHAR(100) NOT NULL,
     texto TEXT NOT NULL,
     data_criacao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    professor_id_professor INT NULL, -- coordenador que cadastrou
+    professor_id_professor INT NULL, -- professor que cadastrou
     CONSTRAINT fk_comunicado_professor FOREIGN KEY (professor_id_professor)
         REFERENCES professor(id_professor)
+);
+
+-- 12. Tabela Permissão (as telas que podem ser liberadas)
+-- Catálogo de telas: o controle de acesso é lido daqui, sem regra fixa no código.
+CREATE TABLE permissao (
+    id_permissao INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(45) NOT NULL UNIQUE
+);
+
+-- 13. Tabela de Ligação Professor x Permissão (N:N)
+CREATE TABLE professor_permissao (
+    professor_id_professor INT NOT NULL,
+    permissao_id_permissao INT NOT NULL,
+    PRIMARY KEY (professor_id_professor, permissao_id_permissao),
+    CONSTRAINT fk_prof_perm_professor FOREIGN KEY (professor_id_professor)
+        REFERENCES professor(id_professor) ON DELETE CASCADE,
+    CONSTRAINT fk_prof_perm_permissao FOREIGN KEY (permissao_id_permissao)
+        REFERENCES permissao(id_permissao)
 );
 
 	-- Segunda-feira
@@ -227,12 +237,9 @@ CREATE TABLE comunicado (
 -- 1. CADASTROS BÁSICOS
 -- ============================================================================
 
--- Inserindo o tipo do professor
-INSERT INTO tipo_professor (tipo_professor) VALUES ('COORDENADOR'), ('Professor'); -- Gerará o id_tipo_professor = 1
-
--- Inserindo o Professor
-INSERT INTO professor (nome, email, telefone, senha, tipo_professor_id_tipo_professor, ativo)
-VALUES ('Administrador Sistema', 'admin@sptech.school', 1199999888, '$2a$12$F03Vd6gjrLJRC8jzliUfA.oA4i248BIfEEejMxwQpZQZJiSC1/KAC', 1, 1); -- Gerará o id_professor = 1
+-- Inserindo o Professor administrador (recebe todas as telas logo abaixo)
+INSERT INTO professor (nome, email, telefone, senha, ativo)
+VALUES ('Administrador Sistema', 'admin@sptech.school', 1199999888, '$2a$12$F03Vd6gjrLJRC8jzliUfA.oA4i248BIfEEejMxwQpZQZJiSC1/KAC', 1); -- Gerará o id_professor = 1
 
 -- Inserindo a Turma (Vinculada ao Professor 1)
 INSERT INTO turma (nome_turma, nivel, limite_alunos, tipo, professor_id_professor)
@@ -241,6 +248,20 @@ VALUES ('ADS-2B', 'Intermediário', 30, 'Grupo', 1); -- Gerará o id_turma = 1
 -- Inserindo o Aluno
 INSERT INTO aluno (nome, email, telefone, nivel, ativo)
 VALUES ('Guilherme Silva2', 'guilherme.silva@sptech.school', '11977776666', 'Intermediário', 1); -- Gerará o id_aluno = 1
+
+-- Catálogo de telas que podem ser liberadas por professor
+INSERT INTO permissao (nome) VALUES
+('TELA_GERAL'),
+('TELA_AGENDA'),
+('TELA_DASHBOARD'),
+('TELA_PROFESSORES'),
+('TELA_TURMAS'),
+('TELA_ALUNOS'),
+('TELA_CONTRATOS');
+
+-- O administrador criado acima começa com acesso a todas as telas
+INSERT INTO professor_permissao (professor_id_professor, permissao_id_permissao)
+SELECT 1, id_permissao FROM permissao;
 
 
 -- ============================================================================
@@ -289,7 +310,7 @@ JOIN aluno a ON da.aluno_id_aluno = a.id_aluno
 JOIN professor p ON dp.professor_id_professor = p.id_professor
 JOIN turma t ON dt.turma_id_turma = t.id_turma
 JOIN horario h ON da.horario_id_horario = h.id_horario;
----------------------------------------------------------------------------------------
+-- ---------------------------------------------------------------------------------------
 
 select * from contrato;
 select * from horario;
@@ -298,24 +319,8 @@ select * from disponibilidade_professor;
 select * from disponibilidade_aluno;
 select * from turma;
 select * from aluno;
-select * from tipo_professor;
 
 select * from ids_horario_contrato;
+select * from permissao;
+select * from professor_permissao;
 
--- ============================================================================
--- MIGRAÇÃO PARA BANCOS JÁ EXISTENTES (Historico do Sistema de Cadastro + Primeiro Acesso)
--- Rode apenas se as tabelas já existirem sem as colunas abaixo.
--- ============================================================================
--- Professor: torna a senha opcional (NULL até o primeiro acesso) e adiciona o código de acesso
-ALTER TABLE professor
-    MODIFY senha VARCHAR(255) NULL,
-    MODIFY telefone VARCHAR(20) NOT NULL,
-    ADD COLUMN codigo_acesso VARCHAR(12) NULL UNIQUE;
-
--- Aluno: adiciona a senha (NULL até o primeiro acesso) e o código de acesso
-ALTER TABLE aluno
-    ADD COLUMN senha VARCHAR(255) NULL,
-    ADD COLUMN codigo_acesso VARCHAR(12) NULL UNIQUE;
-
-use boost;
-drop database boost;

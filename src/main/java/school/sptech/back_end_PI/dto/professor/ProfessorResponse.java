@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalTime;
 import java.util.List;
 
-@JsonPropertyOrder({ "id", "nome", "email", "telefone", "tipo", "senhaDefinida", "codigoAcesso", "ativo", "horarios" })
+@JsonPropertyOrder({ "id", "nome", "email", "telefone", "senhaDefinida", "codigoAcesso", "ativo", "horarios", "permissoes" })
 public class ProfessorResponse {
     private Long id;
     private String nome;
@@ -13,8 +13,8 @@ public class ProfessorResponse {
     private Boolean senhaDefinida;
     private String codigoAcesso;
     private Boolean ativo; // Campo adicionado para o JSON
-    private TipoProfessorResponse tipo;
     private List<HorarioProfessorDto> horarios;
+    private List<String> permissoes;
 
     public static class HorarioProfessorDto {
         private Long id;
@@ -48,8 +48,8 @@ public class ProfessorResponse {
     public void setCodigoAcesso(String codigoAcesso) { this.codigoAcesso = codigoAcesso; }
     public Boolean getAtivo() { return ativo; }
     public void setAtivo(Boolean ativo) { this.ativo = ativo; }
-    public TipoProfessorResponse getTipo() { return tipo; }
-    public void setTipo(TipoProfessorResponse tipo) { this.tipo = tipo; }
     public List<HorarioProfessorDto> getHorarios() { return horarios; }
     public void setHorarios(List<HorarioProfessorDto> horarios) { this.horarios = horarios; }
+    public List<String> getPermissoes() { return permissoes; }
+    public void setPermissoes(List<String> permissoes) { this.permissoes = permissoes; }
 }
