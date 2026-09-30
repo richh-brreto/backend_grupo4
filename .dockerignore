@@ -1,0 +1,23 @@
+# build output and VCS/IDE files
+target/
+.git
+.idea
+.vscode
+.classpath
+.project
+*.iml
+logs
+tmp
+**/node_modules
+
+# secrets: a imagem deve ser montada só com configuração via env
+.env
+application.properties
+
+# collection de testes e assets que não vão para a imagem
+src/main/resources/Bruno-Client
+src/main/resources/boost-gpt.png
+
+# não ignorar mvnw / .mvn, o build Docker depende deles
+# .mvn/
+# mvnw

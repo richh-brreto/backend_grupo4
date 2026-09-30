@@ -80,6 +80,7 @@ CREATE TABLE contrato (
     id_contrato INT AUTO_INCREMENT PRIMARY KEY,
     data_inicio DATE NOT NULL,
     data_fim DATE NOT NULL,
+    vencimento_notificado_em DATETIME NULL,
     tipo VARCHAR(45),
     professor_id_professor INT NULL,
     aluno_id_aluno INT NULL,
@@ -310,7 +311,6 @@ JOIN aluno a ON da.aluno_id_aluno = a.id_aluno
 JOIN professor p ON dp.professor_id_professor = p.id_professor
 JOIN turma t ON dt.turma_id_turma = t.id_turma
 JOIN horario h ON da.horario_id_horario = h.id_horario;
--- ---------------------------------------------------------------------------------------
 
 select * from contrato;
 select * from horario;
@@ -323,4 +323,3 @@ select * from aluno;
 select * from ids_horario_contrato;
 select * from permissao;
 select * from professor_permissao;
-

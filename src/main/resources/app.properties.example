@@ -15,6 +15,21 @@ spring.datasource.password=${DB_PASSWORD:SUA-SENHA}
 # JPA / Hibernate
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+
+# RabbitMQ (fila de aviso de contratos prestes a vencer)
+# Devem bater com as do docker-compose.yml. Não use "guest" contra o container:
+# o compose cria o usuário "boost" e o RabbitMQ recusa login guest vindo do host.
+spring.rabbitmq.host=${RABBITMQ_HOST:localhost}
+spring.rabbitmq.port=${RABBITMQ_PORT:5672}
+spring.rabbitmq.username=${RABBITMQ_USERNAME:boost}
+spring.rabbitmq.password=${RABBITMQ_PASSWORD:boost}
+
+# Job de vencimento de contratos (padrão: a cada 2 minutos, avisando 30 dias antes)
+contratos.vencimento.cron=${CONTRATOS_VENCIMENTO_CRON:0 */2 * * * *}
+contratos.vencimento.dias-antecedencia=${CONTRATOS_VENCIMENTO_DIAS:30}
+# Reserva mais antiga que isso é reaberta (protege contra instância que caiu no meio da publicação)
+contratos.vencimento.retry-minutos=${CONTRATOS_VENCIMENTO_RETRY_MINUTOS:60}
+
 # JWT — OBRIGATÓRIO: exporte JWT_SECRET (mín. 32 caracteres) ou crie um arquivo .env
 # na raiz do projeto com: JWT_SECRET=seu-segredo-longo-aqui
 # Para gerar um: openssl rand -base64 32
