@@ -3,6 +3,7 @@ package school.sptech.back_end_PI.security;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import school.sptech.back_end_PI.entity.Permissao;
 import school.sptech.back_end_PI.entity.Professor;
 import school.sptech.back_end_PI.repository.ContratoRepository;
 import school.sptech.back_end_PI.repository.TurmaRepository;
@@ -11,6 +12,16 @@ import school.sptech.back_end_PI.repository.AlunoRepository;
 
 @Component
 public class AccessGuard {
+
+    // Chaves do catálogo de telas (tabela permissao). A permissão de uma tela é o
+    // que libera o domínio inteiro: a tela X e todos os endpoints de X.
+    public static final String TELA_GERAL = "TELA_GERAL";
+    public static final String TELA_AGENDA = "TELA_AGENDA";
+    public static final String TELA_DASHBOARD = "TELA_DASHBOARD";
+    public static final String TELA_PROFESSORES = "TELA_PROFESSORES";
+    public static final String TELA_TURMAS = "TELA_TURMAS";
+    public static final String TELA_ALUNOS = "TELA_ALUNOS";
+    public static final String TELA_CONTRATOS = "TELA_CONTRATOS";
 
     private final ContratoRepository contratoRepository;
     private final TurmaRepository turmaRepository;
@@ -39,10 +50,42 @@ public class AccessGuard {
         return null;
     }
 
-    public boolean isCoordenador(Authentication authentication) {
-        return authentication != null && authentication.getAuthorities()
-                .stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_COORDENADOR"));
+    // A tela veio do professor_permissao e entrou como authority no login
+    public boolean temPermissao(Authentication authentication, String tela) {
+        if (authentication == null || tela == null) {
+            return false;
+        }
+        String authority = Permissao.PREFIXO_AUTHORITY + tela;
+        return authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals(authority));
+    }
+
+    public boolean podeVerGeral(Authentication authentication) {
+        return temPermissao(authentication, TELA_GERAL);
+    }
+
+    public boolean podeVerAulas(Authentication authentication) {
+        return temPermissao(authentication, TELA_AGENDA);
+    }
+
+    public boolean podeVerDashboard(Authentication authentication) {
+        return temPermissao(authentication, TELA_DASHBOARD);
+    }
+
+    public boolean podeVerProfessores(Authentication authentication) {
+        return temPermissao(authentication, TELA_PROFESSORES);
+    }
+
+    public boolean podeVerTurmas(Authentication authentication) {
+        return temPermissao(authentication, TELA_TURMAS);
+    }
+
+    public boolean podeVerAlunos(Authentication authentication) {
+        return temPermissao(authentication, TELA_ALUNOS);
+    }
+
+    public boolean podeVerContratos(Authentication authentication) {
+        return temPermissao(authentication, TELA_CONTRATOS);
     }
 
     public Long currentProfessorId(Authentication authentication) {
@@ -59,22 +102,22 @@ public class AccessGuard {
         return null;
     }
 
+    // Quem tem a tela do domínio administra qualquer registro dele; quem não tem
+    // só alcança o que é próprio.
     public boolean canManageProfessor(Long id, Authentication authentication) {
-        Professor professor = getProfessorFromAuthentication(authentication);
-        if (professor == null) return false;
-
-        Professor currentProfessor = getCurrentProfessor();
-        if (currentProfessor == null) return false;
-
-        if (isCoordenador(authentication)) {
+        if (podeVerProfessores(authentication)) {
             return true;
         }
+
+        Professor professor = getProfessorFromAuthentication(authentication);
+        Professor currentProfessor = getCurrentProfessor();
+        if (professor == null || currentProfessor == null) return false;
 
         return professor.getId().equals(currentProfessor.getId());
     }
 
     public boolean canManageContrato(Long id, Authentication authentication) {
-        if (isCoordenador(authentication)) {
+        if (podeVerContratos(authentication)) {
             return true;
         }
 
@@ -85,7 +128,7 @@ public class AccessGuard {
     }
 
     public boolean canManageTurma(Long id, Authentication authentication) {
-        if (isCoordenador(authentication)) {
+        if (podeVerTurmas(authentication)) {
             return true;
         }
 
@@ -96,7 +139,7 @@ public class AccessGuard {
     }
 
     public boolean canManageAula(Long id, Authentication authentication) {
-        if (isCoordenador(authentication)) {
+        if (podeVerAulas(authentication)) {
             return true;
         }
 
@@ -107,7 +150,7 @@ public class AccessGuard {
     }
 
     public boolean canManageAluno(Long id, Authentication authentication) {
-        if (isCoordenador(authentication)) {
+        if (podeVerAlunos(authentication)) {
             return true;
         }
 

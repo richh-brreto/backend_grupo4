@@ -13,39 +13,38 @@ import school.sptech.back_end_PI.dto.professor.ProfessorRequest;
 import school.sptech.back_end_PI.dto.aluno.HorarioAlunoProfessorRequest;
 import school.sptech.back_end_PI.dto.professor.ProfessorResponse;
 import school.sptech.back_end_PI.entity.Horario;
+import school.sptech.back_end_PI.entity.Permissao;
 import school.sptech.back_end_PI.entity.Professor;
-import school.sptech.back_end_PI.entity.TipoProfessor;
 import school.sptech.back_end_PI.mapper.ProfessorMapper;
 import school.sptech.back_end_PI.mapper.TurmaMapper;
 import school.sptech.back_end_PI.repository.HorarioRepository;
 import school.sptech.back_end_PI.repository.ProfessorRepository;
-import school.sptech.back_end_PI.repository.TipoProfessorRepository;
 import school.sptech.back_end_PI.security.CodigoAcessoGenerator;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ProfessorService {
     private final ProfessorRepository professorRepository;
-    private final TipoProfessorRepository tipoProfessorRepository;
     private final HorarioRepository horarioRepository;
+    private final PermissaoService permissaoService;
     private final AuditService audit;
 
-    public ProfessorService(ProfessorRepository professorRepository, TipoProfessorRepository tipoProfessorRepository, HorarioRepository horarioRepository, AuditService audit) {
+    public ProfessorService(ProfessorRepository professorRepository, HorarioRepository horarioRepository, PermissaoService permissaoService, AuditService audit) {
         this.professorRepository = professorRepository;
-        this.tipoProfessorRepository = tipoProfessorRepository;
         this.horarioRepository = horarioRepository;
+        this.permissaoService = permissaoService;
         this.audit = audit;
     }
 
+    @Transactional
     public Professor create(ProfessorRequest dto) {
 
         if (professorRepository.existsByEmail(dto.getEmail())) {
             throw new ConflictException("Email já cadastrado");
         }
-
-        TipoProfessor tipo = tipoProfessorRepository.findById(dto.getIdTipoProfessor())
-                .orElseThrow(() -> new EntityNotFoundException("Tipo não encontrado"));
 
         List<Horario> horarios = horarioRepository.findAllById(dto.getHorariosIds());
 
@@ -53,7 +52,11 @@ public class ProfessorService {
             throw new BusinessRuleException("Horários não informados ou inválidos");
         }
 
-        Professor novoProfessor = ProfessorMapper.toEntity(dto, tipo, horarios);
+        // As telas liberadas vêm no payload e viram linhas em professor_permissao.
+        // É daqui que sai a autorização do professor: não existe mais tipo/papel.
+        Set<Permissao> permissoes = permissaoService.resolverPorNomes(dto.getPermissoes());
+
+        Professor novoProfessor = ProfessorMapper.toEntity(dto, horarios, permissoes);
         novoProfessor.setCodigoAcesso(gerarCodigoAcessoUnico());
 
         Professor salvo = professorRepository.save(novoProfessor);
@@ -127,9 +130,6 @@ public class ProfessorService {
         Professor professorExistente = professorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFound("Professor não encontrado!"));
 
-        TipoProfessor tipo = tipoProfessorRepository.findById(dto.getIdTipoProfessor())
-                .orElseThrow(() -> new EntityNotFound("Tipo do professor não encontrado!"));
-
         if (!professorExistente.getEmail().equals(dto.getEmail()) &&
                 professorRepository.existsProfessorByEmail(dto.getEmail())) {
             throw new ConflictException("Email já cadastrado");
@@ -138,14 +138,32 @@ public class ProfessorService {
         professorExistente.setNome(dto.getNome());
         professorExistente.setEmail(dto.getEmail());
         professorExistente.setTelefone(dto.getTelefone());
-        professorExistente.setTipo(tipo);
 
         if (dto.getHorariosIds() != null && !dto.getHorariosIds().isEmpty()) {
             List<Horario> novosHorarios = horarioRepository.findAllById(dto.getHorariosIds());
             professorExistente.setHorarios(novosHorarios);
         }
 
+        // Permissões ausentes no payload = não mexe no que já estava liberado
+        if (dto.getPermissoes() != null) {
+            professorExistente.setPermissoes(permissaoService.resolverPorNomes(dto.getPermissoes()));
+        }
+
         return professorRepository.save(professorExistente);
+    }
+
+    // Libera/revoga telas de um professor sem alterar os dados dele
+    @Transactional
+    public Professor atualizarPermissoes(Long id, List<String> nomesPermissoes) {
+        Professor professor = professorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFound("Professor não encontrado!"));
+
+        Set<Permissao> permissoes = permissaoService.resolverPorNomes(nomesPermissoes);
+        professor.setPermissoes(new LinkedHashSet<>(permissoes));
+
+        Professor salvo = professorRepository.save(professor);
+        audit.log("professor.update.permissaoes", audit.currentActor(), "professor:" + id, "success");
+        return salvo;
     }
 
 

@@ -25,21 +25,21 @@ public class ContratoController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_CONTRATOS')")
     public ResponseEntity<ContratoResponse> criarContrato(@Valid @RequestBody ContratoRequest request){
         ContratoResponse contratoCriado = service.criarContrato(request);
         return ResponseEntity.status(201).body(contratoCriado);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_CONTRATOS')")
     public ResponseEntity<ContratoResponse> atualizarContrato(@PathVariable Long id, @Valid @RequestBody ContratoRequest request){
         ContratoResponse contratoAtualizado = service.atualizarContrato(id,request);
         return ResponseEntity.status(200).body(contratoAtualizado);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_CONTRATOS')")
     public ResponseEntity<ContratoResponse> deletarContrato(@PathVariable Long id){
         service.deletarContrato(id);
         return ResponseEntity.status(204).build();
@@ -49,7 +49,7 @@ public class ContratoController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<ContratoResponse>> listarContratos(Authentication authentication){
         List<ContratoResponse> response;
-        if (accessGuard.isCoordenador(authentication)) {
+        if (accessGuard.podeVerContratos(authentication)) {
             response = service.listarTodosContratos();
         } else {
             Long professorId = accessGuard.currentProfessorId(authentication);

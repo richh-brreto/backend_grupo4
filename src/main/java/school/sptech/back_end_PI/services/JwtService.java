@@ -5,7 +5,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.security.Keys;
@@ -14,7 +13,6 @@ import java.security.Key;
 
 import java.util.Date;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
@@ -50,13 +48,11 @@ public class JwtService {
     }
 
     public String generateToken(Authentication authentication) {
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
+        // O token carrega só a identidade. As telas liberadas (PERM_*) são
+        // reconsultadas no banco a cada requisição, então nada de permissão vai
+        // na claim: evita inflar o JWT e evita permissão vencida no token.
         return Jwts.builder()
                 .setSubject(authentication.getName())
-                .claim("authorities", authorities)
                 .setIssuer(issuer)
                 .setAudience(audience)
                 .setId(UUID.randomUUID().toString())

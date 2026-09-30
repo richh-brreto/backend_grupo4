@@ -27,7 +27,7 @@ public class AlunoController {
         this.accessGuard = accessGuard;
     }
     @PostMapping
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_ALUNOS')")
     public ResponseEntity<AlunoResponse> create(
             @Valid @RequestBody AlunoRequest request) {
 
@@ -41,7 +41,7 @@ public class AlunoController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<AlunoResponse>> getAll(Authentication authentication) {
         List<Aluno> alunos;
-        if (accessGuard.isCoordenador(authentication)) {
+        if (accessGuard.podeVerAlunos(authentication)) {
             alunos = service.getAll();
         } else {
             Long professorId = accessGuard.currentProfessorId(authentication);
@@ -77,7 +77,7 @@ public class AlunoController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_ALUNOS')")
     @Operation(summary = "Inativar um aluno (Soft Delete)", description = "Altera o status do aluno para inativo")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
@@ -85,7 +85,7 @@ public class AlunoController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_ALUNOS')")
     public ResponseEntity<AlunoResponse> update(@PathVariable Long id, @Valid @RequestBody AlunoRequest request) {
 
         Aluno atualizado = service.update(id, request);
@@ -93,7 +93,7 @@ public class AlunoController {
     }
 
     @PatchMapping("/{id}/reativar")
-    @PreAuthorize("hasRole('COORDENADOR')")
+    @PreAuthorize("hasAuthority('PERM_TELA_ALUNOS')")
     @Operation(summary = "Reativar um aluno inativo", description = "Restaura o acesso e o status do aluno para ativo")
     public ResponseEntity<AlunoResponse> reativar(@PathVariable Long id) {
         Aluno alunoReativado = service.reativar(id);

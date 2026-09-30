@@ -3,23 +3,25 @@ package school.sptech.back_end_PI.mapper;
 import school.sptech.back_end_PI.dto.professor.ProfessorRequest;
 import school.sptech.back_end_PI.dto.professor.ProfessorResponse;
 import school.sptech.back_end_PI.entity.Horario;
+import school.sptech.back_end_PI.entity.Permissao;
 import school.sptech.back_end_PI.entity.Professor;
-import school.sptech.back_end_PI.entity.TipoProfessor;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ProfessorMapper {
 
-    public static Professor toEntity(ProfessorRequest dto, TipoProfessor tipo, List<Horario> horarios) {
+    public static Professor toEntity(ProfessorRequest dto, List<Horario> horarios, Set<Permissao> permissoes) {
         if (dto == null) return null;
 
         Professor professor = new Professor();
         professor.setNome(dto.getNome());
         professor.setEmail(dto.getEmail());
         professor.setTelefone(dto.getTelefone());
-        professor.setTipo(tipo);
         professor.setHorarios(horarios);
+        professor.setPermissoes(permissoes == null ? new LinkedHashSet<>() : new LinkedHashSet<>(permissoes));
         professor.setAtivo(true); // Nasce ativo por padrão
 
         return professor;
@@ -36,10 +38,7 @@ public class ProfessorMapper {
         dto.setSenhaDefinida(professor.getSenha() != null && !professor.getSenha().isBlank());
         dto.setCodigoAcesso(professor.getCodigoAcesso());
         dto.setAtivo(professor.getAtivo());
-
-        if (professor.getTipo() != null) {
-            dto.setTipo(TipoProfessorMapper.toResponse(professor.getTipo()));
-        }
+        dto.setPermissoes(professor.nomesPermissoes());
 
         if (professor.getHorarios() != null) {
             List<ProfessorResponse.HorarioProfessorDto> horarios = professor.getHorarios()
