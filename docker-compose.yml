@@ -1,0 +1,26 @@
+services:
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: boost-rabbitmq
+    restart: unless-stopped
+    environment:
+      # NÃO usar "guest": o RabbitMQ só aceita o usuário guest vindo de localhost.
+      # O app roda na sua máquina, então qualquer usuário serve aqui — mas o default
+      # do application.properties continua sendo guest para uso local.
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME:-boost}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-boost}
+    ports:
+      - "${RABBITMQ_AMQP_PORT:-5672}:5672"    # AMQP (o app publica aqui)
+      - "${RABBITMQ_UI_PORT:-15672}:15672"    # management web: http://localhost:15672
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  rabbitmq-data:
