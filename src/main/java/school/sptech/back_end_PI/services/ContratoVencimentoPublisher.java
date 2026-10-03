@@ -23,6 +23,6 @@ public class ContratoVencimentoPublisher {
                 mensagem
         );
         log.info("Contrato {} publicado na fila de vencimento (vence em {} dias)",
-                mensagem.contratoId(), mensagem.diasParaVencer());
+                mensagem.contrato().id(), mensagem.diasParaVencer());
     }
 }
