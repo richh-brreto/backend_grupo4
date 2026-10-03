@@ -29,6 +29,8 @@ contratos.vencimento.cron=${CONTRATOS_VENCIMENTO_CRON:0 */2 * * * *}
 contratos.vencimento.dias-antecedencia=${CONTRATOS_VENCIMENTO_DIAS:30}
 # Reserva mais antiga que isso é reaberta (protege contra instância que caiu no meio da publicação)
 contratos.vencimento.retry-minutos=${CONTRATOS_VENCIMENTO_RETRY_MINUTOS:60}
+# Professor que recebe o aviso (bloco "destinatario" da mensagem). É o administrador criado em sql.txt.
+contratos.vencimento.professor-administrador-id=${CONTRATOS_VENCIMENTO_PROFESSOR_ADMIN_ID:1}
 
 # JWT — OBRIGATÓRIO: exporte JWT_SECRET (mín. 32 caracteres) ou crie um arquivo .env
 # na raiz do projeto com: JWT_SECRET=seu-segredo-longo-aqui
