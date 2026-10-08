@@ -23,5 +23,10 @@ jwt.expiration=3600000
 jwt.issuer=${JWT_ISSUER:boost-api}
 jwt.audience=${JWT_AUDIENCE:boost-web}
 
+# Gemini (relatórios com IA) — chave vem do .env / variável de ambiente GEMINI_API_KEY
+gemini.api.key=${GEMINI_API_KEY:}
+gemini.model=${GEMINI_MODEL:gemini-3.5-flash-lite}
+relatorio.files.cron=0 5 0 * * *
+
 #DEBUG
 logging.level.org.springframework.security=DEBUG
