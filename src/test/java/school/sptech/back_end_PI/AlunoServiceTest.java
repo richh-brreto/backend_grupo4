@@ -9,6 +9,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
 import school.sptech.back_end_PI.dto.aluno.AlunoRequest;
 import school.sptech.back_end_PI.entity.Aluno;
@@ -57,27 +61,70 @@ public class AlunoServiceTest {
     public class GetAllTestes {
 
         @Test
-        @DisplayName("Deve retornar lista de alunos")
-        void deveRetornarListaDeAlunos() {
+        @DisplayName("Deve retornar página de alunos ativos")
+        void deveRetornarPaginaDeAlunosAtivos() {
             Aluno aluno = new Aluno();
             aluno.setNome("João");
+            Pageable pageable = PageRequest.of(0, 10);
 
-            Mockito.when(alunoRepository.findAll()).thenReturn(List.of(aluno));
+            Mockito.when(alunoRepository.buscarAtivos(null, pageable)).thenReturn(new PageImpl<>(List.of(aluno), pageable, 1));
 
-            List<Aluno> resultado = alunoService.getAll();
+            Page<Aluno> resultado = alunoService.getAll(null, true, pageable);
 
-            Assertions.assertEquals(1, resultado.size());
-            Assertions.assertEquals("João", resultado.get(0).getNome());
+            Assertions.assertEquals(1, resultado.getTotalElements());
+            Assertions.assertEquals("João", resultado.getContent().get(0).getNome());
         }
 
         @Test
-        @DisplayName("Deve retornar lista vazia quando não houver alunos")
-        void deveRetornarListaVaziaQuandoNaoHouverAlunos() {
-            Mockito.when(alunoRepository.findAll()).thenReturn(Collections.emptyList());
+        @DisplayName("Deve retornar página vazia quando não houver alunos")
+        void deveRetornarPaginaVaziaQuandoNaoHouverAlunos() {
+            Pageable pageable = PageRequest.of(0, 10);
 
-            List<Aluno> resultado = alunoService.getAll();
+            Mockito.when(alunoRepository.buscarAtivos(null, pageable)).thenReturn(Page.empty(pageable));
+
+            Page<Aluno> resultado = alunoService.getAll(null, true, pageable);
 
             Assertions.assertTrue(resultado.isEmpty());
+        }
+
+        @Test
+        @DisplayName("Deve buscar inativos pelo nome sem espaços nas pontas")
+        void deveBuscarInativosPeloNome() {
+            Pageable pageable = PageRequest.of(0, 10);
+
+            Mockito.when(alunoRepository.buscarInativos("ana", pageable)).thenReturn(Page.empty(pageable));
+
+            alunoService.getAll("  ana ", false, pageable);
+
+            Mockito.verify(alunoRepository).buscarInativos("ana", pageable);
+            Mockito.verify(alunoRepository, Mockito.never()).buscarAtivos(Mockito.any(), Mockito.any());
+        }
+
+        @Test
+        @DisplayName("Deve ignorar filtro de nome em branco")
+        void deveIgnorarFiltroDeNomeEmBranco() {
+            Pageable pageable = PageRequest.of(0, 10);
+
+            Mockito.when(alunoRepository.buscarAtivos(null, pageable)).thenReturn(Page.empty(pageable));
+
+            alunoService.getAll("   ", true, pageable);
+
+            Mockito.verify(alunoRepository).buscarAtivos(null, pageable);
+        }
+
+        @Test
+        @DisplayName("Deve retornar página de alunos do professor filtrada por nome")
+        void deveRetornarPaginaDeAlunosDoProfessor() {
+            Aluno aluno = new Aluno();
+            aluno.setNome("Maria");
+            Pageable pageable = PageRequest.of(0, 10);
+
+            Mockito.when(alunoRepository.findByProfessorId(5L, "Mar", pageable)).thenReturn(new PageImpl<>(List.of(aluno), pageable, 1));
+
+            Page<Aluno> resultado = alunoService.getByProfessorId(5L, "Mar", pageable);
+
+            Assertions.assertEquals(1, resultado.getTotalElements());
+            Assertions.assertEquals("Maria", resultado.getContent().get(0).getNome());
         }
     }
 
