@@ -24,7 +24,9 @@ public class RabbitMqConfiguration {
 
     @Bean
     public Queue contratosVencimentoQueue() {
-        return QueueBuilder.durable(FILA_CONTRATOS_VENCIMENTO).build();
+        return QueueBuilder.durable(FILA_CONTRATOS_VENCIMENTO)
+                .withArgument("x-dead-letter-exchange", "mensageria.aula.dlx")
+                .build();
     }
 
     @Bean
