@@ -13,6 +13,7 @@ import school.sptech.back_end_PI.repository.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ContratoService {
@@ -103,6 +104,8 @@ public class ContratoService {
 
         validarDatas(request);
 
+        boolean dataFimMudou = !Objects.equals(contratoExistente.getDataFim(), request.getDataFim());
+
         // Devolve os horários antigos dependendo do tipo antes de aplicar as novas mudanças
         if ("Individual".equalsIgnoreCase(contratoExistente.getTipo())) {
             liberarHorariosDeContratoIndividual(contratoExistente);
@@ -116,6 +119,11 @@ public class ContratoService {
             atualizarContratoIndividual(contratoExistente, request);
         } else {
             throw new BusinessRuleException("Tipo de contrato inválido para atualização. Use 'Grupo' ou 'Individual'.");
+        }
+
+        // Se a data de fim mudou, o contrato volta a ficar elegível para o aviso de vencimento
+        if (dataFimMudou) {
+            contratoExistente.setVencimentoNotificadoEm(null);
         }
 
         Contrato contratoAtualizado = contratoRepository.save(contratoExistente);
