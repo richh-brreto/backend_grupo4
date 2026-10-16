@@ -2,6 +2,7 @@ package school.sptech.back_end_PI.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -18,6 +19,11 @@ public class Contrato {
 
     @Column(name = "data_fim", nullable = false)
     private LocalDate dataFim;
+
+    // Momento em que o aviso de vencimento foi reservado/publicado. NULL = ainda não notificado.
+    // Timestamp (e não boolean) para permitir reabrir reservas abandonadas por uma instância que caiu.
+    @Column(name = "vencimento_notificado_em")
+    private LocalDateTime vencimentoNotificadoEm;
 
     private String tipo;
 
@@ -81,6 +87,14 @@ public class Contrato {
 
     public void setDataFim(LocalDate dataFim) {
         this.dataFim = dataFim;
+    }
+
+    public LocalDateTime getVencimentoNotificadoEm() {
+        return vencimentoNotificadoEm;
+    }
+
+    public void setVencimentoNotificadoEm(LocalDateTime vencimentoNotificadoEm) {
+        this.vencimentoNotificadoEm = vencimentoNotificadoEm;
     }
 
     public String getTipo() {
