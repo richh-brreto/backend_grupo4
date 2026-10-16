@@ -4,137 +4,129 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import school.sptech.back_end_PI.dto.dashboard.DashboardProfessorItem;
 import school.sptech.back_end_PI.dto.dashboard.DashboardResponse;
-import school.sptech.back_end_PI.entity.Aula;
 import school.sptech.back_end_PI.entity.Contrato;
+import school.sptech.back_end_PI.entity.Horario;
 import school.sptech.back_end_PI.entity.Professor;
-import school.sptech.back_end_PI.repository.AulaRepository;
+import school.sptech.back_end_PI.repository.ContratoRepository;
 import school.sptech.back_end_PI.repository.ProfessorRepository;
 
-import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.WeekFields;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @Service
 public class DashboardService {
 
     private final ProfessorRepository professorRepository;
-    private final AulaRepository aulaRepository;
-    private static final double DEFAULT_CAPACITY_HOURS = 40.0;
+    private final ContratoRepository contratoRepository;
 
-    public DashboardService(ProfessorRepository professorRepository, AulaRepository aulaRepository) {
+    public DashboardService(ProfessorRepository professorRepository, ContratoRepository contratoRepository) {
         this.professorRepository = professorRepository;
-        this.aulaRepository = aulaRepository;
+        this.contratoRepository = contratoRepository;
     }
 
-    @Transactional
-    public DashboardResponse montarDashboardProfessores(LocalDate startDate, LocalDate endDate) {
-        LocalDate inicio = mapearDataInicio(startDate);
-        LocalDate fim = mapearDataFim(endDate, inicio);
-
+    // Snapshot semanal e independente de data: capacidade do professor
+    // (disponibilidade) x carga contratada (grade recorrente das turmas e dos
+    // contratos individuais). As aulas se repetem toda semana, então contar as
+    // linhas de aula de uma janela específica distorcia o resultado.
+    @Transactional(readOnly = true)
+    public DashboardResponse montarDashboardProfessores() {
         List<Professor> professores = professorRepository.findAll();
-        List<Aula> aulasDoPeriodo = aulaRepository.findByDataBetween(inicio, fim);
+        Map<Long, Set<Horario>> gradePorProfessor = montarGradeSemanalPorProfessor();
 
-        Map<Long, List<Aula>> aulasPorProfessor = agruparAulasPorProfessor(aulasDoPeriodo);
-        List<DashboardProfessorItem> detalhes = construirDetalhesProfessores(professores, aulasPorProfessor);
+        List<DashboardProfessorItem> detalhes = professores.stream()
+                .map(professor -> criarItemProfessor(professor, gradePorProfessor.getOrDefault(professor.getId(), Set.of())))
+                .toList();
 
         return construirRespostaDashboard(professores.size(), detalhes);
     }
 
-    private LocalDate mapearDataInicio(LocalDate startDate) {
-        if (startDate != null) {
-            return startDate;
+    private Map<Long, Set<Horario>> montarGradeSemanalPorProfessor() {
+        Map<Long, Set<Horario>> grade = new HashMap<>();
+
+        for (Contrato contrato : contratoRepository.findAll()) {
+            Professor professor = resolverProfessorDoContrato(contrato);
+            if (professor == null) {
+                continue;
+            }
+            // Set por id de Horario: evita contar o mesmo slot duas vezes quando
+            // vários alunos compartilham a grade da mesma turma.
+            grade.computeIfAbsent(professor.getId(), id -> new LinkedHashSet<>())
+                    .addAll(horariosDaGrade(contrato));
         }
-        return LocalDate.now().with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1);
+
+        return grade;
     }
 
-    private LocalDate mapearDataFim(LocalDate endDate, LocalDate inicio) {
-        if (endDate != null) {
-            return endDate;
-        }
-        return inicio.plusDays(6);
-    }
-
-    private Map<Long, List<Aula>> agruparAulasPorProfessor(List<Aula> aulas) {
-        return aulas.stream()
-                .filter(aula -> obterProfessorDaAula(aula) != null)
-                .collect(Collectors.groupingBy(aula -> obterProfessorDaAula(aula).getId()));
-    }
-
-    private Professor obterProfessorDaAula(Aula aula) {
-        if (aula == null || aula.getContrato() == null) {
-            return null;
-        }
-        Contrato contrato = aula.getContrato();
+    private Professor resolverProfessorDoContrato(Contrato contrato) {
         if (contrato.getTurma() != null) {
             return contrato.getTurma().getProfessor();
         }
         return contrato.getProfessor();
     }
 
-    private List<DashboardProfessorItem> construirDetalhesProfessores(List<Professor> professores, Map<Long, List<Aula>> aulasPorProfessor) {
-        return professores.stream()
-                .map(professor -> criarItemProfessor(professor, aulasPorProfessor.getOrDefault(professor.getId(), List.of())))
-                .collect(Collectors.toList());
+    private List<Horario> horariosDaGrade(Contrato contrato) {
+        List<Horario> horarios = contrato.getTurma() != null
+                ? contrato.getTurma().getHorarios()
+                : contrato.getHorarios();
+        return horarios != null ? horarios : List.of();
     }
 
-    private DashboardProfessorItem criarItemProfessor(Professor professor, List<Aula> aulas) {
-        double horasSemanais = calcularHorasSemanaisDisponiveis(professor);
-        double totalHorasOcupadas = calcularTotalHorasOcupadas(aulas);
-        double horasLivres = Math.max(0.0, horasSemanais - totalHorasOcupadas);
-        String status = computeStatus(totalHorasOcupadas, horasSemanais);
+    private DashboardProfessorItem criarItemProfessor(Professor professor, Set<Horario> gradeSemanal) {
+        double capacidade = somarHoras(professor.getHorarios());
+        double horasContratadas = somarHoras(gradeSemanal);
+        double horasLivres = Math.max(0.0, capacidade - horasContratadas);
+        String status = computeStatus(horasContratadas, capacidade);
 
         return new DashboardProfessorItem(
                 professor.getId(),
                 professor.getNome(),
-                aulas.size(),
-                round(horasSemanais),
+                gradeSemanal.size(),
+                round(capacidade),
                 round(horasLivres),
                 status
         );
     }
 
-    private double calcularHorasSemanaisDisponiveis(Professor professor) {
-        if (professor.getHorarios() == null || professor.getHorarios().isEmpty()) {
-            return DEFAULT_CAPACITY_HOURS;
+    private double somarHoras(Collection<Horario> horarios) {
+        if (horarios == null) {
+            return 0.0;
         }
-        return professor.getHorarios().stream()
+        return horarios.stream()
+                .filter(h -> h != null && h.getHoraInicio() != null && h.getHoraFim() != null)
                 .mapToDouble(h -> ChronoUnit.MINUTES.between(h.getHoraInicio(), h.getHoraFim()) / 60.0)
                 .sum();
     }
 
-    private double calcularTotalHorasOcupadas(List<Aula> aulas) {
-        return aulas.stream()
-                .filter(a -> a.getHoraInicio() != null && a.getHoraFim() != null)
-                .mapToDouble(a -> ChronoUnit.MINUTES.between(a.getHoraInicio(), a.getHoraFim()) / 60.0)
-                .sum();
-    }
-
     private DashboardResponse construirRespostaDashboard(int totalProfessores, List<DashboardProfessorItem> detalhes) {
-        int totalAulasGeral = detalhes.stream().mapToInt(DashboardProfessorItem::getAulasCount).sum();
+        int totalAulas = detalhes.stream().mapToInt(DashboardProfessorItem::getAulasCount).sum();
         double totalHorasLivres = detalhes.stream().mapToDouble(DashboardProfessorItem::getHorasLivres).sum();
-        int professoresSobrecarregados = (int) detalhes.stream().filter(d -> d.getStatus().equals("Sobrecarregado")).count();
+        int professoresSobrecarregados = (int) detalhes.stream()
+                .filter(d -> "Sobrecarregado".equals(d.getStatus()))
+                .count();
 
         return new DashboardResponse(
                 totalProfessores,
-                totalAulasGeral,
+                totalAulas,
                 round(totalHorasLivres),
                 professoresSobrecarregados,
                 detalhes
         );
     }
 
-    private static String computeStatus(double horasOcupadas, double capacidadeTotal) {
-        if (capacidadeTotal == 0) {
-            return "Subutilizado";
+    private static String computeStatus(double horasContratadas, double capacidade) {
+        if (capacidade <= 0) {
+            // Sem disponibilidade cadastrada: se tem grade, está sobrecarregado.
+            return horasContratadas > 0 ? "Sobrecarregado" : "Subutilizado";
         }
-        if (horasOcupadas >= 0.80 * capacidadeTotal) {
+        if (horasContratadas >= 0.80 * capacidade) {
             return "Sobrecarregado";
         }
-        if (horasOcupadas >= 0.50 * capacidadeTotal) {
+        if (horasContratadas >= 0.50 * capacidade) {
             return "Equilibrado";
         }
         return "Subutilizado";

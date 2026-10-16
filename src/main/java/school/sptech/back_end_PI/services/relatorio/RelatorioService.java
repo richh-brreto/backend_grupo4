@@ -43,7 +43,7 @@ public class RelatorioService {
         sb.append("Total de Horas Livres;").append(fmtNumero(dashboard.getTotalHorasLivres())).append("\n");
         sb.append("Professores Sobrecarregados;").append(dashboard.getProfessoresSobrecarregados()).append("\n\n");
 
-        sb.append("Professor;Aulas no Periodo;Horas Semanais;Horas Livres;Status\n");
+        sb.append("Professor;Aulas Semanais;Horas Semanais;Horas Livres;Status\n");
         for (DashboardProfessorItem p : dashboard.getDetalhes()) {
             sb.append(escapar(p.getNome())).append(";")
               .append(p.getAulasCount()).append(";")
@@ -77,7 +77,9 @@ public class RelatorioService {
     }
 
     public CsvSnapshot extrairCsv(LocalDate inicio, LocalDate fim) {
-        DashboardResponse dashboard = dashboardService.montarDashboardProfessores(inicio, fim);
+        // A dashboard é um snapshot semanal (grade contratada x disponibilidade),
+        // então o período serve apenas como rótulo do relatório.
+        DashboardResponse dashboard = dashboardService.montarDashboardProfessores();
         return new CsvSnapshot(montarCsv(dashboard, inicio, fim), inicio, fim);
     }
 }

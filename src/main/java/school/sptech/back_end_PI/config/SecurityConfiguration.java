@@ -1,13 +1,17 @@
 package school.sptech.back_end_PI.config;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -17,6 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import school.sptech.back_end_PI.services.CustomUserDetailsService;
 
+import java.io.IOException;
 import java.util.List;
 
 @Configuration
@@ -72,6 +77,10 @@ public class SecurityConfiguration {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(this::responderNaoAutenticado)
+                        .accessDeniedHandler(this::responderAcessoNegado)
+                )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
@@ -80,6 +89,26 @@ public class SecurityConfiguration {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    // Sem isto o Spring usa Http403ForbiddenEntryPoint por padrão: requisição
+    // anônima (cookie ausente/expirado) virava 403 e o front não sabia que era
+    // sessão inválida. Agora não autenticado -> 401, sem permissão -> 403.
+    private void responderNaoAutenticado(HttpServletRequest request, HttpServletResponse response,
+                                         AuthenticationException authException) throws IOException {
+        escreverErro(response, HttpServletResponse.SC_UNAUTHORIZED, "Sessão expirada ou inválida");
+    }
+
+    private void responderAcessoNegado(HttpServletRequest request, HttpServletResponse response,
+                                       AccessDeniedException accessDeniedException) throws IOException {
+        escreverErro(response, HttpServletResponse.SC_FORBIDDEN, "Acesso negado");
+    }
+
+    private void escreverErro(HttpServletResponse response, int status, String mensagem) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("{\"error\":\"" + mensagem + "\"}");
     }
 
     @Bean
