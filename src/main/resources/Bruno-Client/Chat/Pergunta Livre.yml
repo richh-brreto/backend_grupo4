@@ -1,0 +1,24 @@
+info:
+  name: Pergunta Livre
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:8080/chat
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "tipo": "PERGUNTA",
+        "mensagem": "Qual professor está mais sobrecarregado?"
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

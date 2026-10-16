@@ -1,6 +1,7 @@
 package school.sptech.back_end_PI.services;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import school.sptech.back_end_PI.dto.dashboard.DashboardProfessorItem;
 import school.sptech.back_end_PI.dto.dashboard.DashboardResponse;
 import school.sptech.back_end_PI.entity.Aula;
@@ -29,6 +30,7 @@ public class DashboardService {
         this.aulaRepository = aulaRepository;
     }
 
+    @Transactional
     public DashboardResponse montarDashboardProfessores(LocalDate startDate, LocalDate endDate) {
         LocalDate inicio = mapearDataInicio(startDate);
         LocalDate fim = mapearDataFim(endDate, inicio);
