@@ -1,7 +1,7 @@
 USE boost;
 
 -- ========================================================
--- 1. PROFESSORES FICTÍCIOS DE POP CULTURE (IDs de 2 a 11)
+-- 1. PROFESSORES FICTÍCIOS DE POP CULTURE (IDs de 2 a 12)
 -- ========================================================
 INSERT INTO professor (nome, email, telefone, senha, codigo_acesso, ativo) VALUES
 ('Albus Dumbledore', 'dumbledore@hogwarts.edu', '11981110001', '$2a$10$e8T/r1eGZ2G5qW9X5Y.u..Z9K2e9Z9K2e9Z9K2e9Z9K2e9Z9K2e9Z', NULL, 1),
@@ -13,7 +13,8 @@ INSERT INTO professor (nome, email, telefone, senha, codigo_acesso, ativo) VALUE
 ('Rupert Giles', 'giles@sunnydale.edu', '11987770007', NULL, 'PROF-2026-07', 1),
 ('Professor Oak', 'oak@pokemon-lab.jp', '11988880008', NULL, 'PROF-2026-08', 1),
 ('John Keating', 'keating@welton.edu', '11989990009', NULL, 'PROF-2026-09', 1),
-('Indiana Jones', 'indy@marshall.edu', '11980000010', '$2a$10$e8T/r1eGZ2G5qW9X5Y.u..Z9K2e9Z9K2e9Z9K2e9Z9K2e9Z9K2e9Z', NULL, 0);
+('Indiana Jones', 'indy@marshall.edu', '11980000010', '$2a$10$e8T/r1eGZ2G5qW9X5Y.u..Z9K2e9Z9K2e9Z9K2e9Z9K2e9Z9K2e9Z', NULL, 0),
+('Emmet Brown', 'emmet.brown@hillvalley.edu', '11980000011', '$2a$10$e8T/r1eGZ2G5qW9X5Y.u..Z9K2e9Z9K2e9Z9K2e9Z9K2e9Z9K2e9Z', NULL, 1); -- carga alta (turma intensiva)
 
 -- Permissões
 INSERT INTO professor_permissao (professor_id_professor, permissao_id_permissao) VALUES
@@ -21,7 +22,7 @@ INSERT INTO professor_permissao (professor_id_professor, permissao_id_permissao)
 (3, 1), (3, 2), (3, 3), (3, 5),
 (4, 2), (4, 3), (4, 6),
 (5, 2), (5, 3),
-(6, 2), (6, 3), (7, 2), (7, 3), (8, 2), (8, 3), (9, 2), (10, 2), (11, 2);
+(6, 2), (6, 3), (7, 2), (7, 3), (8, 2), (8, 3), (9, 2), (10, 2), (11, 2), (12, 2), (12, 3);
 
 -- ========================================================
 -- 2. ALUNOS FICTÍCIOS DE POP CULTURE (IDs de 2 a 11)
@@ -39,34 +40,28 @@ INSERT INTO aluno (nome, email, telefone, nivel, senha, codigo_acesso, ativo) VA
 ('Walter White', 'walter.white@heisenberg.com', '11990001010', 'Avançado', '$2a$10$e8T/r1eGZ2G5qW9X5Y.u..Z9K2e9Z9K2e9Z9K2e9Z9K2e9Z9K2e9Z', NULL, 0);
 
 -- ========================================================
--- 3. TURMAS EXCLUSIVAS DE INGLÊS (IDs de 2 a 6)
+-- 3. TURMAS EXCLUSIVAS DE INGLÊS (IDs de 2 a 7)
 -- ========================================================
 INSERT INTO turma (nome_turma, nivel, limite_alunos, tipo, professor_id_professor) VALUES
 ('Inglês Avançado - Devs & Tech', 'Avançado', 12, 'Grupo', 2),        -- Prof. Dumbledore
 ('Inglês Instrumental - Business', 'Intermediário', 10, 'Grupo', 3),   -- Prof. Charles Xavier
 ('Inglês Zero - Fundamentos', 'Básico', 15, 'Grupo', 4),              -- Profª Minerva
 ('Inglês para Conversação & Fluência', 'Avançado', 8, 'Grupo', 5),    -- Prof. Severus Snape
-('Inglês Intermediário - TOEFL Prep', 'Intermediário', 10, 'Grupo', 6);-- Prof. Mestre Yoda
+('Inglês Intermediário - TOEFL Prep', 'Intermediário', 10, 'Grupo', 6),-- Prof. Mestre Yoda
+('Inglês Intensivo - Full Time', 'Avançado', 12, 'Grupo', 12);-- Prof. Emmet Brown (36h/semana)
 
 -- ========================================================
 -- 4. MAPEAMENTO DE DISPONIBILIDADES
 -- ========================================================
+-- Jornada semanal (capacidade) e carga contratada (grade) propositalmente variadas
+-- para a Dashboard exibir professores Subutilizados, Equilibrados e Sobrecarregados.
+DELETE FROM disponibilidade_professor WHERE professor_id_professor IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12);
 INSERT INTO disponibilidade_professor (professor_id_professor, horario_id_horario, is_disponivel) VALUES
-(2, 3, TRUE), (2, 37, TRUE), -- Dumbledore (Seg/Qua 08h-09h)
-(3, 20, TRUE), (3, 54, TRUE), -- Xavier (Ter/Qui 08h-09h)
-(4, 38, TRUE),                -- Minerva (Qua 09h-10h)
-(5, 89, TRUE),                -- Snape (Sáb 08h-09h)
-(6, 23, TRUE),                -- Yoda (Ter 11h-12h)
-(7, 4, TRUE),                 -- Annalise (Seg 09h-10h)
-(8, 5, TRUE);                 -- Giles (Seg 10h-11h)
-
+(1, 1, TRUE), (1, 2, TRUE), (1, 3, TRUE), (1, 4, TRUE), (1, 5, TRUE), (1, 6, TRUE), (1, 7, TRUE), (1, 8, TRUE), (1, 9, TRUE), (1, 10, TRUE), (1, 11, TRUE), (1, 12, TRUE), (1, 13, TRUE), (1, 14, TRUE), (1, 15, TRUE), (1, 16, TRUE), (1, 17, TRUE), (1, 18, TRUE), (1, 19, TRUE), (1, 20, TRUE), (1, 21, TRUE), (1, 22, TRUE), (1, 23, TRUE), (1, 24, TRUE), (1, 25, TRUE), (1, 26, TRUE), (1, 27, TRUE), (1, 28, TRUE), (1, 29, TRUE), (1, 30, TRUE), (1, 31, TRUE), (1, 32, TRUE), (1, 33, TRUE), (1, 34, TRUE), (1, 35, TRUE), (1, 36, TRUE), (1, 37, TRUE), (1, 38, TRUE), (1, 39, TRUE), (1, 40, TRUE), (2, 1, TRUE), (2, 2, TRUE), (2, 3, TRUE), (2, 4, TRUE), (2, 5, TRUE), (2, 6, TRUE), (2, 7, TRUE), (2, 8, TRUE), (2, 9, TRUE), (2, 10, TRUE), (2, 11, TRUE), (2, 12, TRUE), (2, 13, TRUE), (2, 14, TRUE), (2, 15, TRUE), (2, 16, TRUE), (2, 17, TRUE), (2, 18, TRUE), (2, 19, TRUE), (2, 20, TRUE), (3, 18, TRUE), (3, 19, TRUE), (3, 20, TRUE), (3, 21, TRUE), (3, 22, TRUE), (3, 23, TRUE), (3, 24, TRUE), (3, 25, TRUE), (3, 26, TRUE), (3, 27, TRUE), (3, 28, TRUE), (3, 29, TRUE), (4, 35, TRUE), (4, 36, TRUE), (4, 37, TRUE), (4, 38, TRUE), (4, 39, TRUE), (4, 40, TRUE), (4, 41, TRUE), (4, 42, TRUE), (4, 43, TRUE), (4, 44, TRUE), (4, 45, TRUE), (4, 46, TRUE), (4, 47, TRUE), (4, 48, TRUE), (4, 49, TRUE), (4, 50, TRUE), (4, 51, TRUE), (4, 52, TRUE), (4, 53, TRUE), (4, 54, TRUE), (4, 55, TRUE), (4, 56, TRUE), (4, 57, TRUE), (4, 58, TRUE), (5, 1, TRUE), (5, 2, TRUE), (5, 3, TRUE), (5, 4, TRUE), (5, 5, TRUE), (5, 6, TRUE), (5, 7, TRUE), (5, 8, TRUE), (5, 9, TRUE), (5, 10, TRUE), (5, 11, TRUE), (5, 12, TRUE), (5, 13, TRUE), (5, 14, TRUE), (5, 15, TRUE), (5, 16, TRUE), (5, 17, TRUE), (5, 18, TRUE), (5, 19, TRUE), (5, 20, TRUE), (5, 21, TRUE), (5, 22, TRUE), (5, 23, TRUE), (5, 24, TRUE), (5, 25, TRUE), (5, 26, TRUE), (5, 27, TRUE), (5, 28, TRUE), (5, 29, TRUE), (5, 30, TRUE), (5, 31, TRUE), (5, 32, TRUE), (5, 33, TRUE), (5, 34, TRUE), (5, 35, TRUE), (5, 36, TRUE), (5, 37, TRUE), (5, 38, TRUE), (5, 39, TRUE), (5, 40, TRUE), (5, 41, TRUE), (5, 42, TRUE), (5, 43, TRUE), (5, 44, TRUE), (6, 69, TRUE), (6, 70, TRUE), (6, 71, TRUE), (6, 72, TRUE), (6, 73, TRUE), (6, 74, TRUE), (6, 75, TRUE), (6, 76, TRUE), (6, 77, TRUE), (6, 78, TRUE), (6, 79, TRUE), (6, 80, TRUE), (6, 81, TRUE), (6, 82, TRUE), (6, 83, TRUE), (6, 84, TRUE), (7, 1, TRUE), (7, 2, TRUE), (7, 3, TRUE), (7, 4, TRUE), (7, 5, TRUE), (7, 6, TRUE), (7, 7, TRUE), (7, 8, TRUE), (7, 9, TRUE), (7, 10, TRUE), (7, 11, TRUE), (7, 12, TRUE), (7, 13, TRUE), (7, 14, TRUE), (7, 15, TRUE), (7, 16, TRUE), (7, 17, TRUE), (7, 18, TRUE), (7, 19, TRUE), (7, 20, TRUE), (7, 21, TRUE), (7, 22, TRUE), (7, 23, TRUE), (7, 24, TRUE), (7, 25, TRUE), (7, 26, TRUE), (7, 27, TRUE), (7, 28, TRUE), (7, 29, TRUE), (7, 30, TRUE), (8, 52, TRUE), (8, 53, TRUE), (8, 54, TRUE), (8, 55, TRUE), (8, 56, TRUE), (8, 57, TRUE), (8, 58, TRUE), (8, 59, TRUE), (8, 60, TRUE), (8, 61, TRUE), (8, 62, TRUE), (8, 63, TRUE), (8, 64, TRUE), (8, 65, TRUE), (8, 66, TRUE), (8, 67, TRUE), (8, 68, TRUE), (8, 69, TRUE), (8, 70, TRUE), (8, 71, TRUE), (8, 72, TRUE), (8, 73, TRUE), (8, 74, TRUE), (8, 75, TRUE), (9, 86, TRUE), (9, 87, TRUE), (9, 88, TRUE), (9, 89, TRUE), (9, 90, TRUE), (9, 91, TRUE), (9, 92, TRUE), (9, 93, TRUE), (9, 94, TRUE), (9, 95, TRUE), (10, 1, TRUE), (10, 2, TRUE), (10, 3, TRUE), (10, 4, TRUE), (10, 5, TRUE), (10, 6, TRUE), (10, 7, TRUE), (10, 8, TRUE), (10, 9, TRUE), (10, 10, TRUE), (10, 11, TRUE), (10, 12, TRUE), (10, 13, TRUE), (10, 14, TRUE), (10, 15, TRUE), (10, 16, TRUE), (10, 17, TRUE), (10, 18, TRUE), (10, 19, TRUE), (10, 20, TRUE), (10, 21, TRUE), (10, 22, TRUE), (10, 23, TRUE), (10, 24, TRUE), (10, 25, TRUE), (10, 26, TRUE), (10, 27, TRUE), (10, 28, TRUE), (10, 29, TRUE), (10, 30, TRUE), (10, 31, TRUE), (10, 32, TRUE), (10, 33, TRUE), (10, 34, TRUE), (10, 35, TRUE), (10, 36, TRUE), (10, 37, TRUE), (10, 38, TRUE), (10, 39, TRUE), (10, 40, TRUE), (12, 3, TRUE), (12, 4, TRUE), (12, 5, TRUE), (12, 6, TRUE), (12, 7, TRUE), (12, 8, TRUE), (12, 9, TRUE), (12, 10, TRUE), (12, 11, TRUE), (12, 12, TRUE), (12, 13, TRUE), (12, 14, TRUE), (12, 15, TRUE), (12, 16, TRUE), (12, 17, TRUE), (12, 18, TRUE), (12, 19, TRUE), (12, 20, TRUE), (12, 21, TRUE), (12, 22, TRUE), (12, 23, TRUE), (12, 24, TRUE), (12, 25, TRUE), (12, 26, TRUE), (12, 27, TRUE), (12, 28, TRUE), (12, 29, TRUE), (12, 30, TRUE), (12, 31, TRUE), (12, 32, TRUE), (12, 33, TRUE), (12, 34, TRUE), (12, 35, TRUE), (12, 36, TRUE), (12, 37, TRUE), (12, 38, TRUE), (12, 39, TRUE), (12, 40, TRUE), (12, 41, TRUE), (12, 42, TRUE);
+-- Grade de cada turma (subconjunto da jornada do professor).
+DELETE FROM disponibilidade_turma WHERE turma_id_turma IN (1, 2, 3, 4, 5, 6, 7);
 INSERT INTO disponibilidade_turma (turma_id_turma, horario_id_horario) VALUES
-(2, 3), (2, 37), -- Turma 2: Inglês Devs
-(3, 20), (3, 54), -- Turma 3: Inglês Business
-(4, 38),          -- Turma 4: Inglês Zero
-(5, 89),          -- Turma 5: Conversação
-(6, 23);          -- Turma 6: TOEFL Prep
-
+(1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (2, 7), (2, 8), (2, 9), (2, 10), (2, 11), (2, 12), (3, 18), (3, 19), (3, 20), (3, 21), (3, 22), (3, 23), (3, 24), (3, 25), (3, 26), (3, 27), (4, 35), (4, 36), (4, 37), (4, 38), (4, 39), (4, 40), (4, 41), (4, 42), (4, 43), (4, 44), (4, 45), (4, 46), (4, 47), (4, 48), (5, 1), (5, 2), (5, 3), (5, 4), (5, 5), (5, 6), (6, 69), (6, 70), (6, 71), (6, 72), (6, 73), (6, 74), (6, 75), (6, 76), (6, 77), (7, 3), (7, 4), (7, 5), (7, 6), (7, 7), (7, 8), (7, 9), (7, 10), (7, 11), (7, 12), (7, 13), (7, 14), (7, 15), (7, 16), (7, 17), (7, 18), (7, 19), (7, 20), (7, 21), (7, 22), (7, 23), (7, 24), (7, 25), (7, 26), (7, 27), (7, 28), (7, 29), (7, 30), (7, 31), (7, 32), (7, 33), (7, 34), (7, 35), (7, 36), (7, 37), (7, 38);
 INSERT INTO disponibilidade_aluno (horario_id_horario, aluno_id_aluno, is_disponivel) VALUES
 (3, 2, TRUE), (37, 2, TRUE),   -- Peter Parker -> Inglês Devs
 (3, 5, TRUE), (37, 5, TRUE),   -- Hermione Granger -> Inglês Devs
@@ -89,35 +84,36 @@ INSERT INTO contrato (id_contrato, data_inicio, data_fim, tipo, professor_id_pro
 (6, '2026-03-01', '2026-12-20', 'Grupo', 6, NULL, 6),      -- Yoda + TOEFL Prep
 (7, '2026-02-01', '2026-12-20', 'Individual', 7, 8, NULL), -- Annalise + Jinx (VIP English)
 (8, '2026-03-01', '2026-12-20', 'Individual', 8, 9, NULL), -- Giles + Jesse (VIP English)
-(9, '2026-03-10', '2026-12-20', 'Individual', 9, 10, NULL);-- Prof. Oak + Lara (VIP English)
+(9, '2026-03-10', '2026-12-20', 'Individual', 9, 10, NULL),-- Prof. Oak + Lara (VIP English)
+(10, '2026-02-01', '2026-12-20', 'Grupo', 12, NULL, 7);-- Prof. Emmet Brown + Inglês Intensivo (36h/semana)
 
+-- Grade dos contratos individuais (subconjunto da jornada do professor).
+DELETE FROM ids_horario_contrato WHERE contrato_id_contrato IN (7, 8, 9);
 INSERT INTO ids_horario_contrato (contrato_id_contrato, horario_id_horario) VALUES
-(7, 4),
-(8, 5),
-(9, 23);
+(7, 1), (7, 2), (7, 3), (7, 4), (7, 5), (7, 6), (7, 7), (7, 8), (8, 52), (8, 53), (8, 54), (8, 55), (8, 56), (8, 57), (8, 58), (8, 59), (8, 60), (8, 61), (8, 62), (8, 63), (8, 64), (8, 65), (8, 66), (9, 86), (9, 87), (9, 88), (9, 89), (9, 90), (9, 91), (9, 92), (9, 93), (9, 94);
 
 -- ========================================================
 -- 6. REGISTRO DE AULAS DE INGLÊS
 -- ========================================================
 INSERT INTO aula (id_aula, data, presenca, status, hora_inicio, hora_fim, contrato_id_contrato) VALUES
-(1, '2026-09-07', 1, 'REALIZADA', '19:00:00', '20:00:00', 1),
+(1, '2026-09-07', 1, 'AGENDADA', '19:00:00', '20:00:00', 1),
 -- Aulas de Inglês Devs
-(2, '2026-09-07', 1, 'REALIZADA', '08:00:00', '09:00:00', 2),
-(3, '2026-09-09', 1, 'REALIZADA', '08:00:00', '09:00:00', 2),
+(2, '2026-09-07', 1, 'AGENDADA', '08:00:00', '09:00:00', 2),
+(3, '2026-09-09', 1, 'AGENDADA', '08:00:00', '09:00:00', 2),
 (4, '2026-10-12', 0, 'AGENDADA',  '08:00:00', '09:00:00', 2),
 -- Aulas de Inglês Business
-(5, '2026-09-08', 1, 'REALIZADA', '08:00:00', '09:00:00', 3),
+(5, '2026-09-08', 1, 'AGENDADA', '08:00:00', '09:00:00', 3),
 (6, '2026-09-10', 0, 'CANCELADA', '08:00:00', '09:00:00', 3),
 -- Aulas de Inglês Zero
-(7, '2026-09-09', 1, 'REALIZADA', '09:00:00', '10:00:00', 4),
+(7, '2026-09-09', 1, 'AGENDADA', '09:00:00', '10:00:00', 4),
 -- Aulas de Conversação
-(8, '2026-09-12', 1, 'REALIZADA', '08:00:00', '09:00:00', 5),
+(8, '2026-09-12', 1, 'AGENDADA', '08:00:00', '09:00:00', 5),
 -- Aulas de TOEFL Prep
-(9, '2026-09-08', 1, 'REALIZADA', '11:00:00', '12:00:00', 6),
+(9, '2026-09-08', 1, 'AGENDADA', '11:00:00', '12:00:00', 6),
 -- Aulas VIPs
-(10, '2026-09-07', 1, 'REALIZADA', '09:00:00', '10:00:00', 7),
-(11, '2026-09-07', 0, 'REALIZADA', '10:00:00', '11:00:00', 8),
-(12, '2026-09-08', 1, 'REALIZADA', '11:00:00', '12:00:00', 9);
+(10, '2026-09-07', 1, 'AGENDADA', '09:00:00', '10:00:00', 7),
+(11, '2026-09-07', 0, 'AGENDADA', '10:00:00', '11:00:00', 8),
+(12, '2026-09-08', 1, 'AGENDADA', '11:00:00', '12:00:00', 9);
 
 -- ========================================================
 -- 7. LOGS DE SISTEMA
