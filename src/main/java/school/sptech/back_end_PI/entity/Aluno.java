@@ -161,7 +161,11 @@ public class Aluno implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_ALUNO"));
+        return List.of(
+                new SimpleGrantedAuthority("ROLE_ALUNO"),
+                new SimpleGrantedAuthority("PERM_TELA_AGENDA"),
+                new SimpleGrantedAuthority("PERM_TELA_GERAL")
+        );
     }
 
     @Override

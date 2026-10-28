@@ -227,6 +227,17 @@ public class PrimeiroAcessoServiceTest {
         }
 
         @Test
+        @DisplayName("Deve conceder ao aluno as permissões de agenda e geral por padrão")
+        void deveConcederPermissoesPadraoAoAluno() {
+            Aluno aluno = new Aluno();
+
+            Assertions.assertTrue(aluno.getAuthorities().stream()
+                    .anyMatch(authority -> "PERM_TELA_AGENDA".equals(authority.getAuthority())));
+            Assertions.assertTrue(aluno.getAuthorities().stream()
+                    .anyMatch(authority -> "PERM_TELA_GERAL".equals(authority.getAuthority())));
+        }
+
+        @Test
         @DisplayName("Deve lançar UsernameNotFoundException quando não encontra o usuário")
         void deveLancarExcecaoQuandoUsuarioNaoExiste() {
             Mockito.when(professorRepository.findByEmail("naoexiste@email.com"))

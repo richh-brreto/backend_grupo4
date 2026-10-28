@@ -111,10 +111,8 @@ public class UsuarioController {
 
         // Token trafega SOMENTE no cookie HttpOnly, nunca no corpo (OWASP A01/A02).
         // Clients de API (Bruno/Postman) autenticam via cookie jar após o /login.
-        // As telas liberadas (professor_permissao) vão no corpo para o front filtrar o menu.
-        List<String> permissoes = isAluno
-                ? List.of()
-                : permissoesDoUsuario(authentication);
+        // As telas liberadas vêm das authorities do usuário. Alunos entram com agenda e geral por padrão.
+        List<String> permissoes = permissoesDoUsuario(authentication);
 
         return ResponseEntity.ok(new LoginResponse("Login realizado com sucesso", permissoes));
     }
@@ -145,7 +143,7 @@ public class UsuarioController {
             return ResponseEntity.ok(new UsuarioLogadoResponse(
                     aluno.getNome(),
                     aluno.getEmail(),
-                    List.of()
+                    permissoesDoUsuario(authentication)
             ));
         }
 
