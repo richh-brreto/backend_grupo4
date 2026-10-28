@@ -27,6 +27,9 @@ public class Contrato {
 
     private String tipo;
 
+    @Column(name = "link_aula", length = 2048)
+    private String linkAula;
+
     @ManyToOne
     @JoinColumn(name = "aluno_id_aluno")
     private Aluno aluno;
@@ -103,6 +106,14 @@ public class Contrato {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public String getLinkAula() {
+        return linkAula;
+    }
+
+    public void setLinkAula(String linkAula) {
+        this.linkAula = linkAula;
     }
 
     public Aluno getAluno() {

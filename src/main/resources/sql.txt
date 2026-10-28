@@ -82,6 +82,7 @@ CREATE TABLE contrato (
     data_fim DATE NOT NULL,
     vencimento_notificado_em DATETIME NULL,
     tipo VARCHAR(45),
+    link_aula VARCHAR(2048) NULL,
     professor_id_professor INT NULL,
     aluno_id_aluno INT NULL,
     turma_id_turma INT NULL,

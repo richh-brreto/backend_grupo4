@@ -22,6 +22,7 @@ public class AulaMapper {
         Contrato contrato = aula.getContrato();
         if (contrato != null) {
             response.setContratoId(contrato.getId());
+            response.setLinkAula(contrato.getLinkAula());
 
             if (contrato.getAluno() != null) {
                 response.setAlunoId(contrato.getAluno().getId());

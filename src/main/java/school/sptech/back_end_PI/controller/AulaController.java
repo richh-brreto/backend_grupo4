@@ -121,4 +121,14 @@ public class AulaController {
     public ResponseEntity<List<AulaResponse>> listarPorContrato(@PathVariable Long contratoId) {
         return ResponseEntity.ok(aulaService.listarAulasPorContrato(contratoId));
     }
+
+    @PatchMapping("/contrato/{contratoId}/link")
+    @PreAuthorize("hasAuthority('PERM_TELA_AGENDA')")
+    @Operation(summary = "Atualizar link das aulas do contrato")
+    public ResponseEntity<Void> atualizarLinkDoContrato(
+            @PathVariable Long contratoId,
+            @RequestBody @Valid LinkAulaRequest request) {
+        aulaService.atualizarLinkDoContrato(contratoId, request.getLinkAula());
+        return ResponseEntity.noContent().build();
+    }
 }

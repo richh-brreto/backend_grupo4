@@ -228,6 +228,17 @@ public class AulaService {
                 .toList();
     }
 
+    @Transactional
+    public void atualizarLinkDoContrato(Long contratoId, String linkAula) {
+        Contrato contrato = buscarContrato(contratoId);
+        if (linkAula != null && linkAula.isBlank()) {
+            linkAula = null;
+        }
+        contrato.setLinkAula(linkAula);
+        contratoRepository.save(contrato);
+        audit.log("aula.link.atualizar", audit.currentActor(), "contrato:" + contratoId, "success");
+    }
+
     @Transactional(readOnly = true)
     public List<AulaResponse> listarAulasPorPeriodo(LocalDate inicio, LocalDate fim) {
         validarPeriodo(inicio, fim);
