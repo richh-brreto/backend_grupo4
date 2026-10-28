@@ -17,9 +17,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import school.sptech.back_end_PI.dto.aluno.AlunoLoginRequest;
 import school.sptech.back_end_PI.dto.auth.LoginResponse;
 import school.sptech.back_end_PI.dto.auth.UsuarioLogadoResponse;
 import school.sptech.back_end_PI.dto.professor.ProfessorLoginRequest;
+import school.sptech.back_end_PI.entity.Aluno;
 import school.sptech.back_end_PI.entity.Permissao;
 import school.sptech.back_end_PI.entity.Professor;
 import school.sptech.back_end_PI.security.LoginAttemptService;
@@ -33,17 +35,19 @@ import java.util.List;
 public class UsuarioController {
 
     private final AuthenticationManager authenticationManager;
+    private final AuthenticationManager alunoAuthenticationManager;
     private final JwtService jwtService;
     private final Environment environment;
     private final LoginAttemptService loginAttempts;
     private final AuditService audit;
 
-    public UsuarioController(AuthenticationManager authenticationManager,
+    public UsuarioController(AuthenticationManager authenticationManager, AuthenticationManager alunoAuthenticationManager,
                              JwtService jwtService,
                              Environment environment,
                              LoginAttemptService loginAttempts,
                              AuditService audit) {
         this.authenticationManager = authenticationManager;
+        this.alunoAuthenticationManager = alunoAuthenticationManager;
         this.jwtService = jwtService;
         this.environment = environment;
         this.loginAttempts = loginAttempts;
@@ -82,9 +86,13 @@ public class UsuarioController {
             throw ex;
         }
         loginAttempts.reset(attemptKey);
-        audit.log("login", request.getEmail(), "success", "ip=" + httpRequest.getRemoteAddr());
 
-        String token = jwtService.generateToken(authentication);
+        boolean isAluno = authentication.getPrincipal() instanceof Aluno;
+        String tipo = isAluno ? "ALUNO" : "PROFESSOR";
+
+        audit.log("login", request.getEmail(), "success", "tipo=" + tipo + " ip=" + httpRequest.getRemoteAddr());
+
+        String token = jwtService.generateToken(authentication, tipo);
 
         // Secure só faz sentido em HTTPS. Em http://localhost (Bruno/dev) um cookie
         // Secure=true nunca é reenviado pelo client -> requests seguintes caem como anonymous -> 403.
@@ -103,7 +111,7 @@ public class UsuarioController {
 
         // Token trafega SOMENTE no cookie HttpOnly, nunca no corpo (OWASP A01/A02).
         // Clients de API (Bruno/Postman) autenticam via cookie jar após o /login.
-        // As telas liberadas (professor_permissao) vão no corpo para o front filtrar o menu.
+        // As telas liberadas vêm das authorities do usuário. Alunos entram com agenda e geral por padrão.
         List<String> permissoes = permissoesDoUsuario(authentication);
 
         return ResponseEntity.ok(new LoginResponse("Login realizado com sucesso", permissoes));
@@ -123,15 +131,23 @@ public class UsuarioController {
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Dados do usuário autenticado", description = "Usado pelo frontend para ajustar a interface às telas liberadas; a autorização continua em cada endpoint.")
     public ResponseEntity<UsuarioLogadoResponse> usuarioLogado(Authentication authentication) {
-        if (!(authentication.getPrincipal() instanceof Professor professor)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não autenticado");
+        if (authentication.getPrincipal() instanceof Professor professor) {
+            return ResponseEntity.ok(new UsuarioLogadoResponse(
+                    professor.getNome(),
+                    professor.getEmail(),
+                    permissoesDoUsuario(authentication)
+            ));
         }
 
-        return ResponseEntity.ok(new UsuarioLogadoResponse(
-                professor.getNome(),
-                professor.getEmail(),
-                permissoesDoUsuario(authentication)
-        ));
+        if (authentication.getPrincipal() instanceof Aluno aluno) {
+            return ResponseEntity.ok(new UsuarioLogadoResponse(
+                    aluno.getNome(),
+                    aluno.getEmail(),
+                    permissoesDoUsuario(authentication)
+            ));
+        }
+
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não autenticado");
     }
 
     @PostMapping("/logout")

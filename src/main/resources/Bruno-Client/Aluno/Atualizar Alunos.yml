@@ -5,16 +5,21 @@ info:
 
 http:
   method: PUT
-  url: http://localhost:8080/alunos/2
+  url: http://localhost:8080/alunos/12
   body:
     type: json
     data: |-
       {
-        "nome": "João Silva Atualizado",
-        "email": "joao@gmail.com",
-        "telefone": "11988887777",
-        "nivel": "Intermediário",
-        "horariosIds": [1,2]
+        "nome": "John Locke",
+        "email": "john.locke@gmail.com",
+        "telefone": "11988887772",
+        "nivel": "C2",
+        "horariosIds": [
+          1,
+          2
+        ],
+        "senhaDefinida": true,
+        "codigoAcesso": "VCKM5RW96E"
       }
 
 settings:

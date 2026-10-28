@@ -5,15 +5,18 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Table(name = "aluno")
 @SQLDelete(sql = "UPDATE aluno SET ativo = 0 WHERE id_aluno = ?")
 @SQLRestriction("ativo = 1") // Filtra automaticamente tirando os inativos dos findall/findbyid
-public class Aluno {
+public class Aluno implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -144,5 +147,29 @@ public class Aluno {
 
     public void setHorarios(List<Horario> horarios) {
         this.horarios = horarios;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public String getPassword() {
+        return senha;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(
+                new SimpleGrantedAuthority("ROLE_ALUNO"),
+                new SimpleGrantedAuthority("PERM_TELA_AGENDA"),
+                new SimpleGrantedAuthority("PERM_TELA_GERAL")
+        );
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return Boolean.TRUE.equals(ativo);
     }
 }

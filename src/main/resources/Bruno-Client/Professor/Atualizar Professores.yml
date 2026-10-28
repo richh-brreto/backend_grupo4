@@ -12,8 +12,8 @@ http:
       {
         "nome": "Pedro Atualizado",
         "email": "pedro@gmail.com",
-        "telefone": 119999999,
-        "senha": "senha123",
+        "telefone": 11999999999,
+        "senha": "banana1234",
         "horariosIds": [1,2,3],
         "permissoes": ["TELA_AGENDA"]
       }
