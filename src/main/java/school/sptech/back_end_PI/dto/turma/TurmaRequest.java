@@ -18,10 +18,15 @@ public class TurmaRequest {
     private String tipo;
     @NotEmpty
     private List<Long> horariosIds;
+    private Long professorId;
 
     public List<Long> getHorariosIds() { return horariosIds; }
 
     public void setHorariosIds(List<Long> horariosIds) { this.horariosIds = horariosIds; }
+
+    public Long getProfessorId() { return professorId; }
+
+    public void setProfessorId(Long professorId) { this.professorId = professorId; }
 
     public String getNome() {
         return nome;

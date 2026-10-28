@@ -14,6 +14,7 @@ http:
         "nivel": "Intermediário",
         "limiteAlunos": 15,
         "tipo": "Regular",
+        "professorId": 2,
         "horariosIds": [1, 2]
       }
   auth: inherit

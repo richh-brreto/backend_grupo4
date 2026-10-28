@@ -120,6 +120,45 @@ public class TurmaServiceTest {
             Assertions.assertNull(resultado.getProfessor());
             Mockito.verify(turmaRepository, Mockito.times(1)).save(Mockito.any(Turma.class));
         }
+
+        @Test
+        @DisplayName("Deve salvar turma vinculando um professor já cadastrado quando professorId é informado")
+        void deveSalvarTurmaComProfessorQuandoProfessorIdForInformado() {
+            TurmaRequest request = new TurmaRequest();
+            request.setNome("Turma com professor");
+            request.setNivel("Intermediário");
+            request.setLimiteAlunos(12);
+            request.setTipo("Regular");
+            request.setHorariosIds(List.of(1L, 2L));
+            request.setProfessorId(7L);
+
+            Horario horario1 = new Horario();
+            horario1.setId(1L);
+            Horario horario2 = new Horario();
+            horario2.setId(2L);
+
+            Professor professor = new Professor();
+            professor.setId(7L);
+            professor.setAtivo(true);
+            professor.setHorarios(List.of(horario1, horario2));
+
+            Turma turmaSalva = new Turma();
+            turmaSalva.setNome("Turma com professor");
+            turmaSalva.setProfessor(professor);
+            turmaSalva.setHorarios(List.of(horario1, horario2));
+
+            Mockito.when(turmaRepository.existsByNome("Turma com professor")).thenReturn(false);
+            Mockito.when(horarioRepository.findAllById(List.of(1L, 2L))).thenReturn(List.of(horario1, horario2));
+            Mockito.when(professorRepository.findById(7L)).thenReturn(Optional.of(professor));
+            Mockito.when(professorRepository.contarHorariosIndisponiveis(7L, List.of(1L, 2L))).thenReturn(0);
+            Mockito.when(turmaRepository.save(Mockito.any(Turma.class))).thenReturn(turmaSalva);
+
+            Turma resultado = turmaService.salvar(request);
+
+            Assertions.assertNotNull(resultado.getProfessor());
+            Assertions.assertEquals(7L, resultado.getProfessor().getId());
+            Mockito.verify(professorRepository, Mockito.times(1)).atualizarDisponibilidadeHorarios(7L, List.of(1L, 2L), false);
+        }
     }
 
     @Nested

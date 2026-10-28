@@ -31,6 +31,7 @@ public class TurmaService {
     @Autowired
     private ProfessorRepository professorRepository;
 
+    @Transactional
     public Turma salvar(TurmaRequest novaTurma) {
         // 1. Validação de Duplicidade (Nome da Turma)
         if (turmaRepository.existsByNome(novaTurma.getNome())) {
@@ -49,11 +50,30 @@ public class TurmaService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Um ou mais IDs de horários informados são inválidos.");
         }
 
-        // 3. Mapeamento e Persistência (Sem setar o Professor)
         Turma turmaSalvar = TurmaMapper.toEntity(novaTurma, horarios);
 
-        // O professor fica como null explicitamente ou por omissão no banco
-        turmaSalvar.setProfessor(null);
+        if (novaTurma.getProfessorId() != null) {
+            Professor professor = professorRepository.findById(novaTurma.getProfessorId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Professor não encontrado."));
+
+            if (professor.getAtivo() != null && !professor.getAtivo()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Não é possível vincular um professor inativo.");
+            }
+
+            if (professor.getHorarios() == null || !professor.getHorarios().containsAll(horarios)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O professor selecionado não possui todos os horários desta turma em sua grade disponível.");
+            }
+
+            List<Long> idsHorariosTurma = horarios.stream().map(Horario::getId).toList();
+            if (professorRepository.contarHorariosIndisponiveis(professor.getId(), idsHorariosTurma) > 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O professor selecionado já possui um ou mais horários desta turma ocupados em outra atividade.");
+            }
+
+            turmaSalvar.setProfessor(professor);
+            alterarDisponibilidadeProfessor(professor.getId(), horarios, false);
+        } else {
+            turmaSalvar.setProfessor(null);
+        }
 
         return turmaRepository.save(turmaSalvar);
     }

@@ -74,7 +74,7 @@ public class TurmaController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('PERM_TELA_TURMAS')")
-    @Operation(summary = "Cadastrar uma nova turma", description = "Cria uma turma vinculada a horários, nascendo inicialmente sem professor.")
+    @Operation(summary = "Cadastrar uma nova turma", description = "Cria uma turma e, opcionalmente, vincula imediatamente um professor já cadastrado na base, desde que ele tenha todos os horários da turma em sua grade disponível.")
     public ResponseEntity<TurmaResponse> cadastrar(@Valid @RequestBody TurmaRequest request) {
         Turma novaTurma = service.salvar(request);
         return ResponseEntity.status(201).body(TurmaMapper.toResponse(novaTurma));
