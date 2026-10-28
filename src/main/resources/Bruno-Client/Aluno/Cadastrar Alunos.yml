@@ -10,11 +10,13 @@ http:
     type: json
     data: |-
       {
-        "nome": "João Silva",
-        "email": "joao2@gmail.com",
-        "telefone": "11988887777",
-        "nivel": "B2",
-        "horariosIds": [1,2]
+        "nome": "John Locke",
+        "email": "john.locke@gmail.com",
+        "telefone": "11988887772",
+        "nivel": "C2",
+        "horariosIds": [1,2],
+        "senha": "senha123",
+        "codigoAcesso": "VCKM5RW96E"
       }
 
 settings:

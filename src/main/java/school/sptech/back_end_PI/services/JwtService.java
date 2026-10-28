@@ -47,7 +47,7 @@ public class JwtService {
                 .getBody();
     }
 
-    public String generateToken(Authentication authentication) {
+    public String generateToken(Authentication authentication, String tipo) {
         // O token carrega só a identidade. As telas liberadas (PERM_*) são
         // reconsultadas no banco a cada requisição, então nada de permissão vai
         // na claim: evita inflar o JWT e evita permissão vencida no token.
