@@ -133,15 +133,23 @@ public class UsuarioController {
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Dados do usuário autenticado", description = "Usado pelo frontend para ajustar a interface às telas liberadas; a autorização continua em cada endpoint.")
     public ResponseEntity<UsuarioLogadoResponse> usuarioLogado(Authentication authentication) {
-        if (!(authentication.getPrincipal() instanceof Professor professor)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não autenticado");
+        if (authentication.getPrincipal() instanceof Professor professor) {
+            return ResponseEntity.ok(new UsuarioLogadoResponse(
+                    professor.getNome(),
+                    professor.getEmail(),
+                    permissoesDoUsuario(authentication)
+            ));
         }
 
-        return ResponseEntity.ok(new UsuarioLogadoResponse(
-                professor.getNome(),
-                professor.getEmail(),
-                permissoesDoUsuario(authentication)
-        ));
+        if (authentication.getPrincipal() instanceof Aluno aluno) {
+            return ResponseEntity.ok(new UsuarioLogadoResponse(
+                    aluno.getNome(),
+                    aluno.getEmail(),
+                    List.of()
+            ));
+        }
+
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não autenticado");
     }
 
     @PostMapping("/logout")

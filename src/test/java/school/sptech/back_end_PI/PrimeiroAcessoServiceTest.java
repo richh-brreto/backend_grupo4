@@ -9,6 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import school.sptech.back_end_PI.dto.auth.PrimeiroAcessoRequest;
 import school.sptech.back_end_PI.dto.auth.PrimeiroAcessoResponse;
@@ -19,6 +21,7 @@ import school.sptech.back_end_PI.exception.ConflictException;
 import school.sptech.back_end_PI.repository.AlunoRepository;
 import school.sptech.back_end_PI.repository.ProfessorRepository;
 import school.sptech.back_end_PI.services.AuditService;
+import school.sptech.back_end_PI.services.CustomUserDetailsService;
 import school.sptech.back_end_PI.services.PrimeiroAcessoService;
 
 import java.util.Optional;
@@ -40,6 +43,9 @@ public class PrimeiroAcessoServiceTest {
 
     @InjectMocks
     private PrimeiroAcessoService primeiroAcessoService;
+
+    @InjectMocks
+    private CustomUserDetailsService customUserDetailsService;
 
     private PrimeiroAcessoRequest requestPadrao(String email, String codigo) {
         PrimeiroAcessoRequest request = new PrimeiroAcessoRequest();
@@ -184,6 +190,52 @@ public class PrimeiroAcessoServiceTest {
 
             Assertions.assertThrows(BusinessRuleException.class,
                     () -> primeiroAcessoService.definirSenha(request));
+        }
+    }
+
+    @Nested
+    public class CustomUserDetailsServiceTestes {
+
+        @Test
+        @DisplayName("Deve carregar um professor pelo email")
+        void deveCarregarProfessorPeloEmail() {
+            Professor professor = new Professor();
+            professor.setEmail("prof@email.com");
+
+            Mockito.when(professorRepository.findByEmail("prof@email.com"))
+                    .thenReturn(Optional.of(professor));
+
+            UserDetails user = customUserDetailsService.loadUserByUsername("prof@email.com");
+
+            Assertions.assertSame(professor, user);
+        }
+
+        @Test
+        @DisplayName("Deve carregar um aluno pelo email")
+        void deveCarregarAlunoPeloEmail() {
+            Aluno aluno = new Aluno();
+            aluno.setEmail("aluno@email.com");
+
+            Mockito.when(professorRepository.findByEmail("aluno@email.com"))
+                    .thenReturn(Optional.empty());
+            Mockito.when(alunoRepository.findByEmail("aluno@email.com"))
+                    .thenReturn(Optional.of(aluno));
+
+            UserDetails user = customUserDetailsService.loadUserByUsername("aluno@email.com");
+
+            Assertions.assertSame(aluno, user);
+        }
+
+        @Test
+        @DisplayName("Deve lançar UsernameNotFoundException quando não encontra o usuário")
+        void deveLancarExcecaoQuandoUsuarioNaoExiste() {
+            Mockito.when(professorRepository.findByEmail("naoexiste@email.com"))
+                    .thenReturn(Optional.empty());
+            Mockito.when(alunoRepository.findByEmail("naoexiste@email.com"))
+                    .thenReturn(Optional.empty());
+
+            Assertions.assertThrows(UsernameNotFoundException.class,
+                    () -> customUserDetailsService.loadUserByUsername("naoexiste@email.com"));
         }
     }
 }
