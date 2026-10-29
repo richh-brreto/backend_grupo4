@@ -3,6 +3,7 @@ package school.sptech.back_end_PI.security;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import school.sptech.back_end_PI.entity.Aluno;
 import school.sptech.back_end_PI.entity.Permissao;
 import school.sptech.back_end_PI.entity.Professor;
 import school.sptech.back_end_PI.repository.ContratoRepository;
@@ -64,8 +65,21 @@ public class AccessGuard {
         return temPermissao(authentication, TELA_GERAL);
     }
 
+    // O aluno tem a tela de agenda para consultar as próprias aulas, mas isso não
+    // pode liberar a visão de todas as aulas nem a gestão delas.
     public boolean podeVerAulas(Authentication authentication) {
-        return temPermissao(authentication, TELA_AGENDA);
+        return !isAluno(authentication) && temPermissao(authentication, TELA_AGENDA);
+    }
+
+    public boolean isAluno(Authentication authentication) {
+        return authentication != null && authentication.getPrincipal() instanceof Aluno;
+    }
+
+    public Long currentAlunoId(Authentication authentication) {
+        if (authentication != null && authentication.getPrincipal() instanceof Aluno aluno) {
+            return aluno.getId();
+        }
+        return null;
     }
 
     public boolean podeVerDashboard(Authentication authentication) {
