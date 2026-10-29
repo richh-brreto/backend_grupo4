@@ -65,8 +65,10 @@ public class AccessGuard {
         return temPermissao(authentication, TELA_GERAL);
     }
 
+    // O aluno tem a tela de agenda para consultar as próprias aulas, mas isso não
+    // pode liberar a visão de todas as aulas nem a gestão delas.
     public boolean podeVerAulas(Authentication authentication) {
-        return temPermissao(authentication, TELA_AGENDA);
+        return !isAluno(authentication) && temPermissao(authentication, TELA_AGENDA);
     }
 
     public boolean isAluno(Authentication authentication) {
