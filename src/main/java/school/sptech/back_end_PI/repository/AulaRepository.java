@@ -36,6 +36,11 @@ public interface AulaRepository extends JpaRepository<Aula, Long> {
                                          @Param("inicio") LocalDate inicio,
                                          @Param("fim") LocalDate fim);
 
+    // Aulas do aluno no período: todas as aulas dos contratos dele (individuais e de grupo)
+    List<Aula> findByContratoAlunoIdAndDataBetweenOrderByDataAscHoraInicioAsc(Long alunoId,
+                                                                              LocalDate inicio,
+                                                                              LocalDate fim);
+
     // AccessGuard ownership check
     boolean existsByIdAndContratoProfessorId(Long id, Long professorId);
 }

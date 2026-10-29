@@ -246,6 +246,15 @@ public class AulaService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<AulaResponse> listarAulasDoAlunoPorPeriodo(Long alunoId, LocalDate inicio, LocalDate fim) {
+        validarPeriodo(inicio, fim);
+        return aulaRepository.findByContratoAlunoIdAndDataBetweenOrderByDataAscHoraInicioAsc(alunoId, inicio, fim)
+                .stream()
+                .map(AulaMapper::toResponse)
+                .toList();
+    }
+
     // ============================================================================
     // MÉTODOS AUXILIARES
     // ============================================================================

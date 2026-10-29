@@ -29,11 +29,17 @@ public class AulaController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Listar aulas de um período", description = "Coordenador vê todas as aulas; professor vê somente as próprias.")
+    @Operation(summary = "Listar aulas de um período", description = "Coordenador vê todas as aulas; professor e aluno veem somente as próprias.")
     public ResponseEntity<List<AulaResponse>> listarPorPeriodo(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim,
             Authentication authentication) {
+
+        // Precisa vir antes da checagem de permissão: o aluno também tem TELA_AGENDA
+        Long alunoId = accessGuard.currentAlunoId(authentication);
+        if (alunoId != null) {
+            return ResponseEntity.ok(aulaService.listarAulasDoAlunoPorPeriodo(alunoId, inicio, fim));
+        }
 
         if (accessGuard.podeVerAulas(authentication)) {
             return ResponseEntity.ok(aulaService.listarAulasPorPeriodo(inicio, fim));

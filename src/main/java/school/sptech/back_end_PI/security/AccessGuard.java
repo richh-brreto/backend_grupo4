@@ -3,6 +3,7 @@ package school.sptech.back_end_PI.security;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import school.sptech.back_end_PI.entity.Aluno;
 import school.sptech.back_end_PI.entity.Permissao;
 import school.sptech.back_end_PI.entity.Professor;
 import school.sptech.back_end_PI.repository.ContratoRepository;
@@ -66,6 +67,17 @@ public class AccessGuard {
 
     public boolean podeVerAulas(Authentication authentication) {
         return temPermissao(authentication, TELA_AGENDA);
+    }
+
+    public boolean isAluno(Authentication authentication) {
+        return authentication != null && authentication.getPrincipal() instanceof Aluno;
+    }
+
+    public Long currentAlunoId(Authentication authentication) {
+        if (authentication != null && authentication.getPrincipal() instanceof Aluno aluno) {
+            return aluno.getId();
+        }
+        return null;
     }
 
     public boolean podeVerDashboard(Authentication authentication) {
