@@ -24,6 +24,7 @@ public class ContratoMapper {
         response.setTipo(contrato.getTipo());
         response.setDataInicio(contrato.getDataInicio());
         response.setDataFim(contrato.getDataFim());
+        response.setLinkDaAula(contrato.getLinkDaAula());
 
         // 1. Mapeia Aluno (Obrigatório em ambos os tipos no novo modelo)
         Aluno aluno = contrato.getAluno();

@@ -56,6 +56,7 @@ public class ContratoService {
         contrato.setTipo("Grupo");
         contrato.setDataInicio(request.getDataInicio());
         contrato.setDataFim(request.getDataFim());
+        contrato.setLinkDaAula(request.getLinkDaAula());
         contrato.setAluno(aluno);
         contrato.setTurma(turma);
         contrato.setProfessor(null);
@@ -83,6 +84,7 @@ public class ContratoService {
         contrato.setTipo("Individual");
         contrato.setDataInicio(request.getDataInicio());
         contrato.setDataFim(request.getDataFim());
+        contrato.setLinkDaAula(request.getLinkDaAula());
         contrato.setAluno(aluno);
         contrato.setProfessor(professor);
         contrato.setTurma(null);
@@ -152,6 +154,7 @@ public class ContratoService {
         contrato.setTipo("Grupo");
         contrato.setDataInicio(request.getDataInicio());
         contrato.setDataFim(request.getDataFim());
+        contrato.setLinkDaAula(request.getLinkDaAula());
         contrato.setAluno(aluno);
         contrato.setTurma(turma);
         contrato.setProfessor(null);
@@ -173,6 +176,7 @@ public class ContratoService {
         contrato.setTipo("Individual");
         contrato.setDataInicio(request.getDataInicio());
         contrato.setDataFim(request.getDataFim());
+        contrato.setLinkDaAula(request.getLinkDaAula());
         contrato.setAluno(aluno);
         contrato.setProfessor(professor);
         contrato.setTurma(null);

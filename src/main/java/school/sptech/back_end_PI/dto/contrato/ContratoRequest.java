@@ -24,6 +24,8 @@ public class ContratoRequest {
     // Não usamos @NotNull aqui, pois será nulo se o tipo for 'Individual'
     private Long turmaId;
 
+    private String linkDaAula;
+
     // Não usamos @NotNull aqui, pois será nulo se o tipo for 'Grupo'
     private Long professorId;
 
@@ -89,5 +91,13 @@ public class ContratoRequest {
 
     public void setHorariosIds(List<Long> horariosIds) {
         this.horariosIds = horariosIds;
+    }
+
+    public String getLinkDaAula() {
+        return linkDaAula;
+    }
+
+    public void setLinkDaAula(String linkDaAula) {
+        this.linkDaAula = linkDaAula;
     }
 }
