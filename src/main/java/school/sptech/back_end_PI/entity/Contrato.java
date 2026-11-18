@@ -27,6 +27,9 @@ public class Contrato {
 
     private String tipo;
 
+    @Column(name = "link_da_aula")
+    private String linkDaAula;
+
     @ManyToOne
     @JoinColumn(name = "aluno_id_aluno")
     private Aluno aluno;
@@ -135,5 +138,13 @@ public class Contrato {
 
     public void setHorarios(List<Horario> horarios) {
         this.horarios = horarios;
+    }
+
+    public String getLinkDaAula() {
+        return linkDaAula;
+    }
+
+    public void setLinkDaAula(String linkDaAula) {
+        this.linkDaAula = linkDaAula;
     }
 }

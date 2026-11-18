@@ -82,6 +82,7 @@ CREATE TABLE contrato (
     data_fim DATE NOT NULL,
     vencimento_notificado_em DATETIME NULL,
     tipo VARCHAR(45),
+    link_da_aula VARCHAR(255) NULL,
     professor_id_professor INT NULL,
     aluno_id_aluno INT NULL,
     turma_id_turma INT NULL,
@@ -150,107 +151,97 @@ CREATE TABLE professor_permissao (
         REFERENCES permissao(id_permissao)
 );
 
-	-- Segunda-feira
-	INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
-	('Segunda-feira', '06:00:00', '07:00:00'), ('Segunda-feira', '07:00:00', '08:00:00'),
-	('Segunda-feira', '08:00:00', '09:00:00'), ('Segunda-feira', '09:00:00', '10:00:00'),
-	('Segunda-feira', '10:00:00', '11:00:00'), ('Segunda-feira', '11:00:00', '12:00:00'),
-	('Segunda-feira', '12:00:00', '13:00:00'), ('Segunda-feira', '13:00:00', '14:00:00'),
-	('Segunda-feira', '14:00:00', '15:00:00'), ('Segunda-feira', '15:00:00', '16:00:00'),
-	('Segunda-feira', '16:00:00', '17:00:00'), ('Segunda-feira', '17:00:00', '18:00:00'),
-	('Segunda-feira', '18:00:00', '19:00:00'), ('Segunda-feira', '19:00:00', '20:00:00'),
-	('Segunda-feira', '20:00:00', '21:00:00'), ('Segunda-feira', '21:00:00', '22:00:00'),
-	('Segunda-feira', '22:00:00', '23:00:00');
-
-	-- Terça-feira
-	INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
-	('Terça-feira', '06:00:00', '07:00:00'), ('Terça-feira', '07:00:00', '08:00:00'),
-	('Terça-feira', '08:00:00', '09:00:00'), ('Terça-feira', '09:00:00', '10:00:00'),
-	('Terça-feira', '10:00:00', '11:00:00'), ('Terça-feira', '11:00:00', '12:00:00'),
-	('Terça-feira', '12:00:00', '13:00:00'), ('Terça-feira', '13:00:00', '14:00:00'),
-	('Terça-feira', '14:00:00', '15:00:00'), ('Terça-feira', '15:00:00', '16:00:00'),
-	('Terça-feira', '16:00:00', '17:00:00'), ('Terça-feira', '17:00:00', '18:00:00'),
-	('Terça-feira', '18:00:00', '19:00:00'), ('Terça-feira', '19:00:00', '20:00:00'),
-	('Terça-feira', '20:00:00', '21:00:00'), ('Terça-feira', '21:00:00', '22:00:00'),
-	('Terça-feira', '22:00:00', '23:00:00');
-
-	-- Quarta-feira
-	INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
-	('Quarta-feira', '06:00:00', '07:00:00'), ('Quarta-feira', '07:00:00', '08:00:00'),
-	('Quarta-feira', '08:00:00', '09:00:00'), ('Quarta-feira', '09:00:00', '10:00:00'),
-	('Quarta-feira', '10:00:00', '11:00:00'), ('Quarta-feira', '11:00:00', '12:00:00'),
-	('Quarta-feira', '12:00:00', '13:00:00'), ('Quarta-feira', '13:00:00', '14:00:00'),
-	('Quarta-feira', '14:00:00', '15:00:00'), ('Quarta-feira', '15:00:00', '16:00:00'),
-	('Quarta-feira', '16:00:00', '17:00:00'), ('Quarta-feira', '17:00:00', '18:00:00'),
-	('Quarta-feira', '18:00:00', '19:00:00'), ('Quarta-feira', '19:00:00', '20:00:00'),
-	('Quarta-feira', '20:00:00', '21:00:00'), ('Quarta-feira', '21:00:00', '22:00:00'),
-	('Quarta-feira', '22:00:00', '23:00:00');
-
-	-- Quinta-feira
-	INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
-	('Quinta-feira', '06:00:00', '07:00:00'), ('Quinta-feira', '07:00:00', '08:00:00'),
-	('Quinta-feira', '08:00:00', '09:00:00'), ('Quinta-feira', '09:00:00', '10:00:00'),
-	('Quinta-feira', '10:00:00', '11:00:00'), ('Quinta-feira', '11:00:00', '12:00:00'),
-	('Quinta-feira', '12:00:00', '13:00:00'), ('Quinta-feira', '13:00:00', '14:00:00'),
-	('Quinta-feira', '14:00:00', '15:00:00'), ('Quinta-feira', '15:00:00', '16:00:00'),
-	('Quinta-feira', '16:00:00', '17:00:00'), ('Quinta-feira', '17:00:00', '18:00:00'),
-	('Quinta-feira', '18:00:00', '19:00:00'), ('Quinta-feira', '19:00:00', '20:00:00'),
-	('Quinta-feira', '20:00:00', '21:00:00'), ('Quinta-feira', '21:00:00', '22:00:00'),
-	('Quinta-feira', '22:00:00', '23:00:00');
-
-	-- Sexta-feira
-	INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
-	('Sexta-feira', '06:00:00', '07:00:00'), ('Sexta-feira', '07:00:00', '08:00:00'),
-	('Sexta-feira', '08:00:00', '09:00:00'), ('Sexta-feira', '09:00:00', '10:00:00'),
-	('Sexta-feira', '10:00:00', '11:00:00'), ('Sexta-feira', '11:00:00', '12:00:00'),
-	('Sexta-feira', '12:00:00', '13:00:00'), ('Sexta-feira', '13:00:00', '14:00:00'),
-	('Sexta-feira', '14:00:00', '15:00:00'), ('Sexta-feira', '15:00:00', '16:00:00'),
-	('Sexta-feira', '16:00:00', '17:00:00'), ('Sexta-feira', '17:00:00', '18:00:00'),
-	('Sexta-feira', '18:00:00', '19:00:00'), ('Sexta-feira', '19:00:00', '20:00:00'),
-	('Sexta-feira', '20:00:00', '21:00:00'), ('Sexta-feira', '21:00:00', '22:00:00'),
-	('Sexta-feira', '22:00:00', '23:00:00');
-
-	-- Sábado
-	INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
-	('Sábado', '06:00:00', '07:00:00'), ('Sábado', '07:00:00', '08:00:00'),
-	('Sábado', '08:00:00', '09:00:00'), ('Sábado', '09:00:00', '10:00:00'),
-	('Sábado', '10:00:00', '11:00:00'), ('Sábado', '11:00:00', '12:00:00'),
-	('Sábado', '12:00:00', '13:00:00'), ('Sábado', '13:00:00', '14:00:00'),
-	('Sábado', '14:00:00', '15:00:00'), ('Sábado', '15:00:00', '16:00:00'),
-	('Sábado', '16:00:00', '17:00:00'), ('Sábado', '17:00:00', '18:00:00'),
-	('Sábado', '18:00:00', '19:00:00'), ('Sábado', '19:00:00', '20:00:00'),
-	('Sábado', '20:00:00', '21:00:00'), ('Sábado', '21:00:00', '22:00:00'),
-	('Sábado', '22:00:00', '23:00:00');
-
-	-- Domingo
-	INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
-	('Domingo', '06:00:00', '07:00:00'), ('Domingo', '07:00:00', '08:00:00'),
-	('Domingo', '08:00:00', '09:00:00'), ('Domingo', '09:00:00', '10:00:00'),
-	('Domingo', '10:00:00', '11:00:00'), ('Domingo', '11:00:00', '12:00:00'),
-	('Domingo', '12:00:00', '13:00:00'), ('Domingo', '13:00:00', '14:00:00'),
-	('Domingo', '14:00:00', '15:00:00'), ('Domingo', '15:00:00', '16:00:00'),
-	('Domingo', '16:00:00', '17:00:00'), ('Domingo', '17:00:00', '18:00:00'),
-	('Domingo', '18:00:00', '19:00:00'), ('Domingo', '19:00:00', '20:00:00'),
-	('Domingo', '20:00:00', '21:00:00'), ('Domingo', '21:00:00', '22:00:00'),
-	('Domingo', '22:00:00', '23:00:00');
-
 -- ============================================================================
--- 1. CADASTROS BÁSICOS
+-- CARGA DE HORÁRIOS DA SEMANA (168 intervalos / 7 dias)
 -- ============================================================================
 
--- Inserindo o Professor administrador (recebe todas as telas logo abaixo)
-INSERT INTO professor (nome, email, telefone, senha, ativo)
-VALUES ('Administrador Sistema', 'admin@sptech.school', 1199999888, '$2a$12$F03Vd6gjrLJRC8jzliUfA.oA4i248BIfEEejMxwQpZQZJiSC1/KAC', 1); -- Gerará o id_professor = 1
+-- Segunda-feira
+INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
+('Segunda-feira', '06:00:00', '07:00:00'), ('Segunda-feira', '07:00:00', '08:00:00'),
+('Segunda-feira', '08:00:00', '09:00:00'), ('Segunda-feira', '09:00:00', '10:00:00'),
+('Segunda-feira', '10:00:00', '11:00:00'), ('Segunda-feira', '11:00:00', '12:00:00'),
+('Segunda-feira', '12:00:00', '13:00:00'), ('Segunda-feira', '13:00:00', '14:00:00'),
+('Segunda-feira', '14:00:00', '15:00:00'), ('Segunda-feira', '15:00:00', '16:00:00'),
+('Segunda-feira', '16:00:00', '17:00:00'), ('Segunda-feira', '17:00:00', '18:00:00'),
+('Segunda-feira', '18:00:00', '19:00:00'), ('Segunda-feira', '19:00:00', '20:00:00'),
+('Segunda-feira', '20:00:00', '21:00:00'), ('Segunda-feira', '21:00:00', '22:00:00'),
+('Segunda-feira', '22:00:00', '23:00:00');
 
--- Inserindo a Turma (Vinculada ao Professor 1)
-INSERT INTO turma (nome_turma, nivel, limite_alunos, tipo, professor_id_professor)
-VALUES ('ADS-2B', 'Intermediário', 30, 'Grupo', 1); -- Gerará o id_turma = 1
+-- Terça-feira
+INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
+('Terça-feira', '06:00:00', '07:00:00'), ('Terça-feira', '07:00:00', '08:00:00'),
+('Terça-feira', '08:00:00', '09:00:00'), ('Terça-feira', '09:00:00', '10:00:00'),
+('Terça-feira', '10:00:00', '11:00:00'), ('Terça-feira', '11:00:00', '12:00:00'),
+('Terça-feira', '12:00:00', '13:00:00'), ('Terça-feira', '13:00:00', '14:00:00'),
+('Terça-feira', '14:00:00', '15:00:00'), ('Terça-feira', '15:00:00', '16:00:00'),
+('Terça-feira', '16:00:00', '17:00:00'), ('Terça-feira', '17:00:00', '18:00:00'),
+('Terça-feira', '18:00:00', '19:00:00'), ('Terça-feira', '19:00:00', '20:00:00'),
+('Terça-feira', '20:00:00', '21:00:00'), ('Terça-feira', '21:00:00', '22:00:00'),
+('Terça-feira', '22:00:00', '23:00:00');
 
--- Inserindo o Aluno
-INSERT INTO aluno (nome, email, telefone, nivel, ativo)
-VALUES ('Guilherme Silva2', 'guilherme.silva@sptech.school', '11977776666', 'Intermediário', 1); -- Gerará o id_aluno = 1
+-- Quarta-feira
+INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
+('Quarta-feira', '06:00:00', '07:00:00'), ('Quarta-feira', '07:00:00', '08:00:00'),
+('Quarta-feira', '08:00:00', '09:00:00'), ('Quarta-feira', '09:00:00', '10:00:00'),
+('Quarta-feira', '10:00:00', '11:00:00'), ('Quarta-feira', '11:00:00', '12:00:00'),
+('Quarta-feira', '12:00:00', '13:00:00'), ('Quarta-feira', '13:00:00', '14:00:00'),
+('Quarta-feira', '14:00:00', '15:00:00'), ('Quarta-feira', '15:00:00', '16:00:00'),
+('Quarta-feira', '16:00:00', '17:00:00'), ('Quarta-feira', '17:00:00', '18:00:00'),
+('Quarta-feira', '18:00:00', '19:00:00'), ('Quarta-feira', '19:00:00', '20:00:00'),
+('Quarta-feira', '20:00:00', '21:00:00'), ('Quarta-feira', '21:00:00', '22:00:00'),
+('Quarta-feira', '22:00:00', '23:00:00');
 
--- Catálogo de telas que podem ser liberadas por professor
+-- Quinta-feira
+INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
+('Quinta-feira', '06:00:00', '07:00:00'), ('Quinta-feira', '07:00:00', '08:00:00'),
+('Quinta-feira', '08:00:00', '09:00:00'), ('Quinta-feira', '09:00:00', '10:00:00'),
+('Quinta-feira', '10:00:00', '11:00:00'), ('Quinta-feira', '11:00:00', '12:00:00'),
+('Quinta-feira', '12:00:00', '13:00:00'), ('Quinta-feira', '13:00:00', '14:00:00'),
+('Quinta-feira', '14:00:00', '15:00:00'), ('Quinta-feira', '15:00:00', '16:00:00'),
+('Quinta-feira', '16:00:00', '17:00:00'), ('Quinta-feira', '17:00:00', '18:00:00'),
+('Quinta-feira', '18:00:00', '19:00:00'), ('Quinta-feira', '19:00:00', '20:00:00'),
+('Quinta-feira', '20:00:00', '21:00:00'), ('Quinta-feira', '21:00:00', '22:00:00'),
+('Quinta-feira', '22:00:00', '23:00:00');
+
+-- Sexta-feira
+INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
+('Sexta-feira', '06:00:00', '07:00:00'), ('Sexta-feira', '07:00:00', '08:00:00'),
+('Sexta-feira', '08:00:00', '09:00:00'), ('Sexta-feira', '09:00:00', '10:00:00'),
+('Sexta-feira', '10:00:00', '11:00:00'), ('Sexta-feira', '11:00:00', '12:00:00'),
+('Sexta-feira', '12:00:00', '13:00:00'), ('Sexta-feira', '13:00:00', '14:00:00'),
+('Sexta-feira', '14:00:00', '15:00:00'), ('Sexta-feira', '15:00:00', '16:00:00'),
+('Sexta-feira', '16:00:00', '17:00:00'), ('Sexta-feira', '17:00:00', '18:00:00'),
+('Sexta-feira', '18:00:00', '19:00:00'), ('Sexta-feira', '19:00:00', '20:00:00'),
+('Sexta-feira', '20:00:00', '21:00:00'), ('Sexta-feira', '21:00:00', '22:00:00'),
+('Sexta-feira', '22:00:00', '23:00:00');
+
+-- Sábado
+INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
+('Sábado', '06:00:00', '07:00:00'), ('Sábado', '07:00:00', '08:00:00'),
+('Sábado', '08:00:00', '09:00:00'), ('Sábado', '09:00:00', '10:00:00'),
+('Sábado', '10:00:00', '11:00:00'), ('Sábado', '11:00:00', '12:00:00'),
+('Sábado', '12:00:00', '13:00:00'), ('Sábado', '13:00:00', '14:00:00'),
+('Sábado', '14:00:00', '15:00:00'), ('Sábado', '15:00:00', '16:00:00'),
+('Sábado', '16:00:00', '17:00:00'), ('Sábado', '17:00:00', '18:00:00'),
+('Sábado', '18:00:00', '19:00:00'), ('Sábado', '19:00:00', '20:00:00'),
+('Sábado', '20:00:00', '21:00:00'), ('Sábado', '21:00:00', '22:00:00'),
+('Sábado', '22:00:00', '23:00:00');
+
+-- Domingo
+INSERT INTO horario (dia_semana, hora_inicio, hora_fim) VALUES
+('Domingo', '06:00:00', '07:00:00'), ('Domingo', '07:00:00', '08:00:00'),
+('Domingo', '08:00:00', '09:00:00'), ('Domingo', '09:00:00', '10:00:00'),
+('Domingo', '10:00:00', '11:00:00'), ('Domingo', '11:00:00', '12:00:00'),
+('Domingo', '12:00:00', '13:00:00'), ('Domingo', '13:00:00', '14:00:00'),
+('Domingo', '14:00:00', '15:00:00'), ('Domingo', '15:00:00', '16:00:00'),
+('Domingo', '16:00:00', '17:00:00'), ('Domingo', '17:00:00', '18:00:00'),
+('Domingo', '18:00:00', '19:00:00'), ('Domingo', '19:00:00', '20:00:00'),
+('Domingo', '20:00:00', '21:00:00'), ('Domingo', '21:00:00', '22:00:00'),
+('Domingo', '22:00:00', '23:00:00');
+
+-- ============================================================================
+-- CATÁLOGO FIXO DE PERMISSÕES (Telas do sistema)
+-- ============================================================================
 INSERT INTO permissao (nome) VALUES
 ('TELA_GERAL'),
 ('TELA_AGENDA'),
@@ -259,67 +250,3 @@ INSERT INTO permissao (nome) VALUES
 ('TELA_TURMAS'),
 ('TELA_ALUNOS'),
 ('TELA_CONTRATOS');
-
--- O administrador criado acima começa com acesso a todas as telas
-INSERT INTO professor_permissao (professor_id_professor, permissao_id_permissao)
-SELECT 1, id_permissao FROM permissao;
-
-
--- ============================================================================
--- 2. VÍNCULO DE DISPONIBILIDADES (3 HORÁRIOS PARA CADA)
--- Confluência no ID 14: Segunda-feira das 19h às 20h
--- ============================================================================
-
--- Disponibilidade do Professor (ID 1)
--- ID 14: Segunda-feira (19h - 20h) -> PONTO DE ENCONTRO
--- ID 15: Segunda-feira (20h - 21h)
--- ID 16: Segunda-feira (21h - 22h)
-INSERT INTO disponibilidade_professor (professor_id_professor, horario_id_horario) VALUES
-(1, 14),
-(1, 15),
-(1, 16);
-
--- Disponibilidade da Turma (ID 1)
--- ID 14: Segunda-feira (19h - 20h) -> PONTO DE ENCONTRO
--- ID 18: Terça-feira (06h - 07h)
--- ID 19: Terça-feira (07h - 08h)
-INSERT INTO disponibilidade_turma (turma_id_turma, horario_id_horario) VALUES
-(1, 14),
-(1, 18),
-(1, 19);
-
--- Disponibilidade do Aluno (ID 1)
--- ID 14: Segunda-feira (19h - 20h) -> PONTO DE ENCONTRO COM PROFESSOR E TURMA
--- ID 32: Terça-feira (20h - 21h)
--- ID 33: Terça-feira (21h - 22h)
-INSERT INTO disponibilidade_aluno (horario_id_horario, aluno_id_aluno) VALUES
-(14, 1),
-(18, 1),
-(19, 1);
-
-SELECT
-    a.nome AS Aluno,
-    p.nome AS Professor,
-    t.nome_turma AS Turma,
-    h.dia_semana AS Dia,
-    h.hora_inicio AS Inicio,
-    h.hora_fim AS Fim
-FROM disponibilidade_aluno da
-JOIN disponibilidade_professor dp ON da.horario_id_horario = dp.horario_id_horario
-JOIN disponibilidade_turma dt ON da.horario_id_horario = dt.horario_id_horario
-JOIN aluno a ON da.aluno_id_aluno = a.id_aluno
-JOIN professor p ON dp.professor_id_professor = p.id_professor
-JOIN turma t ON dt.turma_id_turma = t.id_turma
-JOIN horario h ON da.horario_id_horario = h.id_horario;
-
-select * from contrato;
-select * from horario;
-select * from professor;
-select * from disponibilidade_professor;
-select * from disponibilidade_aluno;
-select * from turma;
-select * from aluno;
-
-select * from ids_horario_contrato;
-select * from permissao;
-select * from professor_permissao;

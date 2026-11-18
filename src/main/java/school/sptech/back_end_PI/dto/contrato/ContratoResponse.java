@@ -9,7 +9,7 @@ import school.sptech.back_end_PI.dto.horario.HorarioResponse;
 import java.time.LocalDate;
 import java.util.List;
 
-@JsonPropertyOrder({ "id", "tipo", "dataInicio", "dataFim", "turma","professor","aluno","horarios" })
+@JsonPropertyOrder({ "id", "tipo", "dataInicio", "dataFim", "turma","professor","aluno","horarios","linkDaAula" })
 public class ContratoResponse {
 
     private Long id;
@@ -20,6 +20,7 @@ public class ContratoResponse {
     private TurmaResponse turma;
     private ProfessorResponse professor;
     private List<HorarioResponse> horarios;
+    private String linkDaAula;
 
     // Construtor Padrão
     public ContratoResponse() {}
@@ -87,5 +88,13 @@ public class ContratoResponse {
 
     public void setHorarios(List<HorarioResponse> horarios) {
         this.horarios = horarios;
+    }
+
+    public String getLinkDaAula() {
+        return linkDaAula;
+    }
+
+    public void setLinkDaAula(String linkDaAula) {
+        this.linkDaAula = linkDaAula;
     }
 }
