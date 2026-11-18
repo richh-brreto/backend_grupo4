@@ -135,6 +135,7 @@ public class UsuarioController {
             return ResponseEntity.ok(new UsuarioLogadoResponse(
                     professor.getNome(),
                     professor.getEmail(),
+                    "PROFESSOR",
                     permissoesDoUsuario(authentication)
             ));
         }
@@ -143,6 +144,7 @@ public class UsuarioController {
             return ResponseEntity.ok(new UsuarioLogadoResponse(
                     aluno.getNome(),
                     aluno.getEmail(),
+                    "ALUNO",
                     permissoesDoUsuario(authentication)
             ));
         }
